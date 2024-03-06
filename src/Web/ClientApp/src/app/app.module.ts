@@ -10,6 +10,7 @@ import { AuthorizeInterceptor } from 'src/api-authorization/authorize.intercepto
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppLayoutModule } from './layout/app.layout.module';
 import { AppRoutingModule } from './app-routing.module';
+import { TranslocoRootModule } from './transloco-root.module';
 
 @NgModule({
   declarations: [AppComponent, HomeComponent],
@@ -20,6 +21,7 @@ import { AppRoutingModule } from './app-routing.module';
     AppLayoutModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    TranslocoRootModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true },

@@ -1,4 +1,5 @@
 using VehiGate.Infrastructure.Data;
+using VehiGate.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,8 @@ app.MapControllerRoute(
     pattern: "{controller}/{action=Index}/{id?}");
 
 app.MapRazorPages();
+
+app.MapIdentityApi<ApplicationUser>();
 
 app.MapFallbackToFile("index.html");
 

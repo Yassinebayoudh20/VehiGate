@@ -29,7 +29,6 @@ import { CommonModule } from '@angular/common';
         AppLayoutComponent,
     ],
     imports: [
-        BrowserModule,
         FormsModule,
         HttpClientModule,
         BrowserAnimationsModule,

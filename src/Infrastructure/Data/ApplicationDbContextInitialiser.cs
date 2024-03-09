@@ -19,7 +19,7 @@ public static class InitialiserExtensions
 
         await initialiser.InitialiseAsync();
 
-        //await initialiser.SeedAsync();
+        await initialiser.SeedAsync();
     }
 }
 
@@ -67,11 +67,19 @@ public class ApplicationDbContextInitialiser
     public async Task TrySeedAsync()
     {
         // Default roles
+        var superAdminRole = new IdentityRole(Roles.SuperAdmin);
         var administratorRole = new IdentityRole(Roles.Administrator);
+        var driver = new IdentityRole(Roles.Driver);
+        var user = new IdentityRole(Roles.User);
 
-        if (_roleManager.Roles.All(r => r.Name != administratorRole.Name))
+
+        if (!_roleManager.Roles.Any())
         {
+            await _roleManager.CreateAsync(superAdminRole);
             await _roleManager.CreateAsync(administratorRole);
+            await _roleManager.CreateAsync(driver);
+            await _roleManager.CreateAsync(user);
+
         }
 
         // Default users

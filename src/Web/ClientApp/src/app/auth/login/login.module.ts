@@ -4,9 +4,11 @@ import { LoginRoutingModule } from './login-routing.module';
 import { LoginComponent } from './login.component';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PasswordModule } from 'primeng/password';
 import { InputTextModule } from 'primeng/inputtext';
+import { TranslocoModule } from '@ngneat/transloco';
+import { CoreModule } from 'src/app/core/core.module';
 
 @NgModule({
     imports: [
@@ -15,8 +17,10 @@ import { InputTextModule } from 'primeng/inputtext';
         ButtonModule,
         CheckboxModule,
         InputTextModule,
-        FormsModule,
-        PasswordModule
+        ReactiveFormsModule,
+        PasswordModule,
+        TranslocoModule,
+        CoreModule
     ],
     declarations: [LoginComponent]
 })

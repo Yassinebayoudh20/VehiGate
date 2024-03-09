@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { UsersManagementRoutingModule } from './users-management-routing.module';
 import { UsersListComponent } from './users-list/users-list.component';
 import { UsersComponent } from './users.component';
+import { CoreModule } from 'src/app/core/core.module';
 
 
 @NgModule({
@@ -13,6 +14,7 @@ import { UsersComponent } from './users.component';
   ],
   imports: [
     CommonModule,
+    CoreModule,
     UsersManagementRoutingModule
   ]
 })

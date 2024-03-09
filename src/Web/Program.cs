@@ -1,31 +1,30 @@
 using VehiGate.Infrastructure.Data;
-using VehiGate.Infrastructure.Identity;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddKeyVaultIfConfigured(builder.Configuration);
 
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
-builder.Services.AddWebServices();
+builder.Services.AddWebServices(builder.Configuration);
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     await app.InitialiseDatabaseAsync();
 }
 else
 {
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHealthChecks("/health");
 app.UseHttpsRedirection();
+app.UseAuthorization();
 app.UseStaticFiles();
+app.UseCors("AllowSpecificOrigin");
 
 app.UseSwaggerUi(settings =>
 {
@@ -39,15 +38,18 @@ app.MapControllerRoute(
 
 app.MapRazorPages();
 
-app.MapIdentityApi<ApplicationUser>();
-
 app.MapFallbackToFile("index.html");
 
-app.UseExceptionHandler(options => { });
-
+app.UseExceptionHandler(
+   new ExceptionHandlerOptions()
+   {
+       AllowStatusCode404Response = true,
+       ExceptionHandlingPath = "/error"
+   });
 
 app.MapEndpoints();
 
 app.Run();
 
-public partial class Program { }
+public partial class Program
+{ }

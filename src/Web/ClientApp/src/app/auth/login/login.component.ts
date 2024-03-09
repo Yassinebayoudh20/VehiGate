@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { LayoutService } from 'src/app/layout/service/app.layout.service';
 import { LoginCommand } from 'src/app/web-api-client';
@@ -20,10 +21,10 @@ import { LoginCommand } from 'src/app/web-api-client';
     `,
   ],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   valCheck: string[] = ['remember'];
-
   loginForm: FormGroup;
+  loginSubscription: Subscription;
 
   constructor(public layoutService: LayoutService, private authService: AuthService, private formBuilder: FormBuilder, private router: Router) {}
 
@@ -39,7 +40,7 @@ export class LoginComponent implements OnInit {
       const loginCmd = new LoginCommand();
       loginCmd.email = this.loginForm.get('email').value;
       loginCmd.password = this.loginForm.get('password').value;
-      this.authService.login(loginCmd).subscribe((response) => {
+      this.loginSubscription = this.authService.login(loginCmd).subscribe((response) => {
         this.navigateToDashboard();
       });
     } else {
@@ -49,5 +50,11 @@ export class LoginComponent implements OnInit {
 
   navigateToDashboard(): void {
     this.router.navigate(['/pages']);
+  }
+
+  ngOnDestroy(): void {
+    if (this.loginSubscription) {
+      this.loginSubscription.unsubscribe();
+    }
   }
 }

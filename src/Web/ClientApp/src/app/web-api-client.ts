@@ -18,6 +18,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 export interface IAuthenticationClient {
     register(command: RegisterCommand): Observable<Result>;
     authenticate(command: LoginCommand): Observable<AuthenticationResponse>;
+    signOut(command: LogoutCommand): Observable<boolean>;
 }
 
 @Injectable({
@@ -136,6 +137,59 @@ export class AuthenticationClient implements IAuthenticationClient {
         }
         return _observableOf(null as any);
     }
+
+    signOut(command: LogoutCommand): Observable<boolean> {
+        let url_ = this.baseUrl + "/api/Authentication/signout";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSignOut(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSignOut(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<boolean>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<boolean>;
+        }));
+    }
+
+    protected processSignOut(response: HttpResponseBase): Observable<boolean> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
 }
 
 export class Result implements IResult {
@@ -187,48 +241,12 @@ export interface IResult {
 }
 
 export class RegisterCommand implements IRegisterCommand {
-    register?: RegisterDto;
-
-    constructor(data?: IRegisterCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.register = _data["register"] ? RegisterDto.fromJS(_data["register"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): RegisterCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new RegisterCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["register"] = this.register ? this.register.toJSON() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IRegisterCommand {
-    register?: RegisterDto;
-}
-
-export class RegisterDto implements IRegisterDto {
     phoneNumber?: string;
     email?: string;
     password?: string;
     roles?: string[];
 
-    constructor(data?: IRegisterDto) {
+    constructor(data?: IRegisterCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -250,9 +268,9 @@ export class RegisterDto implements IRegisterDto {
         }
     }
 
-    static fromJS(data: any): RegisterDto {
+    static fromJS(data: any): RegisterCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new RegisterDto();
+        let result = new RegisterCommand();
         result.init(data);
         return result;
     }
@@ -271,7 +289,7 @@ export class RegisterDto implements IRegisterDto {
     }
 }
 
-export interface IRegisterDto {
+export interface IRegisterCommand {
     phoneNumber?: string;
     email?: string;
     password?: string;
@@ -360,6 +378,36 @@ export class LoginCommand implements ILoginCommand {
 export interface ILoginCommand {
     email?: string;
     password?: string;
+}
+
+export class LogoutCommand implements ILogoutCommand {
+
+    constructor(data?: ILogoutCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): LogoutCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new LogoutCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
+}
+
+export interface ILogoutCommand {
 }
 
 export class SwaggerException extends Error {

@@ -1,14 +1,11 @@
 // user.model.ts
 export class UserInfo {
-  id: number;
-  username: string;
-  email: string;
-  roles: string[] | string;
-
-  constructor(id: number, username: string, email: string, roles: string[] | string) {
-    this.id = id;
-    this.username = username;
-    this.email = email;
-    this.roles = roles;
-  }
+  aud: string;
+  exp: number;
+  iat: number;
+  iss: string;
+  name: string;
+  nameid: string;
+  nbf: number;
+  role: string;
 }

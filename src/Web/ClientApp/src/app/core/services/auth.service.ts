@@ -1,31 +1,28 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { UserRegisterDto } from '../data/dtos/auth/user-register-dto';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { UserLoginDto } from '../data/dtos/auth/user-login-dto';
+import { BehaviorSubject, Observable, switchMap, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { TokenResponse } from '../data/dtos/auth/token-response-dto';
 import { LOCAL_STORAGE_TOKEN_NAME } from '../constants';
 import { UserInfo } from '../data/dtos/auth/user-info-dto';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { AuthenticationClient, AuthenticationResponse, LoginCommand } from 'src/app/web-api-client';
+import { AuthenticationClient, AuthenticationResponse, LoginCommand, LogoutCommand, RegisterCommand, Result } from 'src/app/web-api-client';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   api = environment.API_ENDPOINT + '/Authentication';
-  private currentUserSubject: BehaviorSubject<UserInfo>;
+  public currentUserSubject: BehaviorSubject<UserInfo>;
   public currentUser: Observable<UserInfo>;
   private decodedToken: any;
 
-  constructor(private http: HttpClient, private jwtHelper: JwtHelperService, private authClient: AuthenticationClient) {
+  constructor(private jwtHelper: JwtHelperService, private authClient: AuthenticationClient, private router: Router) {
     this.currentUserSubject = new BehaviorSubject<UserInfo>(this.getUserFromToken());
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
-  register(registerDto: UserRegisterDto): Observable<any> {
-    return this.http.post(this.api + '/register', registerDto);
+  register(registerCommand: RegisterCommand): Observable<Result> {
+    return this.authClient.register(registerCommand);
   }
 
   login(loginCommand: LoginCommand): Observable<AuthenticationResponse> {
@@ -37,12 +34,19 @@ export class AuthService {
     );
   }
 
-  logout(): Observable<void> {
-    localStorage.removeItem(LOCAL_STORAGE_TOKEN_NAME);
-    return new Observable((observer) => {
-      observer.next();
-      observer.complete();
-    });
+  logout(): Observable<unknown> {
+    return this.authClient.signOut(new LogoutCommand()).pipe(
+      tap((result) => {
+        localStorage.removeItem(LOCAL_STORAGE_TOKEN_NAME);
+        this.router.navigate(['auth/login']);
+      }),
+      switchMap((result) => {
+        return new Observable((observer) => {
+          observer.next();
+          observer.complete();
+        });
+      })
+    );
   }
 
   saveToken(token) {
@@ -59,7 +63,13 @@ export class AuthService {
       if (!this.decodedToken || this.decodedToken.token !== token) {
         this.decodedToken = this.jwtHelper.decodeToken(token);
       }
-      return this.decodedToken;
+      const isTokenExpired = this.jwtHelper.isTokenExpired(token);
+
+      if (!isTokenExpired) {
+        return this.decodedToken;
+      } else {
+        this.logout();
+      }
     }
     return null;
   }
@@ -69,5 +79,10 @@ export class AuthService {
     if (user) {
       this.currentUserSubject.next(user);
     }
+  }
+
+  isLoggedIn(): boolean {
+    const token = localStorage.getItem(LOCAL_STORAGE_TOKEN_NAME);
+    return token && !this.jwtHelper.isTokenExpired(token);
   }
 }

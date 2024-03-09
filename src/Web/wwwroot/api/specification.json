@@ -69,6 +69,38 @@
           }
         }
       }
+    },
+    "/api/Authentication/signout": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "SignOut",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -89,15 +121,6 @@
         }
       },
       "RegisterCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "register": {
-            "$ref": "#/components/schemas/RegisterDto"
-          }
-        }
-      },
-      "RegisterDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -146,6 +169,10 @@
             "type": "string"
           }
         }
+      },
+      "LogoutCommand": {
+        "type": "object",
+        "additionalProperties": false
       }
     },
     "securitySchemes": {

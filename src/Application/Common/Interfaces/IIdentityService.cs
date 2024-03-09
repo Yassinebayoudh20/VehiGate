@@ -20,4 +20,6 @@ public interface IIdentityService
     Task<Result> RegisterUserAsync(RegisterDto model);
 
     Task<AuthenticationResponse> AuthenticateAsync(LoginDto model);
+
+    Task<bool> SignOutAsync(); 
 }

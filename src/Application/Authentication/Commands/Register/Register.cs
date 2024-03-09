@@ -11,7 +11,13 @@ using VehiGate.Infrastructure.Identity.models;
 namespace VehiGate.Application.Authentication.Commands.Register;
 public record RegisterCommand : IRequest<Result>
 {
-    public required RegisterDto Register { get; set; }
+    public string PhoneNumber { get; set; } = null!;
+
+    public required string Email { get; set; }
+
+    public required string Password { get; set; }
+
+    public required List<string> Roles { get; set; }
 }
 
 public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result>
@@ -26,6 +32,6 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result>
 
     public async Task<Result> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        return await _identityService.RegisterUserAsync(request.Register);
+        return await _identityService.RegisterUserAsync(new RegisterDto { Email = request.Email, Password = request.Password, Roles = request.Roles, PhoneNumber = request.PhoneNumber });
     }
 }

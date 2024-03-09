@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { MenuModule } from 'primeng/menu';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -15,33 +15,27 @@ import { RouterModule } from '@angular/router';
 import { AppTopBarComponent } from './topbar/app.topbar.component';
 import { AppFooterComponent } from './footer/app.footer.component';
 import { AppConfigModule } from './config/config.module';
-import { AppSidebarComponent } from "./sidebar/app.sidebar.component";
-import { AppLayoutComponent } from "./app.layout.component";
+import { AppSidebarComponent } from './sidebar/app.sidebar.component';
+import { AppLayoutComponent } from './app.layout.component';
 import { CommonModule } from '@angular/common';
 
 @NgModule({
-    declarations: [
-        AppMenuitemComponent,
-        AppTopBarComponent,
-        AppFooterComponent,
-        AppMenuComponent,
-        AppSidebarComponent,
-        AppLayoutComponent,
-    ],
-    imports: [
-        FormsModule,
-        HttpClientModule,
-        BrowserAnimationsModule,
-        InputTextModule,
-        SidebarModule,
-        BadgeModule,
-        RadioButtonModule,
-        InputSwitchModule,
-        RippleModule,
-        RouterModule,
-        AppConfigModule,
-        CommonModule
-    ],
-    exports: [AppLayoutComponent]
+  declarations: [AppMenuitemComponent, AppTopBarComponent, AppFooterComponent, AppMenuComponent, AppSidebarComponent, AppLayoutComponent],
+  imports: [
+    FormsModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+    InputTextModule,
+    MenuModule,
+    SidebarModule,
+    BadgeModule,
+    RadioButtonModule,
+    InputSwitchModule,
+    RippleModule,
+    RouterModule,
+    AppConfigModule,
+    CommonModule,
+  ],
+  exports: [AppLayoutComponent],
 })
-export class AppLayoutModule { }
+export class AppLayoutModule {}

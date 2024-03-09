@@ -22,9 +22,11 @@ public class IdentityService : IIdentityService
     private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
     private readonly IAuthorizationService _authorizationService;
     private readonly JwtSettingsOptions _jwtSettings;
+    private readonly SignInManager<ApplicationUser> _signInManager;
 
     public IdentityService(
         UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
         RoleManager<IdentityRole> roleManager,
         IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
         IAuthorizationService authorizationService,
@@ -32,6 +34,7 @@ public class IdentityService : IIdentityService
     {
         _roleManager = roleManager;
         _userManager = userManager;
+        _signInManager = signInManager;
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
         _authorizationService = authorizationService;
         _jwtSettings = jwtSettings.Value;
@@ -181,5 +184,11 @@ public class IdentityService : IIdentityService
 
         SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
+    }
+
+    public async Task<bool> SignOutAsync()
+    {
+        await _signInManager.SignOutAsync();
+        return true;
     }
 }

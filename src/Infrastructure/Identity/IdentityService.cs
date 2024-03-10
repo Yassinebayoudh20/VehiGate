@@ -186,9 +186,18 @@ public class IdentityService : IIdentityService
         return tokenHandler.WriteToken(token);
     }
 
-    public async Task<bool> SignOutAsync()
+    public async Task<Result> SignOutAsync()
     {
-        await _signInManager.SignOutAsync();
-        return true;
+        try
+        {
+            await _signInManager.SignOutAsync();
+            return Result.Success();
+        }
+        catch (Exception ex)
+        {
+            List<string> errorMessages = new List<string>();
+            errorMessages.Add(ex.Message);
+            return Result.Failure(errorMessages);
+        }
     }
 }

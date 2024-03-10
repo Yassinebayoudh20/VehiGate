@@ -21,5 +21,5 @@ public interface IIdentityService
 
     Task<AuthenticationResponse> AuthenticateAsync(LoginDto model);
 
-    Task<bool> SignOutAsync(); 
+    Task<Result> SignOutAsync();
 }

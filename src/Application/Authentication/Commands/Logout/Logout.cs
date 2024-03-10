@@ -5,11 +5,11 @@ using VehiGate.Application.Common.Models;
 using VehiGate.Infrastructure.Identity.models;
 
 namespace VehiGate.Application.Authentication.Commands.Logout;
-public record LogoutCommand : IRequest<bool>
+public record LogoutCommand : IRequest<Result>
 {
 }
 
-public class LogoutCommandHandler : IRequestHandler<LogoutCommand, bool>
+public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Result>
 {
 
     private readonly IIdentityService _identityService;
@@ -19,7 +19,7 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, bool>
         _identityService = identityService;
     }
 
-    public async Task<bool> Handle(LogoutCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
         return await _identityService.SignOutAsync();
     }

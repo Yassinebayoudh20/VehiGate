@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
 using VehiGate.Application.Authentication.Commands.Login;
 using VehiGate.Application.Authentication.Commands.Logout;
 using VehiGate.Application.Authentication.Commands.Register;
@@ -6,6 +6,7 @@ using VehiGate.Application.Common.Models;
 using VehiGate.Infrastructure.Identity.models;
 
 namespace VehiGate.Web.Endpoints.Authentication;
+
 public class Authentication : EndpointGroupBase
 {
     public override void Map(WebApplication app)
@@ -14,21 +15,21 @@ public class Authentication : EndpointGroupBase
             .MapPost(Register, "/register")
             .MapPost(Authenticate, "/authenticate")
             .MapPost(SignOut, "/signout");
-
     }
 
-    public Task<Result> Register(ISender sender, RegisterCommand command)
+    public async Task<Result> Register(ISender sender, RegisterCommand command)
     {
-        return sender.Send(command);
+        return await sender.Send(command);
     }
 
-    public Task<AuthenticationResponse> Authenticate(ISender sender, LoginCommand command)
+    public async Task<AuthenticationResponse> Authenticate(ISender sender, LoginCommand command)
     {
-        return sender.Send(command);
+        return await sender.Send(command);
     }
 
-    public Task<bool> SignOut(ISender sender, LogoutCommand command)
+    [Authorize]
+    public async Task<Result> SignOut(ISender sender, LogoutCommand command)
     {
-        return sender.Send(command);
+        return await sender.Send(command);
     }
 }

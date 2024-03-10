@@ -1,1 +1,6 @@
-{}
+{
+  "WELCOME": "Missing value for 'WELCOME'",
+  "EMAIL": "Missing value for 'EMAIL'",
+  "PASSWORD": "Missing value for 'PASSWORD'",
+  "SIGN_IN": "Missing value for 'SIGN_IN'"
+}

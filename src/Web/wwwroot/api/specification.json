@@ -3,250 +3,50 @@
   "openapi": "3.0.0",
   "info": {
     "title": "VehiGate API",
-    "version": "1.0.0"
+    "version": "v1"
   },
   "paths": {
-    "/register": {
-      "post": {
-        "operationId": "PostRegister",
-        "requestBody": {
-          "x-name": "registration",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegisterRequest"
-              }
-            }
-          },
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/login": {
-      "post": {
-        "operationId": "PostLogin",
-        "parameters": [
-          {
-            "name": "useCookies",
-            "in": "query",
-            "schema": {
-              "type": "boolean",
-              "nullable": true
-            },
-            "x-position": 2
-          },
-          {
-            "name": "useSessionCookies",
-            "in": "query",
-            "schema": {
-              "type": "boolean",
-              "nullable": true
-            },
-            "x-position": 3
-          }
-        ],
-        "requestBody": {
-          "x-name": "login",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
-              }
-            }
-          },
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccessTokenResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/refresh": {
-      "post": {
-        "operationId": "PostRefresh",
-        "requestBody": {
-          "x-name": "refreshRequest",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RefreshRequest"
-              }
-            }
-          },
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccessTokenResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/confirmEmail": {
+    "/api/Users/me": {
       "get": {
-        "operationId": "GetConfirmEmail",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          },
-          {
-            "name": "code",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 2
-          },
-          {
-            "name": "changedEmail",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 3
-          }
+        "tags": [
+          "Users"
         ],
+        "operationId": "GetUserInfo",
         "responses": {
           "200": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/resendConfirmationEmail": {
-      "post": {
-        "operationId": "PostResendConfirmationEmail",
-        "requestBody": {
-          "x-name": "resendRequest",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ResendConfirmationEmailRequest"
-              }
-            }
-          },
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/forgotPassword": {
-      "post": {
-        "operationId": "PostForgotPassword",
-        "requestBody": {
-          "x-name": "resetRequest",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ForgotPasswordRequest"
-              }
-            }
-          },
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          },
-          "400": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                  "$ref": "#/components/schemas/UserInfoDto"
                 }
               }
             }
           }
-        }
-      }
-    },
-    "/resetPassword": {
-      "post": {
-        "operationId": "PostResetPassword",
-        "requestBody": {
-          "x-name": "resetRequest",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ResetPasswordRequest"
-              }
-            }
-          },
-          "x-position": 1
         },
-        "responses": {
-          "200": {
-            "description": ""
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
-                }
-              }
-            }
+        "security": [
+          {
+            "Bearer": []
           }
-        }
+        ]
       }
     },
-    "/manage/2fa": {
+    "/api/Authentication/register": {
       "post": {
-        "operationId": "PostManage2fa",
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "Register",
         "requestBody": {
-          "x-name": "tfaRequest",
+          "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TwoFactorRequest"
+                "$ref": "#/components/schemas/RegisterCommand"
               }
             }
           },
+          "required": true,
           "x-position": 1
         },
         "responses": {
@@ -255,67 +55,30 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TwoFactorResponse"
+                  "$ref": "#/components/schemas/Result"
                 }
               }
             }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": ""
           }
         }
       }
     },
-    "/manage/info": {
-      "get": {
-        "operationId": "GetManageInfo",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InfoResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": ""
-          }
-        }
-      },
+    "/api/Authentication/authenticate": {
       "post": {
-        "operationId": "PostManageInfo",
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "Authenticate",
         "requestBody": {
-          "x-name": "infoRequest",
+          "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/InfoRequest"
+                "$ref": "#/components/schemas/LoginCommand"
               }
             }
           },
+          "required": true,
           "x-position": 1
         },
         "responses": {
@@ -324,254 +87,139 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/InfoResponse"
+                  "$ref": "#/components/schemas/AuthenticationResponse"
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/Authentication/signout": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "SignOut",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutCommand"
+              }
+            }
           },
-          "400": {
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                  "$ref": "#/components/schemas/Result"
                 }
               }
             }
-          },
-          "404": {
-            "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     }
   },
   "components": {
     "schemas": {
-      "HttpValidationProblemDetails": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/ProblemDetails"
-          },
-          {
-            "type": "object",
-            "additionalProperties": {
-              "nullable": true
-            },
-            "properties": {
-              "errors": {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        ]
-      },
-      "ProblemDetails": {
-        "type": "object",
-        "additionalProperties": {
-          "nullable": true
-        },
-        "properties": {
-          "type": {
-            "type": "string",
-            "nullable": true
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "detail": {
-            "type": "string",
-            "nullable": true
-          },
-          "instance": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "RegisterRequest": {
+      "UserInfoDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "email": {
-            "type": "string"
-          },
-          "password": {
+          "id": {
             "type": "string"
           }
         }
       },
-      "AccessTokenResponse": {
+      "Result": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "tokenType": {
-            "type": "string"
+          "succeeded": {
+            "type": "boolean"
           },
-          "accessToken": {
-            "type": "string"
-          },
-          "expiresIn": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "refreshToken": {
-            "type": "string"
-          }
-        }
-      },
-      "LoginRequest": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "email": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          },
-          "twoFactorCode": {
-            "type": "string",
-            "nullable": true
-          },
-          "twoFactorRecoveryCode": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "RefreshRequest": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "refreshToken": {
-            "type": "string"
-          }
-        }
-      },
-      "ResendConfirmationEmailRequest": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "email": {
-            "type": "string"
-          }
-        }
-      },
-      "ForgotPasswordRequest": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "email": {
-            "type": "string"
-          }
-        }
-      },
-      "ResetPasswordRequest": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "email": {
-            "type": "string"
-          },
-          "resetCode": {
-            "type": "string"
-          },
-          "newPassword": {
-            "type": "string"
-          }
-        }
-      },
-      "TwoFactorResponse": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "sharedKey": {
-            "type": "string"
-          },
-          "recoveryCodesLeft": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "recoveryCodes": {
+          "errors": {
             "type": "array",
-            "nullable": true,
             "items": {
               "type": "string"
             }
-          },
-          "isTwoFactorEnabled": {
-            "type": "boolean"
-          },
-          "isMachineRemembered": {
-            "type": "boolean"
           }
         }
       },
-      "TwoFactorRequest": {
+      "RegisterCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "enable": {
-            "type": "boolean",
-            "nullable": true
+          "phoneNumber": {
+            "type": "string"
           },
-          "twoFactorCode": {
-            "type": "string",
-            "nullable": true
+          "email": {
+            "type": "string"
           },
-          "resetSharedKey": {
-            "type": "boolean"
+          "password": {
+            "type": "string"
           },
-          "resetRecoveryCodes": {
-            "type": "boolean"
-          },
-          "forgetMachine": {
-            "type": "boolean"
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
-      "InfoResponse": {
+      "AuthenticationResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "token": {
+            "type": "string",
+            "nullable": true
+          },
+          "isSuccess": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "LoginCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "email": {
             "type": "string"
           },
-          "isEmailConfirmed": {
-            "type": "boolean"
+          "password": {
+            "type": "string"
           }
         }
       },
-      "InfoRequest": {
+      "LogoutCommand": {
         "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "newEmail": {
-            "type": "string",
-            "nullable": true
-          },
-          "newPassword": {
-            "type": "string",
-            "nullable": true
-          },
-          "oldPassword": {
-            "type": "string",
-            "nullable": true
-          }
-        }
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "Bearer {your JWT token}",
+        "name": "Authorization",
+        "in": "header"
       }
     }
   }

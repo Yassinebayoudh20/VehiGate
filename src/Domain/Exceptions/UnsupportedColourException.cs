@@ -6,4 +6,12 @@ public class UnsupportedColourException : Exception
         : base($"Colour \"{code}\" is unsupported.")
     {
     }
+
+    public UnsupportedColourException() : base()
+    {
+    }
+
+    public UnsupportedColourException(string? message, Exception? innerException) : base(message, innerException)
+    {
+    }
 }

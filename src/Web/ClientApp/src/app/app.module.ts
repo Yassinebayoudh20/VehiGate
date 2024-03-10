@@ -12,6 +12,8 @@ import { TranslocoRootModule } from './transloco-root.module';
 import { PagesModule } from './pages/pages.module';
 import { AuthModule } from './auth/auth.module';
 import { AppLayoutModule } from './layout/app.layout.module';
+import { JWT_OPTIONS, JwtHelperService } from '@auth0/angular-jwt';
+import { CoreModule } from './core/core.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -22,11 +24,10 @@ import { AppLayoutModule } from './layout/app.layout.module';
     AppRoutingModule,
     BrowserAnimationsModule,
     TranslocoRootModule,
-    AppLayoutModule
+    AppLayoutModule,
+    CoreModule,
   ],
-  providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true },
-  ],
+  providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true }, { provide: JWT_OPTIONS, useValue: JWT_OPTIONS }, JwtHelperService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

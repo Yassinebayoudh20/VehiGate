@@ -1,1 +1,7 @@
-{}
+{
+  "WELCOME": "welcome",
+  "EMAIL": "email",
+  "PASSWORD": "password",
+  "SIGN_IN": "sign in",
+  "SIGN_IN_TO_CONTINUE": "sign in to continue"
+}

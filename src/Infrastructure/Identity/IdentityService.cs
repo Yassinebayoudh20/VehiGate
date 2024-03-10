@@ -1,17 +1,23 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading;
+using Azure.Core;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using VehiGate.Application.Authentication.Commands.Login;
 using VehiGate.Application.Authentication.Commands.Register;
 using VehiGate.Application.Common.Interfaces;
 using VehiGate.Application.Common.Models;
+using VehiGate.Application.Users.Queries.GetUsersList;
 using VehiGate.Domain.ConfigurationOptions;
 using VehiGate.Domain.Constants;
 using VehiGate.Infrastructure.Identity.models;
+using VehiGate.Web.Infrastructure;
 
 namespace VehiGate.Infrastructure.Identity;
 
@@ -199,5 +205,53 @@ public class IdentityService : IIdentityService
             errorMessages.Add(ex.Message);
             return Result.Failure(errorMessages);
         }
+    }
+
+    public async Task<List<UserModel>> GetUsersList(string? SearchBy, string? OrderBy, List<string>? InRoles)
+    {
+        var usersQuery = _userManager.Users.AsQueryable();
+
+        if (!string.IsNullOrEmpty(SearchBy))
+        {
+            usersQuery = usersQuery.Where(u => u.UserName == SearchBy);
+        }
+
+        if (InRoles!.Any())
+        {
+            var roleNames = InRoles?.Where(roleName => _roleManager.Roles.Any(r => r.Name == roleName)).ToList();
+            var userIds = await GetUsersInRolesAsync(roleNames);
+            usersQuery = usersQuery.Where(u => userIds.Contains(u.Id));
+        }
+
+        if (!string.IsNullOrEmpty(OrderBy))
+        {
+            usersQuery = usersQuery.OrderByProperty(OrderBy);
+        }
+
+        List<UserModel> users = new List<UserModel>();
+
+        foreach (var user in usersQuery)
+        {
+            users.Add(new UserModel { Id = user.Id, Email = user.Email, PhoneNumber = user.PhoneNumber });
+        }
+
+        return users;
+
+    }
+
+
+
+    public async Task<List<string>> GetUsersInRolesAsync(List<string>? Roles)
+    {
+        var usersInRoles = new List<string>();
+
+        foreach (var roleName in Roles!)
+        {
+            var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
+            usersInRoles.AddRange(usersInRole.Select(u => u.Id));
+        }
+
+        return usersInRoles;
+
     }
 }

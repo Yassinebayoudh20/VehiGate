@@ -4,12 +4,15 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { UsersService } from 'src/app/pages/users-management/services/users.service';
 import { TableColumn } from './models/table-column';
 import { getColumnValue, getColumns } from './utils/crud.utils';
+import { CrudService } from './crud.service';
+import { ToasterService } from '../../services/toaster.service';
+import { ToasterResponse } from '../models/toaster-response';
 
 @Component({
   selector: 'app-crud',
   templateUrl: './crud.component.html',
   styleUrls: ['./crud.component.css'],
-  providers: [MessageService],
+  providers : [MessageService,ToasterService]
 })
 export class CrudComponent {
   @Input() entities!: any[];
@@ -38,10 +41,17 @@ export class CrudComponent {
 
   globalFilterFields: string[] = [];
 
-  constructor(private userService: UsersService) {}
+  constructor(private userService: UsersService, private crudService: CrudService, private toasterService: ToasterService) {}
 
   ngOnInit() {
     this.loading = true;
+    this.crudService.executeToaster.subscribe((response: ToasterResponse) => {
+      if (response.isSuccess) {
+        this.toasterService.showSuccess(response.message);
+      } else {
+        this.toasterService.showError(response.message);
+      }
+    });
   }
 
   loadEntities(event: TableLazyLoadEvent) {

@@ -16,6 +16,7 @@ using VehiGate.Application.Common.Models;
 using VehiGate.Application.Users.Queries.GetUsersList;
 using VehiGate.Domain.ConfigurationOptions;
 using VehiGate.Domain.Constants;
+using VehiGate.Domain.Entities;
 using VehiGate.Infrastructure.Identity.models;
 using VehiGate.Web.Infrastructure;
 
@@ -170,10 +171,12 @@ public class IdentityService : IIdentityService
         IList<string> roles = _userManager.GetRolesAsync(user).Result;
 
         List<Claim> claims = [
-            new Claim(JwtRegisteredClaimNames.Name, user.Email!),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email!),
             new Claim(JwtRegisteredClaimNames.NameId, user.Id!),
+            new Claim(JwtRegisteredClaimNames.Name, $"{user.FirstName!} {user.LastName!}"),
             new Claim(JwtRegisteredClaimNames.Aud, _jwtSettings.Audience),
             new Claim(JwtRegisteredClaimNames.Iss, _jwtSettings.Issuer),
+
             ];
 
         foreach (string role in roles)
@@ -234,7 +237,7 @@ public class IdentityService : IIdentityService
 
         foreach (var user in usersQuery)
         {
-            users.Add(new UserModel { Id = user.Id, Email = user.Email, PhoneNumber = user.PhoneNumber , FirstName = user.FirstName , LastName = user.LastName });
+            users.Add(new UserModel { Id = user.Id, Email = user.Email, PhoneNumber = user.PhoneNumber, FirstName = user.FirstName, LastName = user.LastName });
         }
 
         return users;
@@ -252,4 +255,22 @@ public class IdentityService : IIdentityService
 
         return usersInRoles;
     }
+
+    public async Task<List<RoleInfo>> GetAllRoles()
+    {
+        var roles = await _roleManager.Roles.ToListAsync();
+
+        if (roles == null)
+        {
+            throw new ArgumentNullException(nameof(roles), "The list of roles cannot be null.");
+        }
+
+        if (!roles.Any())
+        {
+            return new List<RoleInfo>();
+        }
+
+        return roles.Select(role => new RoleInfo { Name = role.Name!, Id = role.Id }).ToList();
+    }
+
 }

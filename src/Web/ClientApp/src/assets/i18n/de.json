@@ -7,8 +7,22 @@
   "PASSWORD": "Missing value for 'PASSWORD'",
   "PASSWORD_REQUIRED": "Missing value for 'PASSWORD_REQUIRED'",
   "SIGN_IN": "Missing value for 'SIGN_IN'",
+  "FIRST_NAME": "Missing value for 'FIRST_NAME'",
+  "FIRST_NAME_IS_REQUIRED": "Missing value for 'FIRST_NAME_IS_REQUIRED'",
+  "WHITE_SPACE_ERROR_TEXT": "Missing value for 'WHITE_SPACE_ERROR_TEXT'",
+  "LAST_NAME": "Missing value for 'LAST_NAME'",
+  "LAST_NAME_IS_REQUIRED": "Missing value for 'LAST_NAME_IS_REQUIRED'",
+  "EMAIL_IS_REQUIRED": "Missing value for 'EMAIL_IS_REQUIRED'",
+  "INVALID_EMAIL_FORMAT": "Missing value for 'INVALID_EMAIL_FORMAT'",
+  "PASSWORD_IS_REQUIRED": "Missing value for 'PASSWORD_IS_REQUIRED'",
+  "ROLE": "Missing value for 'ROLE'",
+  "ROLE_IS_REQUIRED": "Missing value for 'ROLE_IS_REQUIRED'",
+  "BACK": "Missing value for 'BACK'",
+  "SAVE": "Missing value for 'SAVE'",
   "NEW": "Missing value for 'NEW'",
   "SEARCH": "Missing value for 'SEARCH'",
   "ACTIONS": "Missing value for 'ACTIONS'",
-  "NO_DATA_WERE_FOUND": "Missing value for 'NO_DATA_WERE_FOUND'"
+  "NO_DATA_WERE_FOUND": "Missing value for 'NO_DATA_WERE_FOUND'",
+  "ADD_NEW_USER": "Missing value for 'ADD_NEW_USER'",
+  "EDIT_USER": "Missing value for 'EDIT_USER'"
 }

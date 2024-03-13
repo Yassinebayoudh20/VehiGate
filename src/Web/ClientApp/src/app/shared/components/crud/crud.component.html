@@ -1,0 +1,74 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card px-6 py-6">
+      <p-toast></p-toast>
+      <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+          <div class="my-2">
+            <button *ngIf="canAdd" pButton pRipple [label]="'NEW' | transloco | titlecase" icon="pi pi-plus" class="p-button-success mr-2" (click)="addNewEntity()"></button>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="right">
+          <!-- <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block"></p-fileUpload> -->
+          <!-- <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="dt.exportCSV()"></button> -->
+          <!-- <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help"></button> -->
+        </ng-template>
+      </p-toolbar>
+      <p-table
+        #dataTable
+        [value]="data"
+        [lazy]="true"
+        (onLazyLoad)="loadEntities($event)"
+        dataKey="id"
+        [tableStyle]="{ 'min-width': '75rem' }"
+        [paginator]="true"
+        [rows]="10"
+        [totalRecords]="totalRecords"
+        [loading]="loading"
+        [globalFilterFields]="globalFilterFields"
+      >
+        <ng-template pTemplate="caption">
+          <div class="flex">
+            <button pButton label="Clear" class="p-button-outlined" icon="pi pi-filter-slash" (click)="clear(dataTable)"></button>
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" #globalSearchInput (input)="onSearchInputChange($event.target['value'])" [placeholder]="'SEARCH' | transloco | titlecase" />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th *ngFor="let column of columns" [pSortableColumn]="column?.field">
+              {{ column?.header }}
+              <p-sortIcon *ngIf="column?.sortable" [field]="column?.field"></p-sortIcon>
+            </th>
+            <th>{{ 'ACTIONS' | transloco | titlecase  }}</th>
+          </tr>
+          <!-- <tr>
+            <th *ngFor="let column of columns">
+              <p-columnFilter *ngIf="column?.filterable" type="text" [field]="column?.field"></p-columnFilter>
+            </th>
+            <th></th>
+          </tr> -->
+        </ng-template>
+        <ng-template pTemplate="body" let-entity>
+          <tr>
+            <td *ngFor="let column of columns">{{ getValue(entity, column?.field) }}</td>
+            <td>
+              <div class="flex">
+                <button *ngIf="canEdit" pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editEntity(entity.id)"></button>
+                <button *ngIf="canDelete" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning mr-2" (click)="deleteEntity(entity.id)"></button>
+                <button *ngIf="canView" pButton pRipple icon="pi pi-eye" class="p-button-rounded p-button-info" (click)="viewEntity(entity.id)"></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4">{{ 'NO_DATA_WERE_FOUND' | transloco | titlecase }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>

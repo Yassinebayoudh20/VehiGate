@@ -16,6 +16,7 @@ using VehiGate.Application.Common.Models;
 using VehiGate.Application.Users.Queries.GetUsersList;
 using VehiGate.Domain.ConfigurationOptions;
 using VehiGate.Domain.Constants;
+using VehiGate.Domain.Entities;
 using VehiGate.Infrastructure.Identity.models;
 using VehiGate.Web.Infrastructure;
 
@@ -254,4 +255,22 @@ public class IdentityService : IIdentityService
 
         return usersInRoles;
     }
+
+    public async Task<List<RoleInfo>> GetAllRoles()
+    {
+        var roles = await _roleManager.Roles.ToListAsync();
+
+        if (roles == null)
+        {
+            throw new ArgumentNullException(nameof(roles), "The list of roles cannot be null.");
+        }
+
+        if (!roles.Any())
+        {
+            return new List<RoleInfo>();
+        }
+
+        return roles.Select(role => new RoleInfo { Name = role.Name!, Id = role.Id }).ToList();
+    }
+
 }

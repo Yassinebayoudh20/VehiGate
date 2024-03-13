@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VehiGate.Application.Common.Models;
 using VehiGate.Application.Users.Queries.GetUserInfo;
+using VehiGate.Application.Users.Queries.GetUserRoles;
 using VehiGate.Application.Users.Queries.GetUsersList;
+using VehiGate.Domain.Entities;
 
 namespace VehiGate.Web.Endpoints.Users;
 
@@ -12,7 +14,9 @@ public class Users : EndpointGroupBase
         app.MapGroup(this)
             .RequireAuthorization()
             .MapGet(GetUserInfo, "/me")
-            .MapGet(GetUsersList, "/list");
+            .MapGet(GetUsersList, "/list")
+            .MapGet(GetUserRoles, "/roles");
+
     }
 
     public Task<UserInfoDto> GetUserInfo(ISender sender)
@@ -41,5 +45,10 @@ public class Users : EndpointGroupBase
         };
 
         return sender.Send(query);
+    }
+
+    public Task<List<RoleInfo>> GetUserRoles(ISender sender)
+    {
+        return sender.Send(new GetUserRolesQuery());
     }
 }

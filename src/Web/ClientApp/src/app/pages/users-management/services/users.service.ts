@@ -11,4 +11,8 @@ export class UsersService {
   getAllUsers(params: PaginationParams) {
     return this.usersClient.getUsersList(params.pageNumber, params.pageSize, params.searchBy, params.orderBy, params.sortOrder, params.inRoles);
   }
+
+  getUserRoles() {
+    return this.usersClient.getUserRoles();
+  }
 }

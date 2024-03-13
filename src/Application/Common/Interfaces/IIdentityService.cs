@@ -2,6 +2,7 @@
 using VehiGate.Application.Authentication.Commands.Register;
 using VehiGate.Application.Common.Models;
 using VehiGate.Application.Users.Queries.GetUsersList;
+using VehiGate.Domain.Entities;
 using VehiGate.Infrastructure.Identity.models;
 
 namespace VehiGate.Application.Common.Interfaces;
@@ -27,4 +28,6 @@ public interface IIdentityService
     Task<List<string>> GetUsersInRolesAsync(List<string> Roles);
 
     Task<List<UserModel>> GetUsersList(string? SearchBy, string? OrderBy, int? SortOrder, List<string>? InRoles);
+
+    Task<List<RoleInfo>> GetAllRoles();
 }

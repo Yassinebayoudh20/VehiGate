@@ -77,13 +77,23 @@
             "x-position": 4
           },
           {
+            "name": "SortOrder",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            },
+            "x-position": 5
+          },
+          {
             "name": "inRoles",
             "in": "query",
             "schema": {
               "type": "string",
               "nullable": true
             },
-            "x-position": 5
+            "x-position": 6
           }
         ],
         "responses": {

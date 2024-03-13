@@ -105,7 +105,6 @@ public class IdentityService : IIdentityService
 
     public async Task<Result> RegisterUserAsync(RegisterDto model)
     {
-
         ApplicationUser user = new ApplicationUser
         {
             UserName = model.Email,
@@ -123,7 +122,6 @@ public class IdentityService : IIdentityService
         if (model.Roles is null)
         {
             await _userManager.AddToRoleAsync(user, Roles.User);
-
         }
         else
         {
@@ -140,10 +138,8 @@ public class IdentityService : IIdentityService
         return result.ToApplicationResult();
     }
 
-
     public async Task<AuthenticationResponse> AuthenticateAsync(LoginDto model)
     {
-
         ApplicationUser? user = await _userManager.FindByEmailAsync(model.Email);
 
         if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
@@ -207,7 +203,7 @@ public class IdentityService : IIdentityService
         }
     }
 
-    public async Task<List<UserModel>> GetUsersList(string? SearchBy, string? OrderBy, List<string>? InRoles)
+    public async Task<List<UserModel>> GetUsersList(string? SearchBy, string? OrderBy, int? SortOrder, List<string>? InRoles)
     {
         var usersQuery = _userManager.Users.AsQueryable();
 
@@ -225,7 +221,9 @@ public class IdentityService : IIdentityService
 
         if (!string.IsNullOrEmpty(OrderBy))
         {
-            usersQuery = usersQuery.OrderByProperty(OrderBy);
+            var sortOrder = SortOrder < 0 ? false : true;
+
+            usersQuery = usersQuery.OrderByProperty(OrderBy, ascending: sortOrder);
         }
 
         List<UserModel> users = new List<UserModel>();
@@ -236,10 +234,7 @@ public class IdentityService : IIdentityService
         }
 
         return users;
-
     }
-
-
 
     public async Task<List<string>> GetUsersInRolesAsync(List<string>? Roles)
     {
@@ -252,6 +247,5 @@ public class IdentityService : IIdentityService
         }
 
         return usersInRoles;
-
     }
 }

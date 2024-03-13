@@ -22,7 +22,6 @@ export class UsersListComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$)
       )
       .subscribe((params) => {
-        console.log("I should be second to update");
         this.data$ = this.userService.getAllUsers(params);
       });
   }

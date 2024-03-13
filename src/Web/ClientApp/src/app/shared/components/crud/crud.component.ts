@@ -93,7 +93,7 @@ export class CrudComponent implements OnChanges {
 
   loadEntities(event: TableLazyLoadEvent) {
     this.loading = true;
-    this.paramsService.updateParams({ pageNumber: getPageNumber(event), pageSize: DEFAULT_PAGE_SIZE, searchBy: event.globalFilter as string });
+    this.paramsService.updateParams({ pageNumber: getPageNumber(event), pageSize: DEFAULT_PAGE_SIZE, searchBy: event.globalFilter as string, orderBy: event.sortField as string , sortOrder : event.sortOrder });
   }
 
   onSearchInputChange(value: string) {

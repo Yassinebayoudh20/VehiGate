@@ -25,6 +25,7 @@ public class Users : EndpointGroupBase
                                                [FromQuery] int pageSize = 10,
                                                [FromQuery] string? searchBy = null,
                                                [FromQuery] string? orderBy = null,
+                                               [FromQuery] int? SortOrder = null,
                                                [FromQuery] string? inRoles = null)
     {
         string[] rolesArray = inRoles?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
@@ -35,6 +36,7 @@ public class Users : EndpointGroupBase
             PageSize = pageSize,
             SearchBy = searchBy,
             OrderBy = orderBy,
+            SortOrder = SortOrder,
             InRoles = rolesArray.ToList()
         };
 

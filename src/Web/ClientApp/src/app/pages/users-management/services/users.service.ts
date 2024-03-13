@@ -10,6 +10,6 @@ export class UsersService {
   constructor(private usersClient: UsersClient) {}
 
   getAllUsers(params: PaginationParams) {
-    return this.usersClient.getUsersList(params.pageNumber, params.pageSize, params.searchBy, params.orderBy, params.inRoles);
+    return this.usersClient.getUsersList(params.pageNumber, params.pageSize, params.searchBy, params.orderBy,params.sortOrder, params.inRoles);
   }
 }

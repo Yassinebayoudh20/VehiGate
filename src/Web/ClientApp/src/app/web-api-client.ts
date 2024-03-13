@@ -17,7 +17,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IUsersClient {
     getUserInfo(): Observable<UserInfoDto>;
-    getUsersList(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, inRoles: string | null | undefined): Observable<PagedResultOfUserModel>;
+    getUsersList(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | null | undefined, inRoles: string | null | undefined): Observable<PagedResultOfUserModel>;
 }
 
 @Injectable({
@@ -81,7 +81,7 @@ export class UsersClient implements IUsersClient {
         return _observableOf(null as any);
     }
 
-    getUsersList(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, inRoles: string | null | undefined): Observable<PagedResultOfUserModel> {
+    getUsersList(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | null | undefined, inRoles: string | null | undefined): Observable<PagedResultOfUserModel> {
         let url_ = this.baseUrl + "/api/Users/list?";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
@@ -95,6 +95,8 @@ export class UsersClient implements IUsersClient {
             url_ += "searchBy=" + encodeURIComponent("" + searchBy) + "&";
         if (orderBy !== undefined && orderBy !== null)
             url_ += "orderBy=" + encodeURIComponent("" + orderBy) + "&";
+        if (sortOrder !== undefined && sortOrder !== null)
+            url_ += "SortOrder=" + encodeURIComponent("" + sortOrder) + "&";
         if (inRoles !== undefined && inRoles !== null)
             url_ += "inRoles=" + encodeURIComponent("" + inRoles) + "&";
         url_ = url_.replace(/[?&]$/, "");

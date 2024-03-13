@@ -6,6 +6,7 @@ export interface PaginationParams {
   pageSize?: number;
   searchBy?: string;
   orderBy?: string;
+  sortOrder? : number;
   inRoles?: string;
 }
 

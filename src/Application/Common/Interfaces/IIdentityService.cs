@@ -26,5 +26,5 @@ public interface IIdentityService
 
     Task<List<string>> GetUsersInRolesAsync(List<string> Roles);
 
-    Task<List<UserModel>> GetUsersList(string? SearchBy, string? OrderBy, List<string>? InRoles);
+    Task<List<UserModel>> GetUsersList(string? SearchBy, string? OrderBy, int? SortOrder, List<string>? InRoles);
 }

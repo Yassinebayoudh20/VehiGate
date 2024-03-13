@@ -26,7 +26,7 @@ export class UserFormComponent implements OnInit {
       role: [null, [Validators.required]],
     });
   }
-
+  
   resolvePageTitle() {
     this.pageTitle = !this.isEditing ? 'ADD_NEW_USER' : 'EDIT_USER';
   }
@@ -36,6 +36,10 @@ export class UserFormComponent implements OnInit {
       // Handle invalid form submission (e.g., show error messages)
       return;
     }
+
+    //! Add roles list to the dropdown
+    //! Call the method to register new user
+    
 
     console.log(this.form.value);
 

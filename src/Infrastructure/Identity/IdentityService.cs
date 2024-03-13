@@ -170,10 +170,12 @@ public class IdentityService : IIdentityService
         IList<string> roles = _userManager.GetRolesAsync(user).Result;
 
         List<Claim> claims = [
-            new Claim(JwtRegisteredClaimNames.Name, user.Email!),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email!),
             new Claim(JwtRegisteredClaimNames.NameId, user.Id!),
+            new Claim(JwtRegisteredClaimNames.Name, $"{user.FirstName!} {user.LastName!}"),
             new Claim(JwtRegisteredClaimNames.Aud, _jwtSettings.Audience),
             new Claim(JwtRegisteredClaimNames.Iss, _jwtSettings.Issuer),
+
             ];
 
         foreach (string role in roles)
@@ -234,7 +236,7 @@ public class IdentityService : IIdentityService
 
         foreach (var user in usersQuery)
         {
-            users.Add(new UserModel { Id = user.Id, Email = user.Email, PhoneNumber = user.PhoneNumber , FirstName = user.FirstName , LastName = user.LastName });
+            users.Add(new UserModel { Id = user.Id, Email = user.Email, PhoneNumber = user.PhoneNumber, FirstName = user.FirstName, LastName = user.LastName });
         }
 
         return users;

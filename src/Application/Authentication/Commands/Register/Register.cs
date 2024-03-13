@@ -17,6 +17,10 @@ public record RegisterCommand : IRequest<Result>
 
     public required string Password { get; set; }
 
+    public required string FirstName { get; set; }
+
+    public required string LastName { get; set; }
+
     public required List<string> Roles { get; set; }
 }
 
@@ -32,6 +36,6 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result>
 
     public async Task<Result> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        return await _identityService.RegisterUserAsync(new RegisterDto { Email = request.Email, Password = request.Password, Roles = request.Roles, PhoneNumber = request.PhoneNumber });
+        return await _identityService.RegisterUserAsync(new RegisterDto { Email = request.Email, Password = request.Password, Roles = request.Roles, PhoneNumber = request.PhoneNumber , FirstName = request.FirstName , LastName = request.LastName });
     }
 }

@@ -426,6 +426,8 @@ export class UserModel implements IUserModel {
     id?: string;
     email?: string | undefined;
     phoneNumber?: string | undefined;
+    firstName?: string;
+    lastName?: string;
 
     constructor(data?: IUserModel) {
         if (data) {
@@ -441,6 +443,8 @@ export class UserModel implements IUserModel {
             this.id = _data["id"];
             this.email = _data["email"];
             this.phoneNumber = _data["phoneNumber"];
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
         }
     }
 
@@ -456,6 +460,8 @@ export class UserModel implements IUserModel {
         data["id"] = this.id;
         data["email"] = this.email;
         data["phoneNumber"] = this.phoneNumber;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
         return data;
     }
 }
@@ -464,6 +470,8 @@ export interface IUserModel {
     id?: string;
     email?: string | undefined;
     phoneNumber?: string | undefined;
+    firstName?: string;
+    lastName?: string;
 }
 
 export class Result implements IResult {
@@ -518,6 +526,8 @@ export class RegisterCommand implements IRegisterCommand {
     phoneNumber?: string;
     email?: string;
     password?: string;
+    firstName?: string;
+    lastName?: string;
     roles?: string[];
 
     constructor(data?: IRegisterCommand) {
@@ -534,6 +544,8 @@ export class RegisterCommand implements IRegisterCommand {
             this.phoneNumber = _data["phoneNumber"];
             this.email = _data["email"];
             this.password = _data["password"];
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
             if (Array.isArray(_data["roles"])) {
                 this.roles = [] as any;
                 for (let item of _data["roles"])
@@ -554,6 +566,8 @@ export class RegisterCommand implements IRegisterCommand {
         data["phoneNumber"] = this.phoneNumber;
         data["email"] = this.email;
         data["password"] = this.password;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
         if (Array.isArray(this.roles)) {
             data["roles"] = [];
             for (let item of this.roles)
@@ -567,6 +581,8 @@ export interface IRegisterCommand {
     phoneNumber?: string;
     email?: string;
     password?: string;
+    firstName?: string;
+    lastName?: string;
     roles?: string[];
 }
 

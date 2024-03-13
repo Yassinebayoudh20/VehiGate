@@ -59,6 +59,8 @@ public class IdentityService : IIdentityService
         {
             UserName = userName,
             Email = userName,
+            FirstName = userName,
+            LastName = userName,
         };
 
         IdentityResult result = await _userManager.CreateAsync(user, password);
@@ -109,7 +111,9 @@ public class IdentityService : IIdentityService
         {
             UserName = model.Email,
             Email = model.Email,
-            PhoneNumber = model.PhoneNumber
+            PhoneNumber = model.PhoneNumber,
+            FirstName = model.FirstName,
+            LastName = model.LastName
         };
 
         IdentityResult result = await _userManager.CreateAsync(user, model.Password);
@@ -230,7 +234,7 @@ public class IdentityService : IIdentityService
 
         foreach (var user in usersQuery)
         {
-            users.Add(new UserModel { Id = user.Id, Email = user.Email, PhoneNumber = user.PhoneNumber });
+            users.Add(new UserModel { Id = user.Id, Email = user.Email, PhoneNumber = user.PhoneNumber , FirstName = user.FirstName , LastName = user.LastName });
         }
 
         return users;

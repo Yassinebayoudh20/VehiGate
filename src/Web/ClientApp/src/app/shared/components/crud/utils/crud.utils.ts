@@ -1,3 +1,4 @@
+import { TableLazyLoadEvent } from 'primeng/table';
 import { TableColumn } from '../models/table-column';
 
 export function getColumns(data: any[]): TableColumn[] {
@@ -28,4 +29,8 @@ export function getColumnValue(entity: any, column: string): any {
 function isExcludedProperty(property: string): boolean {
   const excludedProperties = ['id', 'createdAt', 'updatedAt']; //! Extract to constants
   return excludedProperties.includes(property);
+}
+
+export function getPageNumber(event: TableLazyLoadEvent): number {
+  return event.first! / event.rows! + 1;
 }

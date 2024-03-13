@@ -17,7 +17,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IUsersClient {
     getUserInfo(): Observable<UserInfoDto>;
-    getUsersList(): Observable<UsersListDto>;
+    getUsersList(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, inRoles: string | null | undefined): Observable<PagedResultOfUserModel>;
 }
 
 @Injectable({
@@ -81,8 +81,22 @@ export class UsersClient implements IUsersClient {
         return _observableOf(null as any);
     }
 
-    getUsersList(): Observable<UsersListDto> {
-        let url_ = this.baseUrl + "/api/Users/list";
+    getUsersList(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, inRoles: string | null | undefined): Observable<PagedResultOfUserModel> {
+        let url_ = this.baseUrl + "/api/Users/list?";
+        if (pageNumber === null)
+            throw new Error("The parameter 'pageNumber' cannot be null.");
+        else if (pageNumber !== undefined)
+            url_ += "pageNumber=" + encodeURIComponent("" + pageNumber) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (searchBy !== undefined && searchBy !== null)
+            url_ += "searchBy=" + encodeURIComponent("" + searchBy) + "&";
+        if (orderBy !== undefined && orderBy !== null)
+            url_ += "orderBy=" + encodeURIComponent("" + orderBy) + "&";
+        if (inRoles !== undefined && inRoles !== null)
+            url_ += "inRoles=" + encodeURIComponent("" + inRoles) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -100,14 +114,14 @@ export class UsersClient implements IUsersClient {
                 try {
                     return this.processGetUsersList(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<UsersListDto>;
+                    return _observableThrow(e) as any as Observable<PagedResultOfUserModel>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<UsersListDto>;
+                return _observableThrow(response_) as any as Observable<PagedResultOfUserModel>;
         }));
     }
 
-    protected processGetUsersList(response: HttpResponseBase): Observable<UsersListDto> {
+    protected processGetUsersList(response: HttpResponseBase): Observable<PagedResultOfUserModel> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -118,7 +132,7 @@ export class UsersClient implements IUsersClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = UsersListDto.fromJS(resultData200);
+            result200 = PagedResultOfUserModel.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -342,11 +356,15 @@ export interface IUserInfoDto {
     id?: string;
 }
 
-export class UsersListDto implements IUsersListDto {
+export class PagedResultOfUserModel implements IPagedResultOfUserModel {
     data?: UserModel[];
-    total?: number;
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
 
-    constructor(data?: IUsersListDto) {
+    constructor(data?: IPagedResultOfUserModel) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -362,13 +380,17 @@ export class UsersListDto implements IUsersListDto {
                 for (let item of _data["data"])
                     this.data!.push(UserModel.fromJS(item));
             }
-            this.total = _data["total"];
+            this.pageNumber = _data["pageNumber"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
         }
     }
 
-    static fromJS(data: any): UsersListDto {
+    static fromJS(data: any): PagedResultOfUserModel {
         data = typeof data === 'object' ? data : {};
-        let result = new UsersListDto();
+        let result = new PagedResultOfUserModel();
         result.init(data);
         return result;
     }
@@ -380,14 +402,22 @@ export class UsersListDto implements IUsersListDto {
             for (let item of this.data)
                 data["data"].push(item.toJSON());
         }
-        data["total"] = this.total;
+        data["pageNumber"] = this.pageNumber;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
         return data;
     }
 }
 
-export interface IUsersListDto {
+export interface IPagedResultOfUserModel {
     data?: UserModel[];
-    total?: number;
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
 }
 
 export class UserModel implements IUserModel {

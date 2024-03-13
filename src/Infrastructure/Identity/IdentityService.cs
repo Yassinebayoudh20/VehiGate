@@ -213,10 +213,10 @@ public class IdentityService : IIdentityService
 
         if (!string.IsNullOrEmpty(SearchBy))
         {
-            usersQuery = usersQuery.Where(u => u.UserName == SearchBy);
+            usersQuery = usersQuery.Where(u => u.UserName != null && u.UserName.Contains(SearchBy));
         }
 
-        if (InRoles!.Any())
+        if (InRoles != null && InRoles!.Any())
         {
             var roleNames = InRoles?.Where(roleName => _roleManager.Roles.Any(r => r.Name == roleName)).ToList();
             var userIds = await GetUsersInRolesAsync(roleNames);

@@ -1,7 +1,14 @@
 {
   "WELCOME": "welcome",
+  "SIGN_IN_TO_CONTINUE": "sign in to continue",
   "EMAIL": "email",
+  "EMAIL_ADDRESS": "email address",
+  "EMAIL_REQUIRED": "email required",
   "PASSWORD": "password",
+  "PASSWORD_REQUIRED": "password required",
   "SIGN_IN": "sign in",
-  "SIGN_IN_TO_CONTINUE": "sign in to continue"
+  "NEW": "new",
+  "SEARCH": "search",
+  "ACTIONS": "actions",
+  "NO_DATA_WERE_FOUND": "no data were found"
 }

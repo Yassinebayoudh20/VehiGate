@@ -5,7 +5,7 @@
       <p-toolbar styleClass="mb-4">
         <ng-template pTemplate="left">
           <div class="my-2">
-            <button *ngIf="canAdd" pButton pRipple [label]="'NEW' | transloco" icon="pi pi-plus" class="p-button-success mr-2" (click)="addNewEntity()"></button>
+            <button *ngIf="canAdd" pButton pRipple [label]="'NEW' | transloco | titlecase" icon="pi pi-plus" class="p-button-success mr-2" (click)="addNewEntity()"></button>
           </div>
         </ng-template>
         <ng-template pTemplate="right">
@@ -15,7 +15,8 @@
         </ng-template>
       </p-toolbar>
       <p-table
-        [value]="entities"
+        #dataTable
+        [value]="data"
         [lazy]="true"
         (onLazyLoad)="loadEntities($event)"
         dataKey="id"
@@ -26,20 +27,29 @@
         [loading]="loading"
         [globalFilterFields]="globalFilterFields"
       >
+        <ng-template pTemplate="caption">
+          <div class="flex">
+            <button pButton label="Clear" class="p-button-outlined" icon="pi pi-filter-slash" (click)="clear(dataTable)"></button>
+            <span class="p-input-icon-left ml-auto">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" #globalSearchInput (input)="onSearchInputChange($event.target['value'])" [placeholder]="'SEARCH' | transloco | titlecase" />
+            </span>
+          </div>
+        </ng-template>
         <ng-template pTemplate="header">
           <tr>
             <th *ngFor="let column of columns" [pSortableColumn]="column?.field">
               {{ column?.header }}
               <p-sortIcon *ngIf="column?.sortable" [field]="column?.field"></p-sortIcon>
             </th>
-            <th>{{ 'ACTIONS' | transloco }}</th>
+            <th>{{ 'ACTIONS' | transloco | titlecase  }}</th>
           </tr>
-          <tr>
+          <!-- <tr>
             <th *ngFor="let column of columns">
-              <p-columnFilter *ngIf="column?.filterable" type="text" [field]="column?.field" ></p-columnFilter>
+              <p-columnFilter *ngIf="column?.filterable" type="text" [field]="column?.field"></p-columnFilter>
             </th>
             <th></th>
-          </tr>
+          </tr> -->
         </ng-template>
         <ng-template pTemplate="body" let-entity>
           <tr>
@@ -51,6 +61,11 @@
                 <button *ngIf="canView" pButton pRipple icon="pi pi-eye" class="p-button-rounded p-button-info" (click)="viewEntity(entity.id)"></button>
               </div>
             </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4">{{ 'NO_DATA_WERE_FOUND' | transloco | titlecase }}</td>
           </tr>
         </ng-template>
       </p-table>

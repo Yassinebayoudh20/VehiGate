@@ -10,9 +10,10 @@ import { ToastModule } from 'primeng/toast';
 
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@ngneat/transloco';
+import { InputTextModule } from 'primeng/inputtext';
 
 
-const PRIME_UI_MODULES = [TableModule, MultiSelectModule, ToolbarModule, FileUploadModule, ToastModule];
+const PRIME_UI_MODULES = [TableModule, MultiSelectModule, ToolbarModule, FileUploadModule, ToastModule,InputTextModule];
 
 @NgModule({
   declarations: [CrudComponent],

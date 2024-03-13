@@ -1,10 +1,12 @@
 ﻿using VehiGate.Application.Common.Interfaces;
+using VehiGate.Application.Common.Models;
 using VehiGate.Application.Common.Security;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace VehiGate.Application.Users.Queries.GetUsersList;
 
 [Authorize]
-public record GetUsersListQuery : IRequest<UsersListDto>
+public record GetUsersListQuery : IRequest<PagedResult<UserModel>>
 {
     public string? SearchBy { get; set; }
     public List<string> InRoles { get; set; } = new List<string> { "User" };
@@ -13,7 +15,7 @@ public record GetUsersListQuery : IRequest<UsersListDto>
     public int PageSize { get; init; } = 10;
 };
 
-public class GetUsersListQueryHandler : IRequestHandler<GetUsersListQuery, UsersListDto?>
+public class GetUsersListQueryHandler : IRequestHandler<GetUsersListQuery, PagedResult<UserModel>?>
 {
     private readonly IIdentityService _identityService;
 
@@ -22,22 +24,10 @@ public class GetUsersListQueryHandler : IRequestHandler<GetUsersListQuery, Users
         _identityService = identityService;
     }
 
-    public async Task<UsersListDto?> Handle(GetUsersListQuery request, CancellationToken cancellationToken)
+    public async Task<PagedResult<UserModel>?> Handle(GetUsersListQuery request, CancellationToken cancellationToken)
     {
         var usersList = await _identityService.GetUsersList(request.SearchBy, request.OrderBy, request.InRoles);
 
-
-        var users = usersList
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
-
-        return new UsersListDto
-        {
-            Data = users,
-            Total = users.Count()
-        };
-
-
+        return  PagedResult<UserModel>.Create(usersList, request.PageNumber, request.PageSize);
     }
 }

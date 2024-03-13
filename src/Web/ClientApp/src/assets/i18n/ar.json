@@ -1,6 +1,14 @@
 {
   "WELCOME": "Missing value for 'WELCOME'",
+  "SIGN_IN_TO_CONTINUE": "Missing value for 'SIGN_IN_TO_CONTINUE'",
   "EMAIL": "Missing value for 'EMAIL'",
+  "EMAIL_ADDRESS": "Missing value for 'EMAIL_ADDRESS'",
+  "EMAIL_REQUIRED": "Missing value for 'EMAIL_REQUIRED'",
   "PASSWORD": "Missing value for 'PASSWORD'",
-  "SIGN_IN": "Missing value for 'SIGN_IN'"
+  "PASSWORD_REQUIRED": "Missing value for 'PASSWORD_REQUIRED'",
+  "SIGN_IN": "Missing value for 'SIGN_IN'",
+  "NEW": "Missing value for 'NEW'",
+  "SEARCH": "Missing value for 'SEARCH'",
+  "ACTIONS": "Missing value for 'ACTIONS'",
+  "NO_DATA_WERE_FOUND": "Missing value for 'NO_DATA_WERE_FOUND'"
 }

@@ -4,24 +4,28 @@ using VehiGate.Application.Common.Security;
 namespace VehiGate.Application.Users.Queries.GetUserInfo;
 
 [Authorize]
-public record GetUserInfoQuery : IRequest<UserInfoDto>;
+public record GetUserInfoQuery : IRequest<UserInfoDto>
+{
+    public required string Id { get; set; }
+}
 
-public class GetUserInfoQueryHandler : IRequestHandler<GetUserInfoQuery, UserInfoDto?>
+public class GetUserInfoQueryHandler : IRequestHandler<GetUserInfoQuery, UserInfoDto>
 {
     private readonly IUser _user;
+    private readonly IIdentityService _identityService;
+    private readonly IMapper _mapper;
 
-    public GetUserInfoQueryHandler(IUser user)
+    public GetUserInfoQueryHandler(IUser user, IIdentityService identityService, IMapper mapper)
     {
         _user = user;
+        _identityService = identityService;
+        _mapper = mapper;
     }
 
-    public Task<UserInfoDto?> Handle(GetUserInfoQuery request, CancellationToken cancellationToken)
+    public async Task<UserInfoDto> Handle(GetUserInfoQuery request, CancellationToken cancellationToken)
     {
-        if (_user != null)
-        {
-            return Task.FromResult<UserInfoDto?>(new UserInfoDto { Id = _user.Id! });
-        }
-
-        return Task.FromResult<UserInfoDto?>(null);
+        var userById = await _identityService.GetUserById(request.Id);
+        var userInfoDto = _mapper.Map<UserInfoDto>(userById);
+        return userInfoDto;
     }
 }

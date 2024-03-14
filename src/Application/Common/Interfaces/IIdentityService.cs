@@ -1,6 +1,7 @@
 ﻿using VehiGate.Application.Authentication.Commands.Login;
 using VehiGate.Application.Authentication.Commands.Register;
 using VehiGate.Application.Common.Models;
+using VehiGate.Application.Users.Commands.UpdateUserInfo;
 using VehiGate.Application.Users.Queries.GetUsersList;
 using VehiGate.Domain.Entities;
 using VehiGate.Infrastructure.Identity.models;
@@ -21,6 +22,8 @@ public interface IIdentityService
 
     Task<Result> RegisterUserAsync(RegisterDto model);
 
+    Task<Result> UpdateUserAsync(string userId , UpdateUserDto model);
+
     Task<AuthenticationResponse> AuthenticateAsync(LoginDto model);
 
     Task<Result> SignOutAsync();
@@ -30,4 +33,6 @@ public interface IIdentityService
     Task<List<UserModel>> GetUsersList(string? SearchBy, string? OrderBy, int? SortOrder, List<string>? InRoles);
 
     Task<List<RoleInfo>> GetAllRoles();
+
+    Task<UserModel> GetUserById(string userId);
 }

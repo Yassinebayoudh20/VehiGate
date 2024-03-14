@@ -17,8 +17,6 @@ public class GetUserRolesQueryHandler : IRequestHandler<GetUserRolesQuery, List<
 
     public async Task<List<RoleInfo>> Handle(GetUserRolesQuery request, CancellationToken cancellationToken)
     {
-        var roles = await _identity.GetAllRoles();
-
-        return roles;
+        return await _identity.GetAllRoles();
     }
 }

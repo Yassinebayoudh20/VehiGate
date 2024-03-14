@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using VehiGate.Application.Authentication.Commands.Register;
+using VehiGate.Application.Authentication.Commands.UpdateUserInfo;
 using VehiGate.Application.Common.Models;
 using VehiGate.Application.Users.Queries.GetUserInfo;
 using VehiGate.Application.Users.Queries.GetUserRoles;
@@ -13,15 +15,15 @@ public class Users : EndpointGroupBase
     {
         app.MapGroup(this)
             .RequireAuthorization()
-            .MapGet(GetUserInfo, "/me")
-            .MapGet(GetUsersList, "/list")
-            .MapGet(GetUserRoles, "/roles");
-
+            .MapGet(GetUserInfo,"/details/{Id}")
+            .MapGet(GetUsersList,"/list")
+            .MapGet(GetUserRoles,"/roles")
+            .MapPut(UpdateUserInfo,"{Id}");
     }
 
-    public Task<UserInfoDto> GetUserInfo(ISender sender)
+    public Task<UserInfoDto> GetUserInfo(ISender sender, string Id)
     {
-        return sender.Send(new GetUserInfoQuery());
+        return sender.Send(new GetUserInfoQuery { Id = Id });
     }
 
     public Task<PagedResult<UserModel>> GetUsersList(ISender sender,
@@ -50,5 +52,19 @@ public class Users : EndpointGroupBase
     public Task<List<RoleInfo>> GetUserRoles(ISender sender)
     {
         return sender.Send(new GetUserRolesQuery());
+    }
+
+    public async Task<IResult> UpdateUserInfo(ISender sender, string Id, UpdateUserInfoCommand command)
+    {
+        if (Id != command.Id) return Results.BadRequest();
+
+        var result = await sender.Send(command);
+
+        if (result.Succeeded)
+        {
+            return Results.Ok(result);
+        }
+
+        return Results.BadRequest(result);
     }
 }

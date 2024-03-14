@@ -1,6 +1,7 @@
 import { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { LayoutService } from '../service/app.layout.service';
+import { USERS_LIST_PATH, USER_UPSERT_FORM } from 'src/app/core/paths';
 
 @Component({
   selector: 'app-menu',
@@ -15,9 +16,7 @@ export class AppMenuComponent implements OnInit {
     this.model = [
       {
         label: 'Home',
-        items: [
-          { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] },
-        ],
+        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }],
       },
       {
         label: 'Management',
@@ -25,7 +24,10 @@ export class AppMenuComponent implements OnInit {
           {
             label: 'User Management',
             icon: 'pi pi-fw pi-id-card',
-            // routerLink: ['/uikit/formlayout'],
+            items: [
+              { label: 'Users', icon: 'pi pi-list', routerLink: [USERS_LIST_PATH] },
+              { label: 'Add User', icon: 'pi pi-plus', routerLink: [USER_UPSERT_FORM] },
+            ],
           },
         ],
       },

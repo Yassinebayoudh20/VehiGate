@@ -17,12 +17,15 @@
   "PASSWORD_IS_REQUIRED": "Missing value for 'PASSWORD_IS_REQUIRED'",
   "ROLE": "Missing value for 'ROLE'",
   "ROLE_IS_REQUIRED": "Missing value for 'ROLE_IS_REQUIRED'",
+  "PHONE_NUMBER": "Missing value for 'PHONE_NUMBER'",
+  "PHONE_NUMBER_IS_REQUIRED": "Missing value for 'PHONE_NUMBER_IS_REQUIRED'",
   "BACK": "Missing value for 'BACK'",
   "SAVE": "Missing value for 'SAVE'",
   "NEW": "Missing value for 'NEW'",
   "SEARCH": "Missing value for 'SEARCH'",
   "ACTIONS": "Missing value for 'ACTIONS'",
   "NO_DATA_WERE_FOUND": "Missing value for 'NO_DATA_WERE_FOUND'",
+  "USER_ADDED_SUCCESSFULLY": "Missing value for 'USER_ADDED_SUCCESSFULLY'",
   "ADD_NEW_USER": "Missing value for 'ADD_NEW_USER'",
   "EDIT_USER": "Missing value for 'EDIT_USER'"
 }

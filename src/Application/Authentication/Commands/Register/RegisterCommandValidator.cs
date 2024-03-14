@@ -1,7 +1,7 @@
 ﻿namespace VehiGate.Application.Authentication.Commands.Register;
-public class LoginCommandValidator : AbstractValidator<RegisterCommand>
+public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 {
-    public LoginCommandValidator()
+    public RegisterCommandValidator()
     {
         RuleFor(x => x.PhoneNumber)
              .NotEmpty()

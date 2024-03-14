@@ -14,6 +14,8 @@ import { AuthModule } from './auth/auth.module';
 import { AppLayoutModule } from './layout/app.layout.module';
 import { JWT_OPTIONS, JwtHelperService } from '@auth0/angular-jwt';
 import { CoreModule } from './core/core.module';
+import { HttpErrorInterceptor } from './core/interceptors/http-error.interceptor';
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
   declarations: [AppComponent],
@@ -26,8 +28,14 @@ import { CoreModule } from './core/core.module';
     TranslocoRootModule,
     AppLayoutModule,
     CoreModule,
+    ToastModule
   ],
-  providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true }, { provide: JWT_OPTIONS, useValue: JWT_OPTIONS }, JwtHelperService],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true },
+    { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
+    JwtHelperService,
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

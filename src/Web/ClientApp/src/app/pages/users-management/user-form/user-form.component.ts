@@ -1,11 +1,16 @@
 // user-form.component.ts
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
 import { Observable } from 'rxjs';
 import { noWhiteSpaceValidator } from 'src/app/core/validators/white-space.validator';
 import { UsersService } from '../services/users.service';
+import { RegisterCommand, RoleInfo, UpdateUserInfoCommand } from 'src/app/web-api-client';
+import { USERS_LIST_PATH } from 'src/app/core/paths';
+import { ToasterService } from 'src/app/shared/services/toaster.service';
+import { CrudService } from 'src/app/shared/components/crud/crud.service';
+import { FormState } from 'src/app/core/data/models/form-state.enum';
 
 @Component({
   selector: 'app-user-form',
@@ -15,54 +20,123 @@ export class UserFormComponent implements OnInit {
   form: FormGroup;
   isEditing: boolean = false;
   pageTitle: string;
+  userRolesList$: Observable<RoleInfo[]> = new Observable();
+  requestProcessing = false;
 
-  constructor(private formBuilder: FormBuilder, private transloco: TranslocoService, private router: Router, private userService: UsersService) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private transloco: TranslocoService,
+    private crudService: CrudService,
+    private router: Router,
+    private userService: UsersService,
+    private aRoute: ActivatedRoute
+  ) {}
 
   ngOnInit() {
-    this.initializeUserRolesList();
-    this.resolvePageTitle();
-    this.form = this.formBuilder.group({
-      firstName: [null, [Validators.required, Validators.minLength(2), noWhiteSpaceValidator()]],
-      lastName: [null, [Validators.required, Validators.minLength(2), noWhiteSpaceValidator()]],
-      email: [null, [Validators.required, Validators.email, noWhiteSpaceValidator()]],
-      password: [null, [Validators.required, Validators.minLength(6), noWhiteSpaceValidator()]],
-      role: [null, [Validators.required]],
+    const userId = this.aRoute.snapshot.params.id;
+    this.aRoute.queryParams.subscribe((params) => {
+      this.isEditing = params['action'] === FormState.EDITING ? true : false;
+      this.resolvePageTitle();
+      this.initializeUserRolesList();
+      this.form = this.formBuilder.group({
+        firstName: [null, [Validators.required, Validators.minLength(2), noWhiteSpaceValidator()]],
+        lastName: [null, [Validators.required, Validators.minLength(2), noWhiteSpaceValidator()]],
+        email: [null, [Validators.required, Validators.email, noWhiteSpaceValidator()]],
+        password: [null, [Validators.required, Validators.minLength(6), noWhiteSpaceValidator()]],
+        role: [null, [Validators.required]],
+        phoneNumber: [null, [Validators.required, noWhiteSpaceValidator()]],
+      });
+      if (this.isEditing) {
+        this.fetchUserDetails(userId);
+      }
     });
   }
 
   resolvePageTitle() {
-    this.pageTitle = !this.isEditing ? 'ADD_NEW_USER' : 'EDIT_USER';
+    this.pageTitle = this.isEditing ? 'EDIT_USER' : 'ADD_NEW_USER';
   }
 
   initializeUserRolesList() {
-    this.userService.getUserRoles().subscribe({
-      next: (res) => {
-        console.log(res);
+    this.userRolesList$ = this.userService.getUserRoles();
+  }
+
+  onSubmit(): void {
+    if (this.form.invalid) {
+      return;
+    }
+
+    this.requestProcessing = true;
+
+    const command = this.isEditing ? this.createUpdateUserCommand() : this.createRegisterCommand();
+    const userServiceMethod = this.isEditing ? this.userService.updateUser : this.userService.registerNewUser;
+
+    const methodParams = this.isEditing ? [this.aRoute.snapshot.params.id, command] : [command];
+
+    userServiceMethod.apply(this.userService, methodParams).subscribe({
+      next: () => this.handleSuccess(),
+      error: () => this.handleError(),
+      complete: () => (this.requestProcessing = false),
+    });
+  }
+
+  fetchUserDetails(userId: string) {
+    this.userService.getUserDetails(userId).subscribe({
+      next: (userData) => {
+        this.form.patchValue({
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          email: userData.email,
+          role: userData.roles[0],
+          phoneNumber: userData.phoneNumber,
+        });
+        this.form.get('password').disable();
       },
     });
   }
 
-  onSubmit() {
-    if (this.form.invalid) {
-      // Handle invalid form submission (e.g., show error messages)
-      return;
+  private createRegisterCommand(): RegisterCommand {
+    const registerCmd = new RegisterCommand();
+    registerCmd.firstName = this.form.get('firstName').value;
+    registerCmd.lastName = this.form.get('lastName').value;
+    registerCmd.email = this.form.get('email').value;
+    registerCmd.password = this.form.get('password').value;
+    registerCmd.roles = [this.form.get('role').value];
+    registerCmd.phoneNumber = this.form.get('phoneNumber').value;
+    return registerCmd;
+  }
+  private createUpdateUserCommand(): UpdateUserInfoCommand {
+    const updateCmd = new UpdateUserInfoCommand();
+    updateCmd.id = this.aRoute.snapshot.params.id;
+
+    if (this.form.get('firstName').dirty) {
+      updateCmd.firstName = this.form.get('firstName').value;
+    }
+    if (this.form.get('lastName').dirty) {
+      updateCmd.lastName = this.form.get('lastName').value;
+    }
+    if (this.form.get('email').dirty) {
+      updateCmd.email = this.form.get('email').value;
+    }
+    if (this.form.get('role').dirty) {
+      updateCmd.roles = [this.form.get('role').value];
+    }
+    if (this.form.get('phoneNumber').dirty) {
+      updateCmd.phoneNumber = this.form.get('phoneNumber').value;
     }
 
-    //! Add roles list to the dropdown
-    //! Call the method to register new user
+    return updateCmd;
+  }
 
-    console.log(this.form.value);
+  private handleSuccess() {
+    this.crudService.executeToaster.next({ isSuccess: true, message: this.transloco.translate('USER_ADDED_SUCCESSFULLY') });
+    this.router.navigate([USERS_LIST_PATH]);
+  }
 
-    // Handle valid form submission (e.g., save data to backend)
-    // Example: Call a service to add or update user data
-    // ...
-
-    // After successful submission, navigate to a different page
-    // Example: this.router.navigate(['/users']);
+  private handleError() {
+    this.requestProcessing = false;
   }
 
   goBack() {
-    // Implement navigation logic to go back to the previous page
-    this.router.navigate(['pages/users']); // Replace '/previous-page' with the route of your previous page
+    this.router.navigate([USERS_LIST_PATH]);
   }
 }

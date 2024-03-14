@@ -6,6 +6,7 @@ using Azure.Core;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -13,6 +14,7 @@ using VehiGate.Application.Authentication.Commands.Login;
 using VehiGate.Application.Authentication.Commands.Register;
 using VehiGate.Application.Common.Interfaces;
 using VehiGate.Application.Common.Models;
+using VehiGate.Application.Users.Commands.UpdateUserInfo;
 using VehiGate.Application.Users.Queries.GetUsersList;
 using VehiGate.Domain.ConfigurationOptions;
 using VehiGate.Domain.Constants;
@@ -204,8 +206,7 @@ public class IdentityService : IIdentityService
         }
         catch (Exception ex)
         {
-            List<string> errorMessages = new List<string>();
-            errorMessages.Add(ex.Message);
+            List<string> errorMessages = [ex.Message];
             return Result.Failure(errorMessages);
         }
     }
@@ -272,5 +273,72 @@ public class IdentityService : IIdentityService
 
         return roles.Select(role => new RoleInfo { Name = role.Name!, Id = role.Id }).ToList();
     }
+
+    public async Task<UserModel> GetUserById(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user == null)
+        {
+            throw new NotFoundException(nameof(user), "could not find user with");
+        }
+
+        UserModel userModel = new UserModel { FirstName = user.FirstName, LastName = user.LastName, Id = user.Id, Email = user.Email, PhoneNumber = user.PhoneNumber };
+
+        IList<string> roles = _userManager.GetRolesAsync(user).Result;
+
+        if (roles.Any())
+        {
+            userModel.Roles = roles.ToList();
+        }
+
+        return userModel;
+    }
+
+    public async Task<Result> UpdateUserAsync(string userId, UpdateUserDto model)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user == null)
+        {
+            throw new NotFoundException(nameof(user), $"Could not find user with ID {userId}");
+        }
+
+        if (!string.IsNullOrEmpty(model.FirstName))
+        {
+            user.FirstName = model.FirstName;
+        }
+
+        if (!string.IsNullOrEmpty(model.LastName))
+        {
+            user.LastName = model.LastName;
+        }
+
+        if (!string.IsNullOrEmpty(model.Email))
+        {
+            user.Email = model.Email;
+        }
+
+        if (!string.IsNullOrEmpty(model.PhoneNumber))
+        {
+            user.PhoneNumber = model.PhoneNumber;
+        }
+
+        if (model.Roles != null && model.Roles.Any())
+        {
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, currentRoles);
+
+            foreach (var role in model.Roles)
+            {
+                await _userManager.AddToRoleAsync(user, role);
+            }
+        }
+
+        var result = await _userManager.UpdateAsync(user);
+
+        return result.ToApplicationResult();
+    }
+
 
 }

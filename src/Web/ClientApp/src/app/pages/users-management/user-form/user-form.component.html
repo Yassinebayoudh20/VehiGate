@@ -11,7 +11,7 @@
           </span>
           <div *ngIf="form.get('firstName').invalid && (form.get('firstName').dirty || form.get('firstName').touched)">
             <small class="text-red-500" *ngIf="form.get('firstName').errors.required">{{ 'FIRST_NAME_IS_REQUIRED' | transloco | titlecase }}</small>
-            <small class="text-red-500" *ngIf="form.get('firstName').hasError('whiteSpace')">{{'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase}}</small>
+            <small class="text-red-500" *ngIf="form.get('firstName').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
           </div>
         </div>
         <div class="field col-12 md:col-6">
@@ -22,7 +22,7 @@
           </span>
           <div *ngIf="form.get('lastName').invalid && (form.get('lastName').dirty || form.get('lastName').touched)">
             <small class="text-red-500" *ngIf="form.get('lastName').errors.required">{{ 'LAST_NAME_IS_REQUIRED' | transloco | titlecase }}</small>
-            <small class="text-red-500" *ngIf="form.get('lastName').hasError('whiteSpace')">{{'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase | transloco | titlecase}}</small>
+            <small class="text-red-500" *ngIf="form.get('lastName').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase | transloco | titlecase }}</small>
           </div>
         </div>
         <div class="field col-12 md:col-6">
@@ -34,7 +34,7 @@
           <div *ngIf="form.get('email').invalid && (form.get('email').dirty || form.get('email').touched)">
             <small class="text-red-500" *ngIf="form.get('email').errors.required">{{ 'EMAIL_IS_REQUIRED' | transloco | titlecase }}</small>
             <small class="text-red-500" *ngIf="form.get('email').errors.email"> {{ 'INVALID_EMAIL_FORMAT' | transloco | titlecase }}</small>
-            <small class="text-red-500" *ngIf="form.get('email').hasError('whiteSpace')">{{'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase}}</small>
+            <small class="text-red-500" *ngIf="form.get('email').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
           </div>
         </div>
         <div class="field col-12 md:col-6">
@@ -45,21 +45,42 @@
           </span>
           <div *ngIf="form.get('password').invalid && (form.get('password').dirty || form.get('password').touched)">
             <small class="text-red-500" *ngIf="form.get('password').errors.required">{{ 'PASSWORD_IS_REQUIRED' | transloco | titlecase }}</small>
-            <small class="text-red-500" *ngIf="form.get('password').hasError('whiteSpace')">{{'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase}}</small>
+            <small class="text-red-500" *ngIf="form.get('password').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
           </div>
         </div>
         <div class="field col-12 md:col-3">
           <label htmlFor="state">{{ 'ROLE' | transloco | titlecase }}</label>
-          <p-dropdown [options]="[{ name: 'Admin' }, { name: 'User' }, { name: 'Driver' }]" optionLabel="name" formControlName="role" [placeholder]="'role' | titlecase"></p-dropdown>
+          <p-dropdown [options]="userRolesList$ | async" optionLabel="name" optionValue="name" formControlName="role" [placeholder]="'role' | titlecase"></p-dropdown>
           <div *ngIf="form.get('role').invalid && (form.get('role').dirty || form.get('role').touched)">
             <small class="text-red-500">{{ 'ROLE_IS_REQUIRED' | transloco | titlecase }}</small>
-            <small class="text-red-500" *ngIf="form.get('role').hasError('whiteSpace')">{{'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase}}</small>
+            <small class="text-red-500" *ngIf="form.get('role').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
+          </div>
+        </div>
+        <div class="field col-12 md:col-6">
+          <label>{{ 'PHONE_NUMBER' | transloco | titlecase }}</label>
+          <span class="p-input-icon-left">
+            <i class="pi pi-phone"></i>
+            <input pInputText type="text" formControlName="phoneNumber" placeholder="{{ 'PHONE_NUMBER' | transloco | titlecase }}" />
+          </span>
+          <div *ngIf="form.get('phoneNumber').invalid && (form.get('phoneNumber').dirty || form.get('phoneNumber').touched)">
+            <small class="text-red-500" *ngIf="form.get('phoneNumber').errors.required">{{ 'PHONE_NUMBER_IS_REQUIRED' | transloco | titlecase }}</small>
+            <small class="text-red-500" *ngIf="form.get('phoneNumber').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase | transloco | titlecase }}</small>
           </div>
         </div>
       </form>
       <div class="flex md:justify-content-end gap-2">
         <button pButton type="button" pRipple icon="pi pi-arrow-left" label="{{ 'BACK' | transloco | titlecase }}" class="p-button" (click)="goBack()"></button>
-        <button pButton type="button" pRipple icon="pi pi-save" label="{{ 'SAVE' | transloco | titlecase }}" class="p-button p-button-success" (click)="onSubmit()"></button>
+        <button
+          pButton
+          type="button"
+          [loading]="requestProcessing"
+          [disabled]="!this.form.valid || !this.form.dirty"
+          pRipple
+          icon="pi pi-save"
+          label="{{ 'SAVE' | transloco | titlecase }}"
+          class="p-button p-button-success"
+          (click)="onSubmit()"
+        ></button>
       </div>
     </div>
   </div>

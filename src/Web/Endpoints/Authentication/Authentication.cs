@@ -17,9 +17,16 @@ public class Authentication : EndpointGroupBase
             .MapPost(SignOut, "/signout");
     }
 
-    public async Task<Result> Register(ISender sender, RegisterCommand command)
+    public async Task<IResult> Register(ISender sender, RegisterCommand command)
     {
-        return await sender.Send(command);
+        var result = await sender.Send(command);
+
+        if (result.Succeeded)
+        {
+            return Results.Ok(result);
+        }
+
+        return Results.BadRequest(result);
     }
 
     public async Task<AuthenticationResponse> Authenticate(ISender sender, LoginCommand command)

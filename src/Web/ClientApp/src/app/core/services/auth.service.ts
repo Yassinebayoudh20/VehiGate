@@ -21,7 +21,7 @@ export class AuthService {
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
-  register(registerCommand: RegisterCommand): Observable<Result> {
+  register(registerCommand: RegisterCommand): Observable<void> {
     return this.authClient.register(registerCommand);
   }
 

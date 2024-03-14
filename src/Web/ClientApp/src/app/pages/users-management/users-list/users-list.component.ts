@@ -4,6 +4,9 @@ import { UsersService } from '../services/users.service';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { PagedResultOfUserModel } from 'src/app/web-api-client';
 import { PaginationParamsService } from 'src/app/shared/services/pagination-params.service';
+import { Router } from '@angular/router';
+import { USER_UPSERT_FORM } from 'src/app/core/paths';
+import { FormState } from 'src/app/core/data/models/form-state.enum';
 
 @Component({
   selector: 'app-users-list',
@@ -14,16 +17,20 @@ export class UsersListComponent implements OnInit, OnDestroy {
   data$: Observable<PagedResultOfUserModel>;
   destroy$: Subject<boolean> = new Subject();
 
-  constructor(private userService: UsersService, private paramsService: PaginationParamsService) {}
+  constructor(private userService: UsersService, private paramsService: PaginationParamsService, private router: Router) {}
 
   ngOnInit(): void {
-    this.paramsService.params$
-      .pipe(
-        takeUntil(this.destroy$)
-      )
-      .subscribe((params) => {
-        this.data$ = this.userService.getAllUsers(params);
-      });
+    this.paramsService.params$.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      this.data$ = this.userService.getAllUsers(params);
+    });
+  }
+
+  goToAddUserForm() {
+    this.router.navigate([USER_UPSERT_FORM]);
+  }
+
+  goToEditUserForm(userId : string) {
+    this.router.navigate([`${USER_UPSERT_FORM}/${userId}`], { queryParams: { action: FormState.EDITING } });
   }
 
   ngOnDestroy() {

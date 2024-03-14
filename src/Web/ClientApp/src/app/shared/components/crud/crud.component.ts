@@ -67,8 +67,6 @@ export class CrudComponent implements OnChanges {
     this.crudService.executeToaster.subscribe((response: ToasterResponse) => {
       if (response.isSuccess) {
         this.toasterService.showSuccess(response.message);
-      } else {
-        this.toasterService.showError(response.message);
       }
     });
   }
@@ -93,7 +91,13 @@ export class CrudComponent implements OnChanges {
 
   loadEntities(event: TableLazyLoadEvent) {
     this.loading = true;
-    this.paramsService.updateParams({ pageNumber: getPageNumber(event), pageSize: DEFAULT_PAGE_SIZE, searchBy: event.globalFilter as string, orderBy: event.sortField as string , sortOrder : event.sortOrder });
+    this.paramsService.updateParams({
+      pageNumber: getPageNumber(event),
+      pageSize: DEFAULT_PAGE_SIZE,
+      searchBy: event.globalFilter as string,
+      orderBy: event.sortField as string,
+      sortOrder: event.sortOrder,
+    });
   }
 
   onSearchInputChange(value: string) {

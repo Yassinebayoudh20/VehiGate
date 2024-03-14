@@ -19,8 +19,8 @@ export class ToasterService {
     this.messageService.add({ severity: 'warn', summary: 'Warning', detail: message });
   }
 
-  showError(message: string) {
-    this.messageService.add({ severity: 'error', summary: 'Error', detail: message });
+  showError(title: string, message: string) {
+    this.messageService.add({ severity: 'error', summary: title, detail: message });
   }
 
   clear() {

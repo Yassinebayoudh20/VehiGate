@@ -3,6 +3,7 @@ using VehiGate.Application.Common.Interfaces;
 using VehiGate.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using VehiGate.Domain.Entities;
 
 namespace VehiGate.Infrastructure.Data;
 
@@ -10,6 +11,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
+    public DbSet<Company> Companies => Set<Company>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

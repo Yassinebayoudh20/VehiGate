@@ -895,8 +895,8 @@ export interface IUserModel {
 }
 
 export class RoleInfo implements IRoleInfo {
-    id?: string;
-    name?: string;
+    id?: string | undefined;
+    name?: string | undefined;
 
     constructor(data?: IRoleInfo) {
         if (data) {
@@ -930,8 +930,8 @@ export class RoleInfo implements IRoleInfo {
 }
 
 export interface IRoleInfo {
-    id?: string;
-    name?: string;
+    id?: string | undefined;
+    name?: string | undefined;
 }
 
 export class UpdateUserInfoCommand implements IUpdateUserInfoCommand {

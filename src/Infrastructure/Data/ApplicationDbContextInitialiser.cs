@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VehiGate.Domain.Entities;
 
 namespace VehiGate.Infrastructure.Data;
 
@@ -72,14 +73,12 @@ public class ApplicationDbContextInitialiser
         var driver = new IdentityRole(Roles.Driver);
         var user = new IdentityRole(Roles.User);
 
-
         if (!_roleManager.Roles.Any())
         {
             await _roleManager.CreateAsync(superAdminRole);
             await _roleManager.CreateAsync(administratorRole);
             await _roleManager.CreateAsync(driver);
             await _roleManager.CreateAsync(user);
-
         }
 
         // Default users
@@ -94,7 +93,56 @@ public class ApplicationDbContextInitialiser
             }
         }
 
-        // Default data
-        // Seed, if necessary
+        await SeedCompaniesAsync();
+
+        await SeedDriversAsync();
+    }
+
+    private async Task SeedCompaniesAsync()
+    {
+        if (!_context.Companies.Any())
+        {
+            var company = new Company
+            {
+                Name = "Sample Company",
+                Address = "Sample Address",
+                Email = "company@example.com",
+                Phone = "1234567890",
+                Contact = "John Doe"
+            };
+
+            _context.Companies.Add(company);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    private async Task SeedDriversAsync()
+    {
+        if (!_context.Drivers.Any())
+        {
+            var user = new ApplicationUser { UserName = "driver@example.com", Email = "driver@example.com", FirstName = "John", LastName = "Doe" };
+            var driverRole = await _roleManager.FindByNameAsync(Roles.Driver);
+
+            if (driverRole != null && _userManager.Users.All(u => u.UserName != user.UserName))
+            {
+                await _userManager.CreateAsync(user, "DriverPassword1!");
+                await _userManager.AddToRoleAsync(user, driverRole.Name!);
+
+                var company = _context.Companies.FirstOrDefault();
+
+                if (company != null)
+                {
+                    var driver = new Driver
+                    {
+                        UserId = user.Id,
+                        CompanyId = company.Id,
+                        DriverLicenseNumber = "DL123456"
+                    };
+
+                    _context.Drivers.Add(driver);
+                    await _context.SaveChangesAsync();
+                }
+            }
+        }
     }
 }

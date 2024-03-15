@@ -581,10 +581,12 @@
         "additionalProperties": false,
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           }
         }
       },

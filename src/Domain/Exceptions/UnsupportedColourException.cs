@@ -11,7 +11,7 @@ public class UnsupportedColourException : Exception
     {
     }
 
-    public UnsupportedColourException(string? message, Exception? innerException) : base(message, innerException)
+    public UnsupportedColourException(string message, Exception innerException) : base(message, innerException)
     {
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace VehiGate.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class SampleMigration : Migration
+    public partial class AddVehicleAndGenreTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -70,6 +70,22 @@ namespace VehiGate.Infrastructure.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Companies", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VehicleTypes",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Created = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModified = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VehicleTypes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -202,6 +218,40 @@ namespace VehiGate.Infrastructure.Data.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Vehicles",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    VehicleTypeId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CompanyId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    InsuranceCompany = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PlateNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InsuranceFrom = table.Column<DateOnly>(type: "date", nullable: false),
+                    InsuranceTo = table.Column<DateOnly>(type: "date", nullable: false),
+                    Created = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModified = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Vehicles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Vehicles_Companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Vehicles_VehicleTypes_VehicleTypeId",
+                        column: x => x.VehicleTypeId,
+                        principalTable: "VehicleTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -245,6 +295,16 @@ namespace VehiGate.Infrastructure.Data.Migrations
                 name: "IX_Drivers_CompanyId",
                 table: "Drivers",
                 column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vehicles_CompanyId",
+                table: "Vehicles",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vehicles_VehicleTypeId",
+                table: "Vehicles",
+                column: "VehicleTypeId");
         }
 
         /// <inheritdoc />
@@ -269,6 +329,9 @@ namespace VehiGate.Infrastructure.Data.Migrations
                 name: "Drivers");
 
             migrationBuilder.DropTable(
+                name: "Vehicles");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -276,6 +339,9 @@ namespace VehiGate.Infrastructure.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Companies");
+
+            migrationBuilder.DropTable(
+                name: "VehicleTypes");
         }
     }
 }

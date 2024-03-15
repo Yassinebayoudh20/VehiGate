@@ -15,6 +15,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
     public DbSet<Driver> Drivers => Set<Driver>();
 
+    public DbSet<Vehicle> Vehicles => Set<Vehicle>();
+
+    public DbSet<VehicleType> VehicleTypes => Set<VehicleType>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

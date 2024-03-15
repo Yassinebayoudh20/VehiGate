@@ -96,6 +96,10 @@ public class ApplicationDbContextInitialiser
         await SeedCompaniesAsync();
 
         await SeedDriversAsync();
+
+        await SeedVehicleTypesAsync();
+
+        await SeedVehiclesAsync();
     }
 
     private async Task SeedCompaniesAsync()
@@ -145,4 +149,55 @@ public class ApplicationDbContextInitialiser
             }
         }
     }
+
+    private async Task SeedVehicleTypesAsync()
+    {
+        if (!_context.VehicleTypes.Any())
+        {
+            // Add default vehicle types
+            var vehicleTypes = new[]
+            {
+                    new VehicleType { Name = "Car" },
+                    new VehicleType { Name = "Truck" },
+                };
+
+            await _context.VehicleTypes.AddRangeAsync(vehicleTypes);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    private async Task SeedVehiclesAsync()
+    {
+        if (!_context.Vehicles.Any())
+        {
+            var vehicleType = await _context.VehicleTypes.FirstOrDefaultAsync();
+
+            if (vehicleType != null)
+            {
+                var company = await _context.Companies.FirstOrDefaultAsync();
+
+                if (company != null)
+                {
+                    // Add default vehicles
+                    var vehicles = new[]
+                    {
+                            new Vehicle
+                            {
+                                VehicleType = vehicleType,
+                                Company = company,
+                                InsuranceCompany = "Insurance Inc.",
+                                Name = "Vehicle 1",
+                                PlateNumber = "ABC123",
+                                InsuranceFrom = DateOnly.FromDateTime(DateTime.Now),
+                                InsuranceTo = DateOnly.FromDateTime(DateTime.Today.AddDays(3))
+                            },
+                        };
+
+                    await _context.Vehicles.AddRangeAsync(vehicles);
+                    await _context.SaveChangesAsync();
+                }
+            }
+        }
+    }
+
 }

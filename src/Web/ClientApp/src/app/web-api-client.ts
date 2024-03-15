@@ -15,6 +15,556 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
+export interface IVehiclesClient {
+    createVehicle(command: CreateVehicleCommand): Observable<void>;
+    getVehicles(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void>;
+    updateVehicle(id: string, command: UpdateVehicleCommand): Observable<void>;
+    deleteVehicle(id: string): Observable<void>;
+    getVehicleById(id: string): Observable<void>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class VehiclesClient implements IVehiclesClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    createVehicle(command: CreateVehicleCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/Vehicles";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateVehicle(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateVehicle(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processCreateVehicle(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getVehicles(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/Vehicles?";
+        if (pageNumber === null)
+            throw new Error("The parameter 'pageNumber' cannot be null.");
+        else if (pageNumber !== undefined)
+            url_ += "pageNumber=" + encodeURIComponent("" + pageNumber) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (searchBy !== undefined && searchBy !== null)
+            url_ += "searchBy=" + encodeURIComponent("" + searchBy) + "&";
+        if (orderBy !== undefined && orderBy !== null)
+            url_ += "orderBy=" + encodeURIComponent("" + orderBy) + "&";
+        if (sortOrder === null)
+            throw new Error("The parameter 'sortOrder' cannot be null.");
+        else if (sortOrder !== undefined)
+            url_ += "SortOrder=" + encodeURIComponent("" + sortOrder) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetVehicles(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetVehicles(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processGetVehicles(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    updateVehicle(id: string, command: UpdateVehicleCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/Vehicles/{Id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{Id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateVehicle(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateVehicle(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processUpdateVehicle(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    deleteVehicle(id: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/Vehicles/{Id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{Id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteVehicle(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteVehicle(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processDeleteVehicle(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getVehicleById(id: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/Vehicles/{Id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{Id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetVehicleById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetVehicleById(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processGetVehicleById(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+export interface IVehiclesTypesClient {
+    createVehicleType(command: CreateVehicleTypeCommand): Observable<void>;
+    getVehicleTypes(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void>;
+    updateVehicleType(id: string, command: UpdateVehicleTypeCommand): Observable<void>;
+    deleteVehicleType(id: string): Observable<void>;
+    getVehicleTypeById(id: string): Observable<void>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class VehiclesTypesClient implements IVehiclesTypesClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    createVehicleType(command: CreateVehicleTypeCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/VehiclesTypes";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateVehicleType(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateVehicleType(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processCreateVehicleType(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getVehicleTypes(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/VehiclesTypes?";
+        if (pageNumber === null)
+            throw new Error("The parameter 'pageNumber' cannot be null.");
+        else if (pageNumber !== undefined)
+            url_ += "pageNumber=" + encodeURIComponent("" + pageNumber) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (searchBy !== undefined && searchBy !== null)
+            url_ += "searchBy=" + encodeURIComponent("" + searchBy) + "&";
+        if (orderBy !== undefined && orderBy !== null)
+            url_ += "orderBy=" + encodeURIComponent("" + orderBy) + "&";
+        if (sortOrder === null)
+            throw new Error("The parameter 'sortOrder' cannot be null.");
+        else if (sortOrder !== undefined)
+            url_ += "SortOrder=" + encodeURIComponent("" + sortOrder) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetVehicleTypes(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetVehicleTypes(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processGetVehicleTypes(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    updateVehicleType(id: string, command: UpdateVehicleTypeCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/VehiclesTypes/{Id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{Id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateVehicleType(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateVehicleType(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processUpdateVehicleType(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    deleteVehicleType(id: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/VehiclesTypes/{Id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{Id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteVehicleType(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteVehicleType(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processDeleteVehicleType(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getVehicleTypeById(id: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/VehiclesTypes/{Id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{Id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetVehicleTypeById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetVehicleTypeById(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processGetVehicleTypeById(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
 export interface IUsersClient {
     getUserInfo(id: string): Observable<UserInfoDto>;
     getUsersList(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined, inRoles: string | null | undefined): Observable<PagedResultOfUserModel>;
@@ -981,6 +1531,206 @@ export class AuthenticationClient implements IAuthenticationClient {
     }
 }
 
+export class CreateVehicleCommand implements ICreateVehicleCommand {
+    vehicleTypeId?: string | undefined;
+    companyId?: string | undefined;
+    insuranceCompany?: string | undefined;
+    name?: string | undefined;
+    plateNumber?: string | undefined;
+    insuranceFrom?: Date;
+    insuranceTo?: Date;
+
+    constructor(data?: ICreateVehicleCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.vehicleTypeId = _data["vehicleTypeId"];
+            this.companyId = _data["companyId"];
+            this.insuranceCompany = _data["insuranceCompany"];
+            this.name = _data["name"];
+            this.plateNumber = _data["plateNumber"];
+            this.insuranceFrom = _data["insuranceFrom"] ? new Date(_data["insuranceFrom"].toString()) : <any>undefined;
+            this.insuranceTo = _data["insuranceTo"] ? new Date(_data["insuranceTo"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): CreateVehicleCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateVehicleCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["vehicleTypeId"] = this.vehicleTypeId;
+        data["companyId"] = this.companyId;
+        data["insuranceCompany"] = this.insuranceCompany;
+        data["name"] = this.name;
+        data["plateNumber"] = this.plateNumber;
+        data["insuranceFrom"] = this.insuranceFrom ? formatDate(this.insuranceFrom) : <any>undefined;
+        data["insuranceTo"] = this.insuranceTo ? formatDate(this.insuranceTo) : <any>undefined;
+        return data;
+    }
+}
+
+export interface ICreateVehicleCommand {
+    vehicleTypeId?: string | undefined;
+    companyId?: string | undefined;
+    insuranceCompany?: string | undefined;
+    name?: string | undefined;
+    plateNumber?: string | undefined;
+    insuranceFrom?: Date;
+    insuranceTo?: Date;
+}
+
+export class UpdateVehicleCommand implements IUpdateVehicleCommand {
+    id?: string | undefined;
+    vehicleTypeId?: string | undefined;
+    companyId?: string | undefined;
+    insuranceCompany?: string | undefined;
+    name?: string | undefined;
+    plateNumber?: string | undefined;
+    insuranceFrom?: Date;
+    insuranceTo?: Date;
+
+    constructor(data?: IUpdateVehicleCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.vehicleTypeId = _data["vehicleTypeId"];
+            this.companyId = _data["companyId"];
+            this.insuranceCompany = _data["insuranceCompany"];
+            this.name = _data["name"];
+            this.plateNumber = _data["plateNumber"];
+            this.insuranceFrom = _data["insuranceFrom"] ? new Date(_data["insuranceFrom"].toString()) : <any>undefined;
+            this.insuranceTo = _data["insuranceTo"] ? new Date(_data["insuranceTo"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): UpdateVehicleCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateVehicleCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["vehicleTypeId"] = this.vehicleTypeId;
+        data["companyId"] = this.companyId;
+        data["insuranceCompany"] = this.insuranceCompany;
+        data["name"] = this.name;
+        data["plateNumber"] = this.plateNumber;
+        data["insuranceFrom"] = this.insuranceFrom ? formatDate(this.insuranceFrom) : <any>undefined;
+        data["insuranceTo"] = this.insuranceTo ? formatDate(this.insuranceTo) : <any>undefined;
+        return data;
+    }
+}
+
+export interface IUpdateVehicleCommand {
+    id?: string | undefined;
+    vehicleTypeId?: string | undefined;
+    companyId?: string | undefined;
+    insuranceCompany?: string | undefined;
+    name?: string | undefined;
+    plateNumber?: string | undefined;
+    insuranceFrom?: Date;
+    insuranceTo?: Date;
+}
+
+export class CreateVehicleTypeCommand implements ICreateVehicleTypeCommand {
+    name?: string | undefined;
+
+    constructor(data?: ICreateVehicleTypeCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): CreateVehicleTypeCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateVehicleTypeCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        return data;
+    }
+}
+
+export interface ICreateVehicleTypeCommand {
+    name?: string | undefined;
+}
+
+export class UpdateVehicleTypeCommand implements IUpdateVehicleTypeCommand {
+    id?: string | undefined;
+    name?: string | undefined;
+
+    constructor(data?: IUpdateVehicleTypeCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): UpdateVehicleTypeCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateVehicleTypeCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        return data;
+    }
+}
+
+export interface IUpdateVehicleTypeCommand {
+    id?: string | undefined;
+    name?: string | undefined;
+}
+
 export class UserInfoDto implements IUserInfoDto {
     id?: string | undefined;
     email?: string | undefined;
@@ -1721,6 +2471,12 @@ export class LogoutCommand implements ILogoutCommand {
 }
 
 export interface ILogoutCommand {
+}
+
+function formatDate(d: Date) {
+    return d.getFullYear() + '-' + 
+        (d.getMonth() < 9 ? ('0' + (d.getMonth()+1)) : (d.getMonth()+1)) + '-' +
+        (d.getDate() < 10 ? ('0' + d.getDate()) : d.getDate());
 }
 
 export class SwaggerException extends Error {

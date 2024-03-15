@@ -6,7 +6,11 @@ public interface IApplicationDbContext
 {
     DbSet<Company> Companies { get; }
 
-    public DbSet<Driver> Drivers { get; }
+    DbSet<Driver> Drivers { get; }
+
+    DbSet<Vehicle> Vehicles { get; }
+
+    DbSet<VehicleType> VehicleTypes { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

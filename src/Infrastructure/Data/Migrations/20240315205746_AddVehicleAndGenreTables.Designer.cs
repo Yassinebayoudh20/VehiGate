@@ -12,8 +12,8 @@ using VehiGate.Infrastructure.Data;
 namespace VehiGate.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240315112310_SampleMigration")]
-    partial class SampleMigration
+    [Migration("20240315205746_AddVehicleAndGenreTables")]
+    partial class AddVehicleAndGenreTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -231,6 +231,78 @@ namespace VehiGate.Infrastructure.Data.Migrations
                     b.ToTable("Drivers");
                 });
 
+            modelBuilder.Entity("VehiGate.Domain.Entities.Vehicle", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CompanyId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InsuranceCompany")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("InsuranceFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("InsuranceTo")
+                        .HasColumnType("date");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlateNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VehicleTypeId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("VehicleTypeId");
+
+                    b.ToTable("Vehicles");
+                });
+
+            modelBuilder.Entity("VehiGate.Domain.Entities.VehicleType", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VehicleTypes");
+                });
+
             modelBuilder.Entity("VehiGate.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -365,9 +437,33 @@ namespace VehiGate.Infrastructure.Data.Migrations
                     b.Navigation("Company");
                 });
 
+            modelBuilder.Entity("VehiGate.Domain.Entities.Vehicle", b =>
+                {
+                    b.HasOne("VehiGate.Domain.Entities.Company", "Company")
+                        .WithMany("Vehicles")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("VehiGate.Domain.Entities.VehicleType", "VehicleType")
+                        .WithMany("Vehicles")
+                        .HasForeignKey("VehicleTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Company");
+
+                    b.Navigation("VehicleType");
+                });
+
             modelBuilder.Entity("VehiGate.Domain.Entities.Company", b =>
                 {
                     b.Navigation("Drivers");
+
+                    b.Navigation("Vehicles");
+                });
+
+            modelBuilder.Entity("VehiGate.Domain.Entities.VehicleType", b =>
+                {
+                    b.Navigation("Vehicles");
                 });
 #pragma warning restore 612, 618
         }

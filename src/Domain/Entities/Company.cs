@@ -11,4 +11,7 @@ public class Company : BaseAuditableEntity
 
     [JsonIgnore]
     public virtual ICollection<Driver> Drivers { get; set; } = new List<Driver>();
+
+    [JsonIgnore]
+    public virtual ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
 }

@@ -12,5 +12,9 @@ public interface IApplicationDbContext
 
     DbSet<VehicleType> VehicleTypes { get; }
 
+    DbSet<Site> Sites { get; }
+
+    DbSet<Customer> Customers { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

@@ -100,6 +100,10 @@ public class ApplicationDbContextInitialiser
         await SeedVehicleTypesAsync();
 
         await SeedVehiclesAsync();
+
+        await SeedCustomersAsync();
+
+        await SeedSitesAsync();
     }
 
     private async Task SeedCompaniesAsync()
@@ -200,4 +204,61 @@ public class ApplicationDbContextInitialiser
         }
     }
 
+    public async Task SeedCustomersAsync()
+    {
+        if (!_context.Customers.Any())
+        {
+            var customers = new[]
+            {
+                    new Customer
+                    {
+                        Name = "Customer 1",
+                        Distance = "10 km",
+                        Contact = "John Doe",
+                        Phone = "123456789",
+                        Email = "customer1@example.com"
+                    },
+                    new Customer
+                    {
+                        Name = "Customer 2",
+                        Distance = "20 km",
+                        Contact = "Jane Smith",
+                        Phone = "987654321",
+                        Email = "customer2@example.com"
+                    },
+                    // Add more customers as needed
+                };
+
+            await _context.Customers.AddRangeAsync(customers);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task SeedSitesAsync()
+    {
+        if (!_context.Sites.Any())
+        {
+            var sites = new[]
+            {
+                    new Site
+                    {
+                        Address = "Site 1 Address",
+                        Contact = "John Doe",
+                        Phone = "123456789",
+                        Email = "site1@example.com"
+                    },
+                    new Site
+                    {
+                        Address = "Site 2 Address",
+                        Contact = "Jane Smith",
+                        Phone = "987654321",
+                        Email = "site2@example.com"
+                    },
+                    // Add more sites as needed
+                };
+
+            await _context.Sites.AddRangeAsync(sites);
+            await _context.SaveChangesAsync();
+        }
+    }
 }

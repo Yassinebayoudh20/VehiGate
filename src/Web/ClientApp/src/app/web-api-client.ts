@@ -17,7 +17,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IUsersClient {
     getUserInfo(id: string): Observable<UserInfoDto>;
-    getUsersList(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | null | undefined, inRoles: string | null | undefined): Observable<PagedResultOfUserModel>;
+    getUsersList(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined, inRoles: string | null | undefined): Observable<PagedResultOfUserModel>;
     getUserRoles(): Observable<RoleInfo[]>;
     updateUserInfo(id: string, command: UpdateUserInfoCommand): Observable<void>;
 }
@@ -86,7 +86,7 @@ export class UsersClient implements IUsersClient {
         return _observableOf(null as any);
     }
 
-    getUsersList(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | null | undefined, inRoles: string | null | undefined): Observable<PagedResultOfUserModel> {
+    getUsersList(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined, inRoles: string | null | undefined): Observable<PagedResultOfUserModel> {
         let url_ = this.baseUrl + "/api/Users/list?";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
@@ -100,7 +100,9 @@ export class UsersClient implements IUsersClient {
             url_ += "searchBy=" + encodeURIComponent("" + searchBy) + "&";
         if (orderBy !== undefined && orderBy !== null)
             url_ += "orderBy=" + encodeURIComponent("" + orderBy) + "&";
-        if (sortOrder !== undefined && sortOrder !== null)
+        if (sortOrder === null)
+            throw new Error("The parameter 'sortOrder' cannot be null.");
+        else if (sortOrder !== undefined)
             url_ += "SortOrder=" + encodeURIComponent("" + sortOrder) + "&";
         if (inRoles !== undefined && inRoles !== null)
             url_ += "inRoles=" + encodeURIComponent("" + inRoles) + "&";
@@ -257,9 +259,284 @@ export class UsersClient implements IUsersClient {
     }
 }
 
+export interface IDriversClient {
+    createDriver(command: CreateDriverCommand): Observable<void>;
+    getDrivers(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void>;
+    updateDriver(id: string, command: UpdateDriverCommand): Observable<void>;
+    deleteDriver(id: string): Observable<void>;
+    getDriverById(id: string): Observable<void>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class DriversClient implements IDriversClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    createDriver(command: CreateDriverCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/Drivers";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateDriver(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateDriver(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processCreateDriver(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getDrivers(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/Drivers?";
+        if (pageNumber === null)
+            throw new Error("The parameter 'pageNumber' cannot be null.");
+        else if (pageNumber !== undefined)
+            url_ += "pageNumber=" + encodeURIComponent("" + pageNumber) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (searchBy !== undefined && searchBy !== null)
+            url_ += "searchBy=" + encodeURIComponent("" + searchBy) + "&";
+        if (orderBy !== undefined && orderBy !== null)
+            url_ += "orderBy=" + encodeURIComponent("" + orderBy) + "&";
+        if (sortOrder === null)
+            throw new Error("The parameter 'sortOrder' cannot be null.");
+        else if (sortOrder !== undefined)
+            url_ += "sortOrder=" + encodeURIComponent("" + sortOrder) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetDrivers(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetDrivers(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processGetDrivers(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    updateDriver(id: string, command: UpdateDriverCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/Drivers/{Id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{Id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateDriver(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateDriver(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processUpdateDriver(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    deleteDriver(id: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/Drivers/{Id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{Id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteDriver(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteDriver(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processDeleteDriver(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getDriverById(id: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/Drivers/{Id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{Id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetDriverById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetDriverById(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processGetDriverById(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
 export interface ICompaniesClient {
     createCompany(command: CreateCompanyCommand): Observable<void>;
-    getCompanies(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | null | undefined): Observable<void>;
+    getCompanies(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void>;
     updateCompany(id: string, command: UpdateCompanyCommand): Observable<void>;
     deleteCompany(id: string): Observable<void>;
     getCompanyById(id: string): Observable<void>;
@@ -326,7 +603,7 @@ export class CompaniesClient implements ICompaniesClient {
         return _observableOf(null as any);
     }
 
-    getCompanies(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | null | undefined): Observable<void> {
+    getCompanies(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void> {
         let url_ = this.baseUrl + "/api/Companies?";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
@@ -340,7 +617,9 @@ export class CompaniesClient implements ICompaniesClient {
             url_ += "searchBy=" + encodeURIComponent("" + searchBy) + "&";
         if (orderBy !== undefined && orderBy !== null)
             url_ += "orderBy=" + encodeURIComponent("" + orderBy) + "&";
-        if (sortOrder !== undefined && sortOrder !== null)
+        if (sortOrder === null)
+            throw new Error("The parameter 'sortOrder' cannot be null.");
+        else if (sortOrder !== undefined)
             url_ += "SortOrder=" + encodeURIComponent("" + sortOrder) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -703,11 +982,11 @@ export class AuthenticationClient implements IAuthenticationClient {
 }
 
 export class UserInfoDto implements IUserInfoDto {
-    id?: string;
+    id?: string | undefined;
     email?: string | undefined;
     phoneNumber?: string | undefined;
-    firstName?: string;
-    lastName?: string;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
     roles?: string[] | undefined;
 
     constructor(data?: IUserInfoDto) {
@@ -758,16 +1037,16 @@ export class UserInfoDto implements IUserInfoDto {
 }
 
 export interface IUserInfoDto {
-    id?: string;
+    id?: string | undefined;
     email?: string | undefined;
     phoneNumber?: string | undefined;
-    firstName?: string;
-    lastName?: string;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
     roles?: string[] | undefined;
 }
 
 export class PagedResultOfUserModel implements IPagedResultOfUserModel {
-    data?: UserModel[];
+    data?: UserModel[] | undefined;
     pageNumber?: number;
     totalPages?: number;
     totalCount?: number;
@@ -822,7 +1101,7 @@ export class PagedResultOfUserModel implements IPagedResultOfUserModel {
 }
 
 export interface IPagedResultOfUserModel {
-    data?: UserModel[];
+    data?: UserModel[] | undefined;
     pageNumber?: number;
     totalPages?: number;
     totalCount?: number;
@@ -831,11 +1110,11 @@ export interface IPagedResultOfUserModel {
 }
 
 export class UserModel implements IUserModel {
-    id?: string;
+    id?: string | undefined;
     email?: string | undefined;
     phoneNumber?: string | undefined;
-    firstName?: string;
-    lastName?: string;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
     roles?: string[] | undefined;
 
     constructor(data?: IUserModel) {
@@ -886,11 +1165,11 @@ export class UserModel implements IUserModel {
 }
 
 export interface IUserModel {
-    id?: string;
+    id?: string | undefined;
     email?: string | undefined;
     phoneNumber?: string | undefined;
-    firstName?: string;
-    lastName?: string;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
     roles?: string[] | undefined;
 }
 
@@ -935,8 +1214,8 @@ export interface IRoleInfo {
 }
 
 export class UpdateUserInfoCommand implements IUpdateUserInfoCommand {
-    id?: string;
-    phoneNumber?: string;
+    id?: string | undefined;
+    phoneNumber?: string | undefined;
     email?: string | undefined;
     firstName?: string | undefined;
     lastName?: string | undefined;
@@ -990,16 +1269,128 @@ export class UpdateUserInfoCommand implements IUpdateUserInfoCommand {
 }
 
 export interface IUpdateUserInfoCommand {
-    id?: string;
-    phoneNumber?: string;
+    id?: string | undefined;
+    phoneNumber?: string | undefined;
     email?: string | undefined;
     firstName?: string | undefined;
     lastName?: string | undefined;
     roles?: string[] | undefined;
 }
 
+export class CreateDriverCommand implements ICreateDriverCommand {
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    email?: string | undefined;
+    phone?: string | undefined;
+    companyId?: string | undefined;
+    driverLicenseNumber?: string | undefined;
+
+    constructor(data?: ICreateDriverCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.email = _data["email"];
+            this.phone = _data["phone"];
+            this.companyId = _data["companyId"];
+            this.driverLicenseNumber = _data["driverLicenseNumber"];
+        }
+    }
+
+    static fromJS(data: any): CreateDriverCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateDriverCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["email"] = this.email;
+        data["phone"] = this.phone;
+        data["companyId"] = this.companyId;
+        data["driverLicenseNumber"] = this.driverLicenseNumber;
+        return data;
+    }
+}
+
+export interface ICreateDriverCommand {
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    email?: string | undefined;
+    phone?: string | undefined;
+    companyId?: string | undefined;
+    driverLicenseNumber?: string | undefined;
+}
+
+export class UpdateDriverCommand implements IUpdateDriverCommand {
+    id?: string | undefined;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    email?: string | undefined;
+    phone?: string | undefined;
+    driverLicenseNumber?: string | undefined;
+
+    constructor(data?: IUpdateDriverCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.email = _data["email"];
+            this.phone = _data["phone"];
+            this.driverLicenseNumber = _data["driverLicenseNumber"];
+        }
+    }
+
+    static fromJS(data: any): UpdateDriverCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateDriverCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["email"] = this.email;
+        data["phone"] = this.phone;
+        data["driverLicenseNumber"] = this.driverLicenseNumber;
+        return data;
+    }
+}
+
+export interface IUpdateDriverCommand {
+    id?: string | undefined;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    email?: string | undefined;
+    phone?: string | undefined;
+    driverLicenseNumber?: string | undefined;
+}
+
 export class CreateCompanyCommand implements ICreateCompanyCommand {
-    name?: string;
+    name?: string | undefined;
     address?: string | undefined;
     email?: string | undefined;
     phone?: string | undefined;
@@ -1043,7 +1434,7 @@ export class CreateCompanyCommand implements ICreateCompanyCommand {
 }
 
 export interface ICreateCompanyCommand {
-    name?: string;
+    name?: string | undefined;
     address?: string | undefined;
     email?: string | undefined;
     phone?: string | undefined;
@@ -1051,7 +1442,7 @@ export interface ICreateCompanyCommand {
 }
 
 export class UpdateCompanyCommand implements IUpdateCompanyCommand {
-    id?: string;
+    id?: string | undefined;
     name?: string | undefined;
     address?: string | undefined;
     email?: string | undefined;
@@ -1098,7 +1489,7 @@ export class UpdateCompanyCommand implements IUpdateCompanyCommand {
 }
 
 export interface IUpdateCompanyCommand {
-    id?: string;
+    id?: string | undefined;
     name?: string | undefined;
     address?: string | undefined;
     email?: string | undefined;
@@ -1107,12 +1498,12 @@ export interface IUpdateCompanyCommand {
 }
 
 export class RegisterCommand implements IRegisterCommand {
-    phoneNumber?: string;
-    email?: string;
-    password?: string;
-    firstName?: string;
-    lastName?: string;
-    roles?: string[];
+    phoneNumber?: string | undefined;
+    email?: string | undefined;
+    password?: string | undefined;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    roles?: string[] | undefined;
 
     constructor(data?: IRegisterCommand) {
         if (data) {
@@ -1162,12 +1553,12 @@ export class RegisterCommand implements IRegisterCommand {
 }
 
 export interface IRegisterCommand {
-    phoneNumber?: string;
-    email?: string;
-    password?: string;
-    firstName?: string;
-    lastName?: string;
-    roles?: string[];
+    phoneNumber?: string | undefined;
+    email?: string | undefined;
+    password?: string | undefined;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    roles?: string[] | undefined;
 }
 
 export class AuthenticationResponse implements IAuthenticationResponse {
@@ -1215,8 +1606,8 @@ export interface IAuthenticationResponse {
 }
 
 export class LoginCommand implements ILoginCommand {
-    email?: string;
-    password?: string;
+    email?: string | undefined;
+    password?: string | undefined;
 
     constructor(data?: ILoginCommand) {
         if (data) {
@@ -1250,13 +1641,13 @@ export class LoginCommand implements ILoginCommand {
 }
 
 export interface ILoginCommand {
-    email?: string;
-    password?: string;
+    email?: string | undefined;
+    password?: string | undefined;
 }
 
 export class Result implements IResult {
     succeeded?: boolean;
-    errors?: string[];
+    errors?: string[] | undefined;
 
     constructor(data?: IResult) {
         if (data) {
@@ -1299,7 +1690,7 @@ export class Result implements IResult {
 
 export interface IResult {
     succeeded?: boolean;
-    errors?: string[];
+    errors?: string[] | undefined;
 }
 
 export class LogoutCommand implements ILogoutCommand {

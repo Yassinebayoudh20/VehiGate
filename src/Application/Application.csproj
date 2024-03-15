@@ -4,6 +4,7 @@
     <RootNamespace>VehiGate.Application</RootNamespace>
     <AssemblyName>VehiGate.Application</AssemblyName>
     <LangVersion>preview</LangVersion>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

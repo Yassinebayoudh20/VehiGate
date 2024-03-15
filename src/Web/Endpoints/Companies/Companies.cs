@@ -61,7 +61,7 @@ public class Companies : EndpointGroupBase
                                                [FromQuery] int pageSize = 10,
                                                [FromQuery] string? searchBy = null,
                                                [FromQuery] string? orderBy = null,
-                                               [FromQuery] int? SortOrder = null)
+                                               [FromQuery] int SortOrder = 1)
     {
         GetCompaniesQuery query = new GetCompaniesQuery
         {

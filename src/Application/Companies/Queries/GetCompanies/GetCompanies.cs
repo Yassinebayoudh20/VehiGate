@@ -7,6 +7,7 @@ using VehiGate.Application.Common.Interfaces;
 using VehiGate.Application.Common.Models;
 using VehiGate.Application.Common.Security;
 using VehiGate.Application.Companies.Commands.CreateCompany;
+using VehiGate.Domain.Entities;
 using VehiGate.Web.Infrastructure;
 
 namespace VehiGate.Application.Companies.Queries.GetCompanies
@@ -14,9 +15,9 @@ namespace VehiGate.Application.Companies.Queries.GetCompanies
     [Authorize]
     public record GetCompaniesQuery : IRequest<PagedResult<CompanyDto>>
     {
-        public string? SearchBy { get; init; }
-        public string? OrderBy { get; init; }
-        public int? SortOrder { get; init; } = 1;
+        public string SearchBy { get; init; }
+        public string OrderBy { get; init; }
+        public int SortOrder { get; init; } = 1;
         public int PageNumber { get; init; } = 1;
         public int PageSize { get; init; } = 10;
     }
@@ -57,7 +58,7 @@ namespace VehiGate.Application.Companies.Queries.GetCompanies
             {
                 var sortOrder = request.SortOrder < 0 ? false : true;
 
-                query = query.OrderByProperty(request.OrderBy, ascending: sortOrder);
+                query = (IQueryable<Company>) query.OrderByProperty(request.OrderBy, ascending: sortOrder);
             }
 
             var totalCount = await query.CountAsync(cancellationToken);

@@ -21,7 +21,7 @@ public class Authentication : EndpointGroupBase
     {
         var result = await sender.Send(command);
 
-        if (result.Succeeded)
+        if (result.Item1.Succeeded)
         {
             return Results.Ok(result);
         }

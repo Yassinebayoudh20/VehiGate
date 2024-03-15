@@ -31,7 +31,7 @@ public class Users : EndpointGroupBase
                                                [FromQuery] int pageSize = 10,
                                                [FromQuery] string? searchBy = null,
                                                [FromQuery] string? orderBy = null,
-                                               [FromQuery] int? SortOrder = null,
+                                               [FromQuery] int SortOrder = 1,
                                                [FromQuery] string? inRoles = null)
     {
         string[] rolesArray = inRoles?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries) ?? new string[0];
@@ -60,7 +60,7 @@ public class Users : EndpointGroupBase
 
         var result = await sender.Send(command);
 
-        if (result.Succeeded)
+        if (result.Item1.Succeeded)
         {
             return Results.Ok(result);
         }

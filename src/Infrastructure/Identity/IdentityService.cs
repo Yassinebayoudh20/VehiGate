@@ -108,7 +108,7 @@ public class IdentityService : IIdentityService
         return result.ToApplicationResult();
     }
 
-    public async Task<Result> RegisterUserAsync(RegisterDto model)
+    public async Task<(Result Result, string? UserId)> RegisterUserAsync(RegisterDto model)
     {
         ApplicationUser user = new ApplicationUser
         {
@@ -123,7 +123,7 @@ public class IdentityService : IIdentityService
 
         if (!result.Succeeded)
         {
-            return Result.Failure(result.Errors.Select(e => e.Description));
+            return (Result.Failure(result.Errors.Select(e => e.Description)), null);
         }
 
         if (model.Roles is null)
@@ -142,7 +142,7 @@ public class IdentityService : IIdentityService
             }
         }
 
-        return result.ToApplicationResult();
+        return (result.ToApplicationResult(), user.Id);
     }
 
     public async Task<AuthenticationResponse> AuthenticateAsync(LoginDto model)
@@ -211,7 +211,7 @@ public class IdentityService : IIdentityService
         }
     }
 
-    public async Task<List<UserModel>> GetUsersList(string? SearchBy, string? OrderBy, int? SortOrder, List<string>? InRoles)
+    public async Task<List<UserModel>> GetUsersList(string SearchBy, string OrderBy, int SortOrder, List<string> InRoles)
     {
         var usersQuery = _userManager.Users.AsQueryable();
 
@@ -231,7 +231,7 @@ public class IdentityService : IIdentityService
         {
             var sortOrder = SortOrder < 0 ? false : true;
 
-            usersQuery = usersQuery.OrderByProperty(OrderBy, ascending: sortOrder);
+            usersQuery = (IQueryable<ApplicationUser>) usersQuery.OrderByProperty(OrderBy, ascending: sortOrder);
         }
 
         List<UserModel> users = new List<UserModel>();
@@ -295,7 +295,7 @@ public class IdentityService : IIdentityService
         return userModel;
     }
 
-    public async Task<Result> UpdateUserAsync(string userId, UpdateUserDto model)
+    public async Task<(Result Result, string UserId)> UpdateUserAsync(string userId, UpdateUserDto model)
     {
         var user = await _userManager.FindByIdAsync(userId);
 
@@ -337,8 +337,6 @@ public class IdentityService : IIdentityService
 
         var result = await _userManager.UpdateAsync(user);
 
-        return result.ToApplicationResult();
+        return (result.ToApplicationResult(),userId);
     }
-
-
 }

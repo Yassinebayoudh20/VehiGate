@@ -8,10 +8,10 @@ namespace VehiGate.Application.Companies.Commands.CreateCompany;
 public record CreateCompanyCommand : IRequest<string>
 {
     public required string Name { get; init; }
-    public string? Address { get; init; }
-    public string? Email { get; init; }
-    public string? Phone { get; init; }
-    public string? Contact { get; init; }
+    public string Address { get; init; }
+    public string Email { get; init; }
+    public string Phone { get; init; }
+    public string Contact { get; init; }
 }
 
 public class CreateCompanyCommandValidator : AbstractValidator<CreateCompanyCommand>

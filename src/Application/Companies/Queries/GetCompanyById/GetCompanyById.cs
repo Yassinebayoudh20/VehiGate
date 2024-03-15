@@ -4,11 +4,13 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using VehiGate.Application.Common.Interfaces;
+using VehiGate.Application.Common.Security;
 using VehiGate.Application.Companies.Commands.CreateCompany;
 using VehiGate.Domain.Entities;
 
 namespace VehiGate.Application.Companies.Queries.GetCompanyById
 {
+    [Authorize]
     public record GetCompanyByIdQuery : IRequest<CompanyDto>
     {
         public required string Id { get; init; }

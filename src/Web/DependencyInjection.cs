@@ -7,6 +7,7 @@ using VehiGate.Application.Common.Interfaces;
 using VehiGate.Infrastructure.Data;
 using VehiGate.Web.Services;
 using VehiGate.Domain.ConfigurationOptions;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -14,7 +15,6 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddWebServices(this IServiceCollection services, IConfiguration configuration)
     {
-
         services.Configure<JwtSettingsOptions>(configuration.GetSection("JwtSettings"));
 
         services.AddDatabaseDeveloperPageExceptionFilter();
@@ -35,7 +35,6 @@ public static class DependencyInjection
             options.SuppressModelStateInvalidFilter = false);
 
         services.AddEndpointsApiExplorer();
-
 
         services.AddOpenApiDocument(configure =>
         {

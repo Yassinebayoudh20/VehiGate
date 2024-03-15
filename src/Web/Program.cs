@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http.Json;
 using VehiGate.Infrastructure.Data;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,7 @@ builder.Services.AddKeyVaultIfConfigured(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebServices(builder.Configuration);
+
 
 WebApplication app = builder.Build();
 
@@ -53,4 +56,5 @@ app.MapEndpoints();
 app.Run();
 
 public partial class Program
-{ }
+{
+}

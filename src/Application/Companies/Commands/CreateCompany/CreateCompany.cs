@@ -16,30 +16,52 @@ public record CreateCompanyCommand : IRequest<string>
 
 public class CreateCompanyCommandValidator : AbstractValidator<CreateCompanyCommand>
 {
-    public CreateCompanyCommandValidator()
+    private readonly IApplicationDbContext _context;
+
+    public CreateCompanyCommandValidator(IApplicationDbContext context)
     {
-        RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
-        RuleFor(x => x.Address).NotEmpty().MaximumLength(200);
-        RuleFor(x => x.Email).NotEmpty().EmailAddress();
-        RuleFor(x => x.Phone).NotEmpty();
-        RuleFor(x => x.Contact).NotEmpty().MaximumLength(50);
+        _context = context;
+
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("Name is required.")
+            .MaximumLength(100).WithMessage("Name must not exceed 100 characters.")
+            .MustAsync(BeUniqueName).WithMessage("Name must be unique.");
+
+        RuleFor(x => x.Email)
+            .NotEmpty().WithMessage("Email is required.")
+            .EmailAddress().WithMessage("Invalid email format.")
+            .MustAsync(BeUniqueEmail).WithMessage("Email must be unique.");
+
+        RuleFor(x => x.Address).NotEmpty().WithMessage("Address is required.").MaximumLength(200);
+        RuleFor(x => x.Phone).NotEmpty().WithMessage("Phone is required.");
+        RuleFor(x => x.Contact).NotEmpty().WithMessage("Contact is required.").MaximumLength(50);
+    }
+
+    private async Task<bool> BeUniqueName(string name, CancellationToken cancellationToken)
+    {
+        var existingCompany = await _context.Companies.FirstOrDefaultAsync(c => c.Name == name);
+        return existingCompany == null;
+    }
+
+    private async Task<bool> BeUniqueEmail(string email, CancellationToken cancellationToken)
+    {
+        var existingCompany = await _context.Companies.FirstOrDefaultAsync(c => c.Email == email);
+        return existingCompany == null;
     }
 }
 
 public class CreateCompanyCommandHandler : IRequestHandler<CreateCompanyCommand, string>
 {
     private readonly IApplicationDbContext _context;
-    private readonly IMapper _mapper;
 
-    public CreateCompanyCommandHandler(IApplicationDbContext context, IMapper mapper)
+    public CreateCompanyCommandHandler(IApplicationDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<string> Handle(CreateCompanyCommand request, CancellationToken cancellationToken)
     {
-        var companyDto = new CompanyDto
+        var company = new Company
         {
             Name = request.Name,
             Address = request.Address,
@@ -48,12 +70,10 @@ public class CreateCompanyCommandHandler : IRequestHandler<CreateCompanyCommand,
             Contact = request.Contact
         };
 
-        var company = _mapper.Map<Company>(companyDto);
-
         _context.Companies.Add(company);
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return company.Id;
+        return company.Id!;
     }
 }

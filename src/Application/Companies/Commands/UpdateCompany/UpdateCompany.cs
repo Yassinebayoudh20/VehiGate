@@ -23,16 +23,43 @@ namespace VehiGate.Application.Companies.Commands.UpdateCompany
 
     public class UpdateCompanyCommandValidator : AbstractValidator<UpdateCompanyCommand>
     {
-        public UpdateCompanyCommandValidator()
+        private readonly IApplicationDbContext _context;
+
+        public UpdateCompanyCommandValidator(IApplicationDbContext dbContext)
         {
-            RuleFor(x => x.Id).NotEmpty();
-            RuleFor(x => x.Name).MaximumLength(100);
-            RuleFor(x => x.Address).MaximumLength(200);
-            RuleFor(x => x.Email).EmailAddress();
-            RuleFor(x => x.Phone);
-            RuleFor(x => x.Contact).MaximumLength(50);
+            _context = dbContext;
+
+            RuleFor(x => x.Id)
+                .NotEmpty().WithMessage("Id is required.");
+
+            RuleFor(x => x.Name)
+                .NotEmpty().WithMessage("Name is required.")
+                .MaximumLength(100).WithMessage("Name must not exceed 100 characters.")
+                .MustAsync(BeUniqueName).WithMessage("Name must be unique.");
+
+            RuleFor(x => x.Email)
+                .NotEmpty().WithMessage("Email is required.")
+                .EmailAddress().WithMessage("Invalid email format.")
+                .MustAsync(BeUniqueEmail).WithMessage("Email must be unique.");
+
+            RuleFor(x => x.Address).NotEmpty().WithMessage("Address is required.").MaximumLength(200);
+            RuleFor(x => x.Phone).NotEmpty().WithMessage("Phone is required.");
+            RuleFor(x => x.Contact).NotEmpty().WithMessage("Contact is required.").MaximumLength(50);
+        }
+
+        private async Task<bool> BeUniqueName(UpdateCompanyCommand command, string name, CancellationToken cancellationToken)
+        {
+            var existingCompany = await _context.Companies.FirstOrDefaultAsync(c => c.Name == name && c.Id != command.Id);
+            return existingCompany == null;
+        }
+
+        private async Task<bool> BeUniqueEmail(UpdateCompanyCommand command, string email, CancellationToken cancellationToken)
+        {
+            var existingCompany = await _context.Companies.FirstOrDefaultAsync(c => c.Email == email && c.Id != command.Id);
+            return existingCompany == null;
         }
     }
+
 
     public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand, CompanyDto>
     {

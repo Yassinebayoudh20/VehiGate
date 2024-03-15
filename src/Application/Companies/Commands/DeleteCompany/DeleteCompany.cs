@@ -44,7 +44,7 @@ namespace VehiGate.Application.Companies.Commands.DeleteCompany
             _context.Companies.Remove(company);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return company.Id;
+            return company.Id!;
         }
     }
 }

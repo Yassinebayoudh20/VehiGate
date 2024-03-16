@@ -16,5 +16,7 @@ public interface IApplicationDbContext
 
     DbSet<Customer> Customers { get; }
 
+    DbSet<VehicleInspection> VehicleInspections { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

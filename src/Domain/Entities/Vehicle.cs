@@ -24,4 +24,7 @@ public class Vehicle : BaseAuditableEntity
     public DateOnly InsuranceFrom { get; set; }
 
     public DateOnly InsuranceTo { get; set; }
+
+    public virtual ICollection<VehicleInspection> VehicleInspections { get; set; } = new List<VehicleInspection>();
+
 }

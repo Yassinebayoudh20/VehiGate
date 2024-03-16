@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace VehiGate.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddCustomerAndSitesTables : Migration
+    public partial class AddVehicleInspectionTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -291,6 +291,42 @@ namespace VehiGate.Infrastructure.Data.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "VehicleInspections",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DriverId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    VehicleId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    HasDocuments = table.Column<bool>(type: "bit", nullable: false),
+                    IsDamaged = table.Column<bool>(type: "bit", nullable: false),
+                    Msdn = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Created = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModified = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InspectorId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AuthorizedFrom = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AuthorizedTo = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VehicleInspections", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_VehicleInspections_Drivers_DriverId",
+                        column: x => x.DriverId,
+                        principalTable: "Drivers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_VehicleInspections_Vehicles_VehicleId",
+                        column: x => x.VehicleId,
+                        principalTable: "Vehicles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -336,6 +372,16 @@ namespace VehiGate.Infrastructure.Data.Migrations
                 column: "CompanyId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_VehicleInspections_DriverId",
+                table: "VehicleInspections",
+                column: "DriverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VehicleInspections_VehicleId",
+                table: "VehicleInspections",
+                column: "VehicleId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Vehicles_CompanyId",
                 table: "Vehicles",
                 column: "CompanyId");
@@ -368,19 +414,22 @@ namespace VehiGate.Infrastructure.Data.Migrations
                 name: "Customers");
 
             migrationBuilder.DropTable(
-                name: "Drivers");
-
-            migrationBuilder.DropTable(
                 name: "Sites");
 
             migrationBuilder.DropTable(
-                name: "Vehicles");
+                name: "VehicleInspections");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Drivers");
+
+            migrationBuilder.DropTable(
+                name: "Vehicles");
 
             migrationBuilder.DropTable(
                 name: "Companies");

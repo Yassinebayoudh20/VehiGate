@@ -104,6 +104,8 @@ public class ApplicationDbContextInitialiser
         await SeedCustomersAsync();
 
         await SeedSitesAsync();
+
+        await SeedVehicleInspectionsAsync();
     }
 
     private async Task SeedCompaniesAsync()
@@ -259,6 +261,70 @@ public class ApplicationDbContextInitialiser
 
             await _context.Sites.AddRangeAsync(sites);
             await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task SeedVehicleInspectionsAsync()
+    {
+        if (!_context.VehicleInspections.Any())
+        {
+            var driver = await _context.Drivers.FirstOrDefaultAsync();
+            var vehicle = await _context.Vehicles.FirstOrDefaultAsync();
+
+            if (driver != null && vehicle != null)
+            {
+                var inspections = new[]
+                {
+                new VehicleInspection
+                {
+                    DriverId = driver.Id,
+                    VehicleId = vehicle.Id,
+                    HasDocuments = true,
+                    IsDamaged = false,
+                    Msdn = "Sample MSDN 1",
+                    AuthorizedFrom = DateTime.Now,
+                    AuthorizedTo = DateTime.Now.AddDays(7),
+                    Notes = "Sample notes 1"
+                },
+                new VehicleInspection
+                {
+                    DriverId = driver.Id,
+                    VehicleId = vehicle.Id,
+                    HasDocuments = false,
+                    IsDamaged = true,
+                    Msdn = "Sample MSDN 2",
+                    AuthorizedFrom = DateTime.Now.AddDays(1),
+                    AuthorizedTo = DateTime.Now.AddDays(8),
+                    Notes = "Sample notes 2"
+                },
+
+                new VehicleInspection
+                {
+                    DriverId = driver.Id,
+                    VehicleId = vehicle.Id,
+                    HasDocuments = true,
+                    IsDamaged = false,
+                    Msdn = "Sample MSDN 1",
+                    AuthorizedFrom = DateTime.Now.AddDays(2),
+                    AuthorizedTo = DateTime.Now.AddDays(7),
+                    Notes = "Sample notes 1"
+                },
+                new VehicleInspection
+                {
+                    DriverId = driver.Id,
+                    VehicleId = vehicle.Id,
+                    HasDocuments = false,
+                    IsDamaged = true,
+                    Msdn = "Sample MSDN 2",
+                    AuthorizedFrom = DateTime.Now.AddDays(1),
+                    AuthorizedTo = DateTime.Now.AddDays(3),
+                    Notes = "Sample notes 2"
+                }
+            };
+
+                await _context.VehicleInspections.AddRangeAsync(inspections);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

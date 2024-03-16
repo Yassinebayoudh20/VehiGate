@@ -12,8 +12,8 @@ using VehiGate.Infrastructure.Data;
 namespace VehiGate.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240315222238_AddCustomerAndSitesTables")]
-    partial class AddCustomerAndSitesTables
+    [Migration("20240316125723_AddVehicleInspectionTable")]
+    partial class AddVehicleInspectionTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -349,6 +349,59 @@ namespace VehiGate.Infrastructure.Data.Migrations
                     b.ToTable("Vehicles");
                 });
 
+            modelBuilder.Entity("VehiGate.Domain.Entities.VehicleInspection", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("AuthorizedFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("AuthorizedTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DriverId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("HasDocuments")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("InspectorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDamaged")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Msdn")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VehicleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DriverId");
+
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("VehicleInspections");
+                });
+
             modelBuilder.Entity("VehiGate.Domain.Entities.VehicleType", b =>
                 {
                     b.Property<string>("Id")
@@ -525,11 +578,38 @@ namespace VehiGate.Infrastructure.Data.Migrations
                     b.Navigation("VehicleType");
                 });
 
+            modelBuilder.Entity("VehiGate.Domain.Entities.VehicleInspection", b =>
+                {
+                    b.HasOne("VehiGate.Domain.Entities.Driver", "Driver")
+                        .WithMany("VehicleInspections")
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("VehiGate.Domain.Entities.Vehicle", "Vehicle")
+                        .WithMany("VehicleInspections")
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Driver");
+
+                    b.Navigation("Vehicle");
+                });
+
             modelBuilder.Entity("VehiGate.Domain.Entities.Company", b =>
                 {
                     b.Navigation("Drivers");
 
                     b.Navigation("Vehicles");
+                });
+
+            modelBuilder.Entity("VehiGate.Domain.Entities.Driver", b =>
+                {
+                    b.Navigation("VehicleInspections");
+                });
+
+            modelBuilder.Entity("VehiGate.Domain.Entities.Vehicle", b =>
+                {
+                    b.Navigation("VehicleInspections");
                 });
 
             modelBuilder.Entity("VehiGate.Domain.Entities.VehicleType", b =>

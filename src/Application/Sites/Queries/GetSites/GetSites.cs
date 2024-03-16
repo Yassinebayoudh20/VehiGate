@@ -6,12 +6,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using VehiGate.Application.Common.Interfaces;
 using VehiGate.Application.Common.Models;
+using VehiGate.Application.Common.Security;
 using VehiGate.Application.Sites.Queries.GetSite;
 using VehiGate.Domain.Entities;
 using VehiGate.Web.Infrastructure;
 
 namespace VehiGate.Application.Sites.Queries.GetSites
 {
+    [Authorize]
     public record GetSitesQuery : IRequest<PagedResult<SiteDto>>
     {
         public int PageNumber { get; init; } = 1;

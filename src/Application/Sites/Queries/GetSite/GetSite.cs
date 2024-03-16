@@ -6,10 +6,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using VehiGate.Application.Common.Interfaces;
 using VehiGate.Application.Common.Models;
+using VehiGate.Application.Common.Security;
 using VehiGate.Domain.Entities;
 
 namespace VehiGate.Application.Sites.Queries.GetSite
 {
+    [Authorize]
     public record GetSiteQuery : IRequest<SiteDto>
     {
         public string Id { get; init; }

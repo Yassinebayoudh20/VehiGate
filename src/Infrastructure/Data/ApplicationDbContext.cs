@@ -23,6 +23,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
     public DbSet<Customer> Customers => Set<Customer>();
 
+    public DbSet<VehicleInspection> VehicleInspections => Set<VehicleInspection>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

@@ -1,8 +1,10 @@
 ﻿using VehiGate.Application.Common.Interfaces;
+using VehiGate.Application.Common.Security;
 using VehiGate.Domain.Entities;
 
 namespace VehiGate.Application.Sites.Commands.DeleteSite
 {
+    [Authorize]
     public record DeleteSiteCommand : IRequest<Unit>
     {
         public string Id { get; init; }

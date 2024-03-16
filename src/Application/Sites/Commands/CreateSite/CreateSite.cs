@@ -4,11 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
 using VehiGate.Application.Common.Interfaces;
+using VehiGate.Application.Common.Security;
 using VehiGate.Application.Sites.Commands.CreateSite;
 using VehiGate.Domain.Entities;
 
 namespace VehiGate.Application.Sites.Commands.CreateSite
 {
+    [Authorize]
     public record CreateSiteCommand : IRequest<string>
     {
         public string Address { get; init; }

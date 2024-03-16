@@ -3,10 +3,12 @@ using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 using VehiGate.Application.Common.Interfaces;
+using VehiGate.Application.Common.Security;
 using VehiGate.Domain.Entities;
 
 namespace VehiGate.Application.Sites.Commands.UpdateSite
 {
+    [Authorize]
     public record UpdateSiteCommand : IRequest<Unit>
     {
         public string Id { get; init; }

@@ -213,25 +213,31 @@ public class IdentityService : IIdentityService
 
     public async Task<List<UserModel>> GetUsersList(string SearchBy, string OrderBy, int SortOrder, List<string> InRoles)
     {
-        var usersQuery = _userManager.Users.AsQueryable();
+        var usersQuery = _userManager.Users.ToList();
 
         if (!string.IsNullOrEmpty(SearchBy))
         {
-            usersQuery = usersQuery.Where(u => u.UserName != null && u.UserName.Contains(SearchBy));
+            usersQuery = usersQuery.Where(u =>
+                    (u.FirstName != null && u.FirstName.Contains(SearchBy)) ||
+                    (u.LastName != null && u.LastName.Contains(SearchBy)) ||
+                    (u.Email != null && u.Email.Contains(SearchBy)) ||
+                    (u.PhoneNumber != null && u.PhoneNumber.Contains(SearchBy)) ||
+                    (u.UserName != null && u.UserName.Contains(SearchBy))
+                ).ToList();
         }
 
         if (InRoles != null && InRoles!.Any())
         {
             var roleNames = InRoles?.Where(roleName => _roleManager.Roles.Any(r => r.Name == roleName)).ToList();
             var userIds = await GetUsersInRolesAsync(roleNames);
-            usersQuery = usersQuery.Where(u => userIds.Contains(u.Id));
+            usersQuery = usersQuery.Where(u => userIds.Contains(u.Id)).ToList();
         }
 
         if (!string.IsNullOrEmpty(OrderBy))
         {
             var sortOrder = SortOrder < 0 ? false : true;
 
-            usersQuery = (IQueryable<ApplicationUser>) usersQuery.OrderByProperty(OrderBy, ascending: sortOrder);
+            usersQuery =  usersQuery.OrderByProperty(OrderBy, ascending: sortOrder).ToList();
         }
 
         List<UserModel> users = new List<UserModel>();

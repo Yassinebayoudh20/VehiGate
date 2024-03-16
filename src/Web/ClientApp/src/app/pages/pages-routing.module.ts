@@ -27,10 +27,10 @@ const routes: Routes = [
       //   path: 'genres',
       //   loadChildren: () => import('./genres-management/genres-management.module').then((m) => m.GenresManagementModule),
       // },
-      // {
-      //   path: 'customers',
-      //   loadChildren: () => import('./customers-management/customers-management.module').then((m) => m.CustomersManagementModule),
-      // },
+      {
+        path: 'customers',
+        loadChildren: () => import('./customers-management/customers-management.module').then((m) => m.CustomersManagementModule),
+      },
       // {
       //   path: 'drivers-inspection',
       //   loadChildren: () => import('./drivers-inspection-management/drivers-inspection-management.module').then((m) => m.DriversInspectionManagementModule),

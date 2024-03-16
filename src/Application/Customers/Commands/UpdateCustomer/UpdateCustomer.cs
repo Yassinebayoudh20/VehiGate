@@ -1,9 +1,4 @@
-﻿using FluentValidation;
-using MediatR;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using VehiGate.Application.Common.Interfaces;
+﻿using VehiGate.Application.Common.Interfaces;
 using VehiGate.Domain.Entities;
 
 namespace VehiGate.Application.Customers.Commands.UpdateCustomer
@@ -20,14 +15,28 @@ namespace VehiGate.Application.Customers.Commands.UpdateCustomer
 
     public class UpdateCustomerCommandValidator : AbstractValidator<UpdateCustomerCommand>
     {
-        public UpdateCustomerCommandValidator()
+        private readonly IApplicationDbContext _context;
+
+        public UpdateCustomerCommandValidator(IApplicationDbContext context)
         {
+            _context = context;
+
             RuleFor(x => x.Id).NotEmpty();
-            RuleFor(x => x.Name).NotEmpty();
+
+            RuleFor(x => x.Email)
+                .EmailAddress().WithMessage("Invalid email address.")
+                .MustAsync((command, email, cancellationToken) => BeUniqueEmail(command.Id, email, cancellationToken))
+                .WithMessage("Email must be unique.");
+        }
+
+        private async Task<bool> BeUniqueEmail(string id, string email, CancellationToken cancellationToken)
+        {
+            var existingSite = await _context.Customers.FirstOrDefaultAsync(s => s.Id != id && s.Email == email, cancellationToken);
+            return existingSite == null;
         }
     }
 
-    public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerCommand,Unit>
+    public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerCommand, Unit>
     {
         private readonly IApplicationDbContext _context;
 
@@ -45,12 +54,30 @@ namespace VehiGate.Application.Customers.Commands.UpdateCustomer
                 throw new NotFoundException(nameof(Customer), request.Id);
             }
 
-            // Update customer properties
-            customer.Name = request.Name;
-            customer.Distance = request.Distance;
-            customer.Contact = request.Contact;
-            customer.Phone = request.Phone;
-            customer.Email = request.Email;
+            if (request.Name != null)
+            {
+                customer.Name = request.Name;
+            }
+
+            if (request.Distance != null)
+            {
+                customer.Distance = request.Distance;
+            }
+
+            if (request.Contact != null)
+            {
+                customer.Contact = request.Contact;
+            }
+
+            if (request.Phone != null)
+            {
+                customer.Phone = request.Phone;
+            }
+
+            if (request.Email != null)
+            {
+                customer.Email = request.Email;
+            }
 
             await _context.SaveChangesAsync(cancellationToken);
 

@@ -41,15 +41,15 @@ export class UserFormComponent implements OnInit {
       this.form = this.formBuilder.group({
         firstName: [null, [Validators.required, Validators.minLength(2), noWhiteSpaceValidator()]],
         lastName: [null, [Validators.required, Validators.minLength(2), noWhiteSpaceValidator()]],
-        email: [null, [Validators.required, Validators.email, noWhiteSpaceValidator()]],
         password: [null, [Validators.required, Validators.minLength(6), noWhiteSpaceValidator()]],
         role: [null, [Validators.required]],
-        phoneNumber: [null, [Validators.required, noWhiteSpaceValidator()]],
+
       });
       if (this.isEditing) {
         this.fetchUserDetails(userId);
       }
     });
+    console.log(this.form)
   }
 
   resolvePageTitle() {
@@ -85,9 +85,11 @@ export class UserFormComponent implements OnInit {
         this.form.patchValue({
           firstName: userData.firstName,
           lastName: userData.lastName,
-          email: userData.email,
           role: userData.roles[0],
-          phoneNumber: userData.phoneNumber,
+          contactInfo: {
+            email: userData.email,
+            phoneNumber: userData.phoneNumber
+          }
         });
         this.form.get('password').disable();
       },
@@ -98,10 +100,10 @@ export class UserFormComponent implements OnInit {
     const registerCmd = new RegisterCommand();
     registerCmd.firstName = this.form.get('firstName').value;
     registerCmd.lastName = this.form.get('lastName').value;
-    registerCmd.email = this.form.get('email').value;
+    registerCmd.email = this.form.get('contactInfo').get('email').value;
     registerCmd.password = this.form.get('password').value;
     registerCmd.roles = [this.form.get('role').value];
-    registerCmd.phoneNumber = this.form.get('phoneNumber').value;
+    registerCmd.phoneNumber = this.form.get('contactInfo').get('phoneNumber').value;
     return registerCmd;
   }
   private createUpdateUserCommand(): UpdateUserInfoCommand {
@@ -114,14 +116,14 @@ export class UserFormComponent implements OnInit {
     if (this.form.get('lastName').dirty) {
       updateCmd.lastName = this.form.get('lastName').value;
     }
-    if (this.form.get('email').dirty) {
-      updateCmd.email = this.form.get('email').value;
+    if (this.form.get('contactInfo').get('email').dirty) {
+      updateCmd.email = this.form.get('contactInfo').get('email').value;
     }
     if (this.form.get('role').dirty) {
       updateCmd.roles = [this.form.get('role').value];
     }
-    if (this.form.get('phoneNumber').dirty) {
-      updateCmd.phoneNumber = this.form.get('phoneNumber').value;
+    if (this.form.get('contactInfo').get('phoneNumber').dirty) {
+      updateCmd.phoneNumber = this.form.get('contactInfo').get('phoneNumber').value;
     }
 
     return updateCmd;

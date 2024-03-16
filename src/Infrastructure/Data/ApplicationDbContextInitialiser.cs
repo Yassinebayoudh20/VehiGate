@@ -1,12 +1,11 @@
-﻿using System.Runtime.InteropServices;
-using VehiGate.Domain.Constants;
-using VehiGate.Infrastructure.Identity;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VehiGate.Domain.Constants;
 using VehiGate.Domain.Entities;
+using VehiGate.Infrastructure.Identity;
 
 namespace VehiGate.Infrastructure.Data;
 
@@ -14,9 +13,9 @@ public static class InitialiserExtensions
 {
     public static async Task InitialiseDatabaseAsync(this WebApplication app)
     {
-        using var scope = app.Services.CreateScope();
+        using IServiceScope scope = app.Services.CreateScope();
 
-        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+        ApplicationDbContextInitialiser initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
 
         await initialiser.InitialiseAsync();
 
@@ -68,10 +67,10 @@ public class ApplicationDbContextInitialiser
     public async Task TrySeedAsync()
     {
         // Default roles
-        var superAdminRole = new IdentityRole(Roles.SuperAdmin);
-        var administratorRole = new IdentityRole(Roles.Administrator);
-        var driver = new IdentityRole(Roles.Driver);
-        var user = new IdentityRole(Roles.User);
+        IdentityRole superAdminRole = new IdentityRole(Roles.SuperAdmin);
+        IdentityRole administratorRole = new IdentityRole(Roles.Administrator);
+        IdentityRole driver = new IdentityRole(Roles.Driver);
+        IdentityRole user = new IdentityRole(Roles.User);
 
         if (!_roleManager.Roles.Any())
         {
@@ -82,7 +81,7 @@ public class ApplicationDbContextInitialiser
         }
 
         // Default users
-        var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", FirstName = "Admin", LastName = "Support" };
+        ApplicationUser administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost", FirstName = "Admin", LastName = "Support" };
 
         if (_userManager.Users.All(u => u.UserName != administrator.UserName))
         {
@@ -106,13 +105,15 @@ public class ApplicationDbContextInitialiser
         await SeedSitesAsync();
 
         await SeedVehicleInspectionsAsync();
+
+        await SeedDriverInspectionsAsync();
     }
 
     private async Task SeedCompaniesAsync()
     {
         if (!_context.Companies.Any())
         {
-            var company = new Company
+            Company company = new Company
             {
                 Name = "Sample Company",
                 Address = "Sample Address",
@@ -130,19 +131,19 @@ public class ApplicationDbContextInitialiser
     {
         if (!_context.Drivers.Any())
         {
-            var user = new ApplicationUser { UserName = "driver@example.com", Email = "driver@example.com", FirstName = "John", LastName = "Doe" };
-            var driverRole = await _roleManager.FindByNameAsync(Roles.Driver);
+            ApplicationUser user = new ApplicationUser { UserName = "driver@example.com", Email = "driver@example.com", FirstName = "John", LastName = "Doe" };
+            IdentityRole? driverRole = await _roleManager.FindByNameAsync(Roles.Driver);
 
             if (driverRole != null && _userManager.Users.All(u => u.UserName != user.UserName))
             {
                 await _userManager.CreateAsync(user, "DriverPassword1!");
                 await _userManager.AddToRoleAsync(user, driverRole.Name!);
 
-                var company = _context.Companies.FirstOrDefault();
+                Company? company = _context.Companies.FirstOrDefault();
 
                 if (company != null)
                 {
-                    var driver = new Driver
+                    Driver driver = new Driver
                     {
                         UserId = user.Id,
                         CompanyId = company.Id,
@@ -161,7 +162,7 @@ public class ApplicationDbContextInitialiser
         if (!_context.VehicleTypes.Any())
         {
             // Add default vehicle types
-            var vehicleTypes = new[]
+            VehicleType[] vehicleTypes = new[]
             {
                     new VehicleType { Name = "Car" },
                     new VehicleType { Name = "Truck" },
@@ -176,16 +177,16 @@ public class ApplicationDbContextInitialiser
     {
         if (!_context.Vehicles.Any())
         {
-            var vehicleType = await _context.VehicleTypes.FirstOrDefaultAsync();
+            VehicleType? vehicleType = await _context.VehicleTypes.FirstOrDefaultAsync();
 
             if (vehicleType != null)
             {
-                var company = await _context.Companies.FirstOrDefaultAsync();
+                Company? company = await _context.Companies.FirstOrDefaultAsync();
 
                 if (company != null)
                 {
                     // Add default vehicles
-                    var vehicles = new[]
+                    Vehicle[] vehicles = new[]
                     {
                             new Vehicle
                             {
@@ -210,7 +211,7 @@ public class ApplicationDbContextInitialiser
     {
         if (!_context.Customers.Any())
         {
-            var customers = new[]
+            Customer[] customers = new[]
             {
                     new Customer
                     {
@@ -240,7 +241,7 @@ public class ApplicationDbContextInitialiser
     {
         if (!_context.Sites.Any())
         {
-            var sites = new[]
+            Site[] sites = new[]
             {
                     new Site
                     {
@@ -268,12 +269,12 @@ public class ApplicationDbContextInitialiser
     {
         if (!_context.VehicleInspections.Any())
         {
-            var driver = await _context.Drivers.FirstOrDefaultAsync();
-            var vehicle = await _context.Vehicles.FirstOrDefaultAsync();
+            Driver? driver = await _context.Drivers.FirstOrDefaultAsync();
+            Vehicle? vehicle = await _context.Vehicles.FirstOrDefaultAsync();
 
             if (driver != null && vehicle != null)
             {
-                var inspections = new[]
+                VehicleInspection[] inspections = new[]
                 {
                 new VehicleInspection
                 {
@@ -323,6 +324,76 @@ public class ApplicationDbContextInitialiser
             };
 
                 await _context.VehicleInspections.AddRangeAsync(inspections);
+                await _context.SaveChangesAsync();
+            }
+        }
+    }
+
+    public async Task SeedDriverInspectionsAsync()
+    {
+        if (!_context.DriverInspections.Any())
+        {
+            Driver? driver = await _context.Drivers.FirstOrDefaultAsync();
+            if (driver != null)
+            {
+                DriverInspection[] inspections = new[]
+                {
+                new DriverInspection
+                {
+                    DriverId = driver.Id,
+                    AuthorizedFrom = DateTime.Now,
+                    AuthorizedTo = DateTime.Now.AddDays(7),
+                    DriversFields = "Truck Driver",
+                    Notes = "Sample notes 1"
+                },
+                new DriverInspection
+                {
+                    DriverId = driver.Id,
+                    AuthorizedFrom = DateTime.Now.AddDays(1),
+                    AuthorizedTo = DateTime.Now.AddDays(8),
+                    Notes = "Sample notes 2",
+                    DriversFields = "Truck Driver",
+                },
+                new DriverInspection
+                {
+                    DriverId = driver.Id,
+                    AuthorizedFrom = DateTime.Now.AddDays(2),
+                    AuthorizedTo = DateTime.Now.AddDays(7),
+                    Notes = "Sample notes 3",
+                    DriversFields = "Truck Driver",
+                },
+                new DriverInspection
+                {
+                    DriverId = driver.Id,
+                    AuthorizedFrom = DateTime.Now.AddDays(1),
+                    AuthorizedTo = DateTime.Now.AddDays(3),
+                    Notes = "Sample notes 4",
+                    DriversFields = "Truck Driver",
+                },
+                new DriverInspection
+                {
+                    DriverId = driver.Id,
+                    AuthorizedFrom = DateTime.Now.AddDays(-2),
+                    AuthorizedTo = DateTime.Now.AddDays(-1),
+                    Notes = "Expired Inspection",
+                    DriversFields = "Truck Driver",                },
+                new DriverInspection
+                {
+                    DriverId = driver.Id,
+                    AuthorizedFrom = DateTime.Now.AddDays(-1),
+                    AuthorizedTo = DateTime.Now.AddDays(1),
+                    Notes = "Active Inspection",
+                    DriversFields = "Truck Driver",                },
+                new DriverInspection
+                {
+                    DriverId = driver.Id,
+                    AuthorizedFrom = DateTime.Now.AddDays(1),
+                    AuthorizedTo = DateTime.Now.AddDays(2),
+                    Notes = "Future Inspection",
+                    DriversFields = "Truck Driver",                }
+            };
+
+                await _context.DriverInspections.AddRangeAsync(inspections);
                 await _context.SaveChangesAsync();
             }
         }

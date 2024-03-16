@@ -777,6 +777,200 @@
         ]
       }
     },
+    "/api/DriverInspections": {
+      "post": {
+        "tags": [
+          "DriverInspections"
+        ],
+        "operationId": "CreateDriverInspection",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDriverInspectionCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "DriverInspections"
+        ],
+        "operationId": "GetDriverInspections",
+        "parameters": [
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            },
+            "x-position": 1
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            },
+            "x-position": 2
+          },
+          {
+            "name": "searchBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            },
+            "x-position": 5
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/DriverInspections/{Id}": {
+      "patch": {
+        "tags": [
+          "DriverInspections"
+        ],
+        "operationId": "UpdateDriverInspection",
+        "parameters": [
+          {
+            "name": "Id",
+            "x-originalName": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDriverInspectionCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "DriverInspections"
+        ],
+        "operationId": "DeleteDriverInspection",
+        "parameters": [
+          {
+            "name": "Id",
+            "x-originalName": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "DriverInspections"
+        ],
+        "operationId": "GetDriverInspectionById",
+        "parameters": [
+          {
+            "name": "Id",
+            "x-originalName": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
     "/api/VehicleInspections": {
       "post": {
         "tags": [
@@ -1933,6 +2127,62 @@
             "nullable": true
           },
           "email": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CreateDriverInspectionCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "authorizedFrom": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "authorizedTo": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "driverId": {
+            "type": "string",
+            "nullable": true
+          },
+          "driversFields": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateDriverInspectionCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "authorizedFrom": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "authorizedTo": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "driverId": {
+            "type": "string",
+            "nullable": true
+          },
+          "driversFields": {
             "type": "string",
             "nullable": true
           }

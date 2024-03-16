@@ -25,6 +25,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
     public DbSet<VehicleInspection> VehicleInspections => Set<VehicleInspection>();
 
+    public DbSet<DriverInspection> DriverInspections => Set<DriverInspection>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

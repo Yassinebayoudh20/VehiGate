@@ -16,6 +16,8 @@ public class Driver : BaseAuditableEntity
 
     public string DriverLicenseNumber { get; set; }
 
-    [JsonIgnore]
     public virtual ICollection<VehicleInspection> VehicleInspections { get; set; } = new List<VehicleInspection>();
+
+    public virtual ICollection<DriverInspection> DriverInspections { get; set; } = new List<DriverInspection>();
+
 }

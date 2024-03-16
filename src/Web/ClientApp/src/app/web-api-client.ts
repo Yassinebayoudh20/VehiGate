@@ -1084,6 +1084,281 @@ export class SitesClient implements ISitesClient {
     }
 }
 
+export interface IDriverInspectionsClient {
+    createDriverInspection(command: CreateDriverInspectionCommand): Observable<void>;
+    getDriverInspections(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void>;
+    updateDriverInspection(id: string, command: UpdateDriverInspectionCommand): Observable<void>;
+    deleteDriverInspection(id: string): Observable<void>;
+    getDriverInspectionById(id: string): Observable<void>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class DriverInspectionsClient implements IDriverInspectionsClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    createDriverInspection(command: CreateDriverInspectionCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/DriverInspections";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateDriverInspection(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateDriverInspection(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processCreateDriverInspection(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getDriverInspections(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/DriverInspections?";
+        if (pageNumber === null)
+            throw new Error("The parameter 'pageNumber' cannot be null.");
+        else if (pageNumber !== undefined)
+            url_ += "pageNumber=" + encodeURIComponent("" + pageNumber) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (searchBy !== undefined && searchBy !== null)
+            url_ += "searchBy=" + encodeURIComponent("" + searchBy) + "&";
+        if (orderBy !== undefined && orderBy !== null)
+            url_ += "orderBy=" + encodeURIComponent("" + orderBy) + "&";
+        if (sortOrder === null)
+            throw new Error("The parameter 'sortOrder' cannot be null.");
+        else if (sortOrder !== undefined)
+            url_ += "sortOrder=" + encodeURIComponent("" + sortOrder) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetDriverInspections(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetDriverInspections(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processGetDriverInspections(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    updateDriverInspection(id: string, command: UpdateDriverInspectionCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/DriverInspections/{Id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{Id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("patch", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateDriverInspection(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateDriverInspection(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processUpdateDriverInspection(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    deleteDriverInspection(id: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/DriverInspections/{Id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{Id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteDriverInspection(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteDriverInspection(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processDeleteDriverInspection(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getDriverInspectionById(id: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/DriverInspections/{Id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{Id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetDriverInspectionById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetDriverInspectionById(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processGetDriverInspectionById(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
 export interface IVehicleInspectionsClient {
     createVehicleInspection(command: CreateVehicleInspectionCommand): Observable<void>;
     getVehicleInspections(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void>;
@@ -2950,6 +3225,114 @@ export interface IUpdateSiteCommand {
     contact?: string | undefined;
     phone?: string | undefined;
     email?: string | undefined;
+}
+
+export class CreateDriverInspectionCommand implements ICreateDriverInspectionCommand {
+    notes?: string | undefined;
+    authorizedFrom?: Date;
+    authorizedTo?: Date;
+    driverId?: string | undefined;
+    driversFields?: string | undefined;
+
+    constructor(data?: ICreateDriverInspectionCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.notes = _data["notes"];
+            this.authorizedFrom = _data["authorizedFrom"] ? new Date(_data["authorizedFrom"].toString()) : <any>undefined;
+            this.authorizedTo = _data["authorizedTo"] ? new Date(_data["authorizedTo"].toString()) : <any>undefined;
+            this.driverId = _data["driverId"];
+            this.driversFields = _data["driversFields"];
+        }
+    }
+
+    static fromJS(data: any): CreateDriverInspectionCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateDriverInspectionCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["notes"] = this.notes;
+        data["authorizedFrom"] = this.authorizedFrom ? this.authorizedFrom.toISOString() : <any>undefined;
+        data["authorizedTo"] = this.authorizedTo ? this.authorizedTo.toISOString() : <any>undefined;
+        data["driverId"] = this.driverId;
+        data["driversFields"] = this.driversFields;
+        return data;
+    }
+}
+
+export interface ICreateDriverInspectionCommand {
+    notes?: string | undefined;
+    authorizedFrom?: Date;
+    authorizedTo?: Date;
+    driverId?: string | undefined;
+    driversFields?: string | undefined;
+}
+
+export class UpdateDriverInspectionCommand implements IUpdateDriverInspectionCommand {
+    id?: string | undefined;
+    notes?: string | undefined;
+    authorizedFrom?: Date;
+    authorizedTo?: Date;
+    driverId?: string | undefined;
+    driversFields?: string | undefined;
+
+    constructor(data?: IUpdateDriverInspectionCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.notes = _data["notes"];
+            this.authorizedFrom = _data["authorizedFrom"] ? new Date(_data["authorizedFrom"].toString()) : <any>undefined;
+            this.authorizedTo = _data["authorizedTo"] ? new Date(_data["authorizedTo"].toString()) : <any>undefined;
+            this.driverId = _data["driverId"];
+            this.driversFields = _data["driversFields"];
+        }
+    }
+
+    static fromJS(data: any): UpdateDriverInspectionCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateDriverInspectionCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["notes"] = this.notes;
+        data["authorizedFrom"] = this.authorizedFrom ? this.authorizedFrom.toISOString() : <any>undefined;
+        data["authorizedTo"] = this.authorizedTo ? this.authorizedTo.toISOString() : <any>undefined;
+        data["driverId"] = this.driverId;
+        data["driversFields"] = this.driversFields;
+        return data;
+    }
+}
+
+export interface IUpdateDriverInspectionCommand {
+    id?: string | undefined;
+    notes?: string | undefined;
+    authorizedFrom?: Date;
+    authorizedTo?: Date;
+    driverId?: string | undefined;
+    driversFields?: string | undefined;
 }
 
 export class CreateVehicleInspectionCommand implements ICreateVehicleInspectionCommand {

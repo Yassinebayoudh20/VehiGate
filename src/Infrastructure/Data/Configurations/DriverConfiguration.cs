@@ -26,5 +26,10 @@ public class DriverConfiguration : IEntityTypeConfiguration<Driver>
          .WithOne(c => c.Driver)
          .HasForeignKey(d => d.DriverId)
          .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany(d => d.DriverInspections)
+         .WithOne(c => c.Driver)
+         .HasForeignKey(d => d.DriverId)
+         .OnDelete(DeleteBehavior.Restrict);
     }
 }

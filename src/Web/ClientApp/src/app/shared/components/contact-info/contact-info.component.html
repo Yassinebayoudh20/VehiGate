@@ -1,0 +1,56 @@
+<p-fieldset legend="{{ 'CONTACT_INFORMATIONS' | transloco | titlecase }}" [formGroupName]="controlKey">
+  <div class="field col-12 md:6"*ngIf="shouldDisplay('email')">
+    <label>{{ 'EMAIL' | transloco | titlecase }}</label>
+    <span class="p-input-icon-left">
+      <i class="pi pi-envelope"></i>
+      <input pInputText type="email" formControlName="email" placeholder="{{ 'EMAIL' | transloco | titlecase }}" />
+    </span>
+    <div *ngIf="form.get('email').invalid && (form.get('email').dirty || form.get('email').touched)">
+      <small class="text-red-500" *ngIf="form.get('email').errors.required">{{ 'EMAIL_IS_REQUIRED' | transloco | titlecase }}</small>
+      <small class="text-red-500" *ngIf="form.get('email').errors.email"> {{ 'INVALID_EMAIL_FORMAT' | transloco | titlecase }}</small>
+      <small class="text-red-500" *ngIf="form.get('email').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
+    </div>
+  </div>
+
+  <div class="field col-12 md:6" *ngIf="shouldDisplay('phoneNumber')">
+    <label>{{ 'PHONE_NUMBER' | transloco | titlecase }}</label>
+    <span class="p-input-icon-left">
+      <i class="pi pi-phone"></i>
+      <input pInputText type="text" formControlName="phoneNumber" placeholder="{{ 'PHONE_NUMBER' | transloco | titlecase }}" />
+    </span>
+
+    <div *ngIf="form.get('phoneNumber').invalid && (form.get('phoneNumber').dirty || form.get('phoneNumber').touched)">
+      <small class="text-red-500" *ngIf="form.get('phoneNumber').errors.required">{{ 'PHONE_NUMBER_IS_REQUIRED' | transloco | titlecase }}</small>
+      <small class="text-red-500" *ngIf="form.get('phoneNumber').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase | transloco | titlecase }}</small>
+    </div>
+
+  </div>
+
+  <div class="field col-12 md:6" *ngIf="shouldDisplay('contact')">
+    <label>{{ 'CONTACT' | transloco | titlecase }}</label>
+    <span class="p-input-icon-left">
+      <i class="pi pi-user"></i>
+      <input pInputText type="text" formControlName="contact" placeholder="{{ 'CONTACT' | transloco | titlecase }}" />
+    </span>
+
+    <div *ngIf="form.get('contact').invalid && (form.get('contact').dirty || form.get('contact').touched)">
+      <small class="text-red-500" *ngIf="form.get('contact').errors.required">{{ 'CONTACT_IS_REQUIRED' | transloco | titlecase }}</small>
+      <small class="text-red-500" *ngIf="form.get('contact').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase | transloco | titlecase }}</small>
+    </div>
+
+  </div>
+
+  <div class="field col-12 md:6" *ngIf="shouldDisplay('address')">
+    <label>{{ 'ADDRESS' | transloco | titlecase }}</label>
+    <span class="p-input-icon-left">
+      <i class="pi pi-user"></i>
+      <input pInputText type="text" formControlName="address" placeholder="{{ 'ADDRESS' | transloco | titlecase }}" />
+    </span>
+
+    <div *ngIf="form.get('address').invalid && (form.get('address').dirty || form.get('address').touched)">
+      <small class="text-red-500" *ngIf="form.get('address').errors.required">{{ 'ADDRESS_IS_REQUIRED' | transloco | titlecase }}</small>
+      <small class="text-red-500" *ngIf="form.get('address').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase | transloco | titlecase }}</small>
+    </div>
+
+  </div>
+</p-fieldset>

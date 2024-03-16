@@ -1,0 +1,8 @@
+::ng-deep legend{
+  color: #ffffff;
+  background: #3b82f6;
+}
+::ng-deep .p-fieldset{
+  border-color: #3b82f6;
+}
+

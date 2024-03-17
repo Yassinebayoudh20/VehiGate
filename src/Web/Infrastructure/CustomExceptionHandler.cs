@@ -17,6 +17,7 @@ public class CustomExceptionHandler : IExceptionHandler
                 { typeof(NotFoundException), HandleNotFoundException },
                 { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
                 { typeof(UnAuthorizedEntityException), HandleUnauthorizedEntityException },
+                { typeof(NoInspectionFoundException), HandleUnauthorizedEntityException },
                 { typeof(ForbiddenAccessException), HandleForbiddenAccessException },
             };
     }

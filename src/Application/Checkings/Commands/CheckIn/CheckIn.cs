@@ -77,7 +77,12 @@ public class CreateCheckInCommandHandler : IRequestHandler<CreateCheckInCommand,
         var driverInspection = _context.DriverInspections
             .FirstOrDefault(di => di.DriverId == request.DriverId);
 
-        if (driverInspection != null && !InspectionHelper.IsAuthorized(driverInspection.AuthorizedFrom, driverInspection.AuthorizedTo))
+        if (driverInspection == null)
+        {
+            throw new NoInspectionFoundException("driver needs to have an inspection first");
+        }
+
+        if (!InspectionHelper.IsAuthorized(driverInspection.AuthorizedFrom, driverInspection.AuthorizedTo))
         {
             throw new UnAuthorizedEntityException("Driver is not authorized.");
         }
@@ -85,15 +90,25 @@ public class CreateCheckInCommandHandler : IRequestHandler<CreateCheckInCommand,
         var vehicleInspection = _context.VehicleInspections
             .FirstOrDefault(vi => vi.VehicleId == request.VehicleId);
 
-        if (vehicleInspection != null && !InspectionHelper.IsAuthorized(vehicleInspection.AuthorizedFrom, vehicleInspection.AuthorizedTo))
+        if (vehicleInspection == null)
+        {
+            throw new NoInspectionFoundException("vehicle needs to have an inspection first");
+        }
+
+        if (!InspectionHelper.IsAuthorized(vehicleInspection.AuthorizedFrom, vehicleInspection.AuthorizedTo))
         {
             throw new UnAuthorizedEntityException("Vehicle is not authorized.");
         }
 
         var tankInspection = _context.VehicleInspections
-            .FirstOrDefault(vi => vi.VehicleId == request.TankId && InspectionHelper.IsAuthorized(vi.AuthorizedFrom, vi.AuthorizedTo));
+            .FirstOrDefault(vi => vi.VehicleId == request.TankId);
 
         if (tankInspection == null)
+        {
+            throw new NoInspectionFoundException("tank needs to have an inspection first");
+        }
+
+        if (!InspectionHelper.IsAuthorized(tankInspection.AuthorizedFrom, tankInspection.AuthorizedTo))
         {
             throw new UnAuthorizedEntityException("Tank is not authorized.");
         }

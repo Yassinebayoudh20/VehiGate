@@ -43,10 +43,10 @@ const routes: Routes = [
       //   path: 'checking',
       //   loadChildren: () => import('./checkings-management/checkings-management.module').then((m) => m.CheckingsManagementModule),
       // },
-      // {
-      //   path: 'companies',
-      //   loadChildren: () => import('./companies-management/companies-management.module').then((m) => m.CompaniesManagementModule),
-      // },
+      {
+        path: 'companies',
+        loadChildren: () => import('./companies-management/companies-management.module').then((m) => m.CompaniesManagementModule),
+      },
     ],
   },
 ];

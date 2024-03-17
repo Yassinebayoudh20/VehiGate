@@ -2186,10 +2186,10 @@ export class CustomersClient implements ICustomersClient {
 
 export interface ICompaniesClient {
     createCompany(command: CreateCompanyCommand): Observable<void>;
-    getCompanies(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void>;
+    getCompanies(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<PagedResultOfCompanyDto>;
     updateCompany(id: string, command: UpdateCompanyCommand): Observable<void>;
     deleteCompany(id: string): Observable<void>;
-    getCompanyById(id: string): Observable<void>;
+    getCompanyById(id: string): Observable<CompanyDto>;
 }
 
 @Injectable({
@@ -2253,7 +2253,7 @@ export class CompaniesClient implements ICompaniesClient {
         return _observableOf(null as any);
     }
 
-    getCompanies(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void> {
+    getCompanies(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<PagedResultOfCompanyDto> {
         let url_ = this.baseUrl + "/api/Companies?";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
@@ -2277,6 +2277,7 @@ export class CompaniesClient implements ICompaniesClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -2287,14 +2288,14 @@ export class CompaniesClient implements ICompaniesClient {
                 try {
                     return this.processGetCompanies(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<PagedResultOfCompanyDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<PagedResultOfCompanyDto>;
         }));
     }
 
-    protected processGetCompanies(response: HttpResponseBase): Observable<void> {
+    protected processGetCompanies(response: HttpResponseBase): Observable<PagedResultOfCompanyDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2303,7 +2304,10 @@ export class CompaniesClient implements ICompaniesClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultOfCompanyDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -2411,7 +2415,7 @@ export class CompaniesClient implements ICompaniesClient {
         return _observableOf(null as any);
     }
 
-    getCompanyById(id: string): Observable<void> {
+    getCompanyById(id: string): Observable<CompanyDto> {
         let url_ = this.baseUrl + "/api/Companies/{Id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -2422,6 +2426,7 @@ export class CompaniesClient implements ICompaniesClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -2432,14 +2437,14 @@ export class CompaniesClient implements ICompaniesClient {
                 try {
                     return this.processGetCompanyById(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<CompanyDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<CompanyDto>;
         }));
     }
 
-    protected processGetCompanyById(response: HttpResponseBase): Observable<void> {
+    protected processGetCompanyById(response: HttpResponseBase): Observable<CompanyDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2448,7 +2453,10 @@ export class CompaniesClient implements ICompaniesClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CompanyDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -4020,6 +4028,126 @@ export interface IUpdateCompanyCommand {
     email?: string | undefined;
     phone?: string | undefined;
     contact?: string | undefined;
+}
+
+export class CompanyDto implements ICompanyDto {
+    id?: string | undefined;
+    name?: string | undefined;
+    address?: string | undefined;
+    email?: string | undefined;
+    phone?: string | undefined;
+    contact?: string | undefined;
+
+    constructor(data?: ICompanyDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.address = _data["address"];
+            this.email = _data["email"];
+            this.phone = _data["phone"];
+            this.contact = _data["contact"];
+        }
+    }
+
+    static fromJS(data: any): CompanyDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CompanyDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["address"] = this.address;
+        data["email"] = this.email;
+        data["phone"] = this.phone;
+        data["contact"] = this.contact;
+        return data;
+    }
+}
+
+export interface ICompanyDto {
+    id?: string | undefined;
+    name?: string | undefined;
+    address?: string | undefined;
+    email?: string | undefined;
+    phone?: string | undefined;
+    contact?: string | undefined;
+}
+
+export class PagedResultOfCompanyDto implements IPagedResultOfCompanyDto {
+    data?: CompanyDto[] | undefined;
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+
+    constructor(data?: IPagedResultOfCompanyDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(CompanyDto.fromJS(item));
+            }
+            this.pageNumber = _data["pageNumber"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+        }
+    }
+
+    static fromJS(data: any): PagedResultOfCompanyDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultOfCompanyDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item.toJSON());
+        }
+        data["pageNumber"] = this.pageNumber;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        return data;
+    }
+}
+
+export interface IPagedResultOfCompanyDto {
+    data?: CompanyDto[] | undefined;
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
 }
 
 export class CreateCheckInCommand implements ICreateCheckInCommand {

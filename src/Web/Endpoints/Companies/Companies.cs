@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using VehiGate.Application.Common.Models;
 using VehiGate.Application.Companies.Commands.CreateCompany;
 using VehiGate.Application.Companies.Commands.DeleteCompany;
 using VehiGate.Application.Companies.Commands.UpdateCompany;
@@ -50,14 +51,13 @@ public class Companies : EndpointGroupBase
         return Results.NoContent();
     }
 
-    private async Task<IResult> GetCompanyById(ISender sender, string id)
+    private async Task<CompanyDto> GetCompanyById(ISender sender, string id)
     {
         var query = new GetCompanyByIdQuery { Id = id };
-        var result = await sender.Send(query);
-        return result != null ? Results.Ok(result) : Results.NotFound();
+        return await sender.Send(query);
     }
 
-    private async Task<IResult> GetCompanies(ISender sender, [FromQuery] int pageNumber = 1,
+    private async Task<PagedResult<CompanyDto>> GetCompanies(ISender sender, [FromQuery] int pageNumber = 1,
                                                [FromQuery] int pageSize = 10,
                                                [FromQuery] string? searchBy = null,
                                                [FromQuery] string? orderBy = null,
@@ -72,7 +72,6 @@ public class Companies : EndpointGroupBase
             SortOrder = SortOrder,
         };
 
-        var result = await sender.Send(query);
-        return Results.Ok(result);
+        return await sender.Send(query);
     }
 }

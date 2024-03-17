@@ -31,7 +31,6 @@ namespace VehiGate.Application.Customers.Queries.GetCustomer
         {
             var customer = await _context.Customers
                 .AsNoTracking()
-                .ProjectTo<CustomerDto>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
 
             if (customer == null)
@@ -39,7 +38,15 @@ namespace VehiGate.Application.Customers.Queries.GetCustomer
                 throw new NotFoundException(nameof(Customer), request.Id);
             }
 
-            return customer;
+            return new CustomerDto
+            {
+                Id = customer.Id,
+                Email = customer.Email,
+                Phone = customer.Phone,
+                Contact = customer.Contact,
+                Distance = customer.Distance,
+                Name = customer.Name
+            };
         }
     }
 }

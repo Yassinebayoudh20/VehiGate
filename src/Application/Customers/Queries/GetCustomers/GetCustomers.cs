@@ -35,7 +35,7 @@ namespace VehiGate.Application.Customers.Queries.GetCustomers
 
         public async Task<PagedResult<CustomerDto>> Handle(GetCustomersQuery request, CancellationToken cancellationToken)
         {
-            var query = _context.Customers.AsNoTracking();
+            var query = await _context.Customers.AsNoTracking().ToListAsync(cancellationToken);
 
             if (!string.IsNullOrEmpty(request.SearchBy))
             {
@@ -45,24 +45,41 @@ namespace VehiGate.Application.Customers.Queries.GetCustomers
                     customer.Contact.Contains(request.SearchBy) ||
                     customer.Phone.Contains(request.SearchBy) ||
                     customer.Email.Contains(request.SearchBy)
-                );
+                ).ToList();
             }
 
             if (!string.IsNullOrEmpty(request.OrderBy))
             {
                 bool sortOrder = request.SortOrder < 0 ? false : true;
-                query = (IQueryable<Customer>)query.OrderByProperty(request.OrderBy, ascending: sortOrder).ToList();
+                query = query.OrderByProperty(request.OrderBy, ascending: sortOrder).ToList();
             }
 
-            var totalCount = await query.CountAsync(cancellationToken);
+            var totalCount = query.Count();
 
-            var customers = await query
+            var customers = query
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
-                .ProjectTo<CustomerDto>(_mapper.ConfigurationProvider)
-                .ToListAsync(cancellationToken);
+                .ToList();
 
-            return PagedResult<CustomerDto>.Create(customers, request.PageNumber, request.PageSize);
+            List<CustomerDto> customerDtos = new List<CustomerDto>();
+
+            foreach (Customer customer in customers)
+            {
+               
+                    CustomerDto customerDto = new CustomerDto
+                    {
+                        Id = customer.Id,
+                        Email = customer.Email,
+                        Phone = customer.Phone,
+                        Contact = customer.Contact,
+                        Distance = customer.Distance,
+                        Name = customer.Name
+                    };
+                    customerDtos.Add(customerDto);
+                
+            }
+
+            return PagedResult<CustomerDto>.Create(customerDtos, request.PageNumber, request.PageSize);
         }
     }
 }

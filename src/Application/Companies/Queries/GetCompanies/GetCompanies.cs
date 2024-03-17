@@ -41,7 +41,7 @@ namespace VehiGate.Application.Companies.Queries.GetCompanies
 
         public async Task<PagedResult<CompanyDto>> Handle(GetCompaniesQuery request, CancellationToken cancellationToken)
         {
-            var query = _context.Companies.AsQueryable();
+            var query = await _context.Companies.ToListAsync(cancellationToken);
 
             if (!string.IsNullOrEmpty(request.SearchBy))
             {
@@ -51,22 +51,21 @@ namespace VehiGate.Application.Companies.Queries.GetCompanies
                     company.Email!.Contains(request.SearchBy) ||
                     company.Phone!.Contains(request.SearchBy) ||
                     company.Contact!.Contains(request.SearchBy)
-                );
+                ).ToList();
             }
 
             if (!string.IsNullOrEmpty(request.OrderBy))
             {
                 var sortOrder = request.SortOrder < 0 ? false : true;
 
-                query = (IQueryable<Company>) query.OrderByProperty(request.OrderBy, ascending: sortOrder);
+                query = query.OrderByProperty(request.OrderBy, ascending: sortOrder).ToList();
             }
 
-            var totalCount = await query.CountAsync(cancellationToken);
+            var totalCount = query.Count();
 
-            var companies = await query
+            var companies = query
                 .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToListAsync(cancellationToken);
+                .Take(request.PageSize).ToList();
 
             var companyDtos = companies.Select(company => new CompanyDto
             {

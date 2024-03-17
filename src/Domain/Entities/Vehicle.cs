@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace VehiGate.Domain.Entities;
+
 public class Vehicle : BaseAuditableEntity
 {
     public string VehicleTypeId { get; set; }
@@ -26,5 +27,4 @@ public class Vehicle : BaseAuditableEntity
     public DateOnly InsuranceTo { get; set; }
 
     public virtual ICollection<VehicleInspection> VehicleInspections { get; set; } = new List<VehicleInspection>();
-
 }

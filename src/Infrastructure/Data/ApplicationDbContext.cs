@@ -27,6 +27,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
     public DbSet<DriverInspection> DriverInspections => Set<DriverInspection>();
 
+    public DbSet<Checking> Checkings => Set<Checking>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

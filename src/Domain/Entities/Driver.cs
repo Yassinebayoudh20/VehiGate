@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace VehiGate.Domain.Entities;
+
 public class Driver : BaseAuditableEntity
 {
     public string UserId { get; set; }
@@ -20,4 +21,5 @@ public class Driver : BaseAuditableEntity
 
     public virtual ICollection<DriverInspection> DriverInspections { get; set; } = new List<DriverInspection>();
 
+    public virtual ICollection<Checking> Checkings { get; } = new List<Checking>();
 }

@@ -12,4 +12,6 @@ public class Customer : BaseAuditableEntity
     public string Contact { get; set; }
     public string Phone { get; set; }
     public string Email { get; set; }
+    public virtual ICollection<Checking> Checkings { get; } = new List<Checking>();
+
 }

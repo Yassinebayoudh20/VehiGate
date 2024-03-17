@@ -20,5 +20,7 @@ public interface IApplicationDbContext
 
     DbSet<DriverInspection> DriverInspections { get; }
 
+    DbSet<Checking> Checkings { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

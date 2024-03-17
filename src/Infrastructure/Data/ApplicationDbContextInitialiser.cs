@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VehiGate.Domain.Constants;
 using VehiGate.Domain.Entities;
+using VehiGate.Domain.Enums;
 using VehiGate.Infrastructure.Identity;
 
 namespace VehiGate.Infrastructure.Data;
@@ -107,6 +108,8 @@ public class ApplicationDbContextInitialiser
         await SeedVehicleInspectionsAsync();
 
         await SeedDriverInspectionsAsync();
+
+        await SeedCheckingsAsync();
     }
 
     private async Task SeedCompaniesAsync()
@@ -396,6 +399,44 @@ public class ApplicationDbContextInitialiser
                 await _context.DriverInspections.AddRangeAsync(inspections);
                 await _context.SaveChangesAsync();
             }
+        }
+    }
+
+    public async Task SeedCheckingsAsync()
+    {
+        if (!_context.Checkings.Any())
+        {
+            var drivers = await _context.Drivers.ToListAsync();
+            var vehicles = await _context.Vehicles.Include(i => i.VehicleType).ToListAsync();
+
+
+            var checkings = new List<Checking>
+        {
+            new Checking
+            {
+                BLNumber = "BL123456",
+                InvoiceNumber = "INV123456",
+                Status = CheckingStatus.Pending,
+                CheckingInDate = DateTime.Today,
+                DriverId = drivers.FirstOrDefault()?.Id,
+                VehicleId = vehicles.FirstOrDefault(v => v.VehicleType.Name == "Car")?.Id,
+                TankId = vehicles.FirstOrDefault(v => v.VehicleType.Name == "Tank")?.Id,
+            },
+            new Checking
+            {
+                BLNumber = "BL234567",
+                InvoiceNumber = "INV234567",
+                Status = CheckingStatus.Completed,
+                CheckingInDate = DateTime.Today.AddDays(-1),
+                CheckingOutDate = DateTime.Today,
+                DriverId = drivers.LastOrDefault()?.Id,
+                VehicleId = vehicles.LastOrDefault(v => v.VehicleType.Name == "Car")?.Id,
+                TankId = vehicles.LastOrDefault(v => v.VehicleType.Name == "Tank")?.Id,
+            },
+        };
+
+            _context.Checkings.AddRange(checkings);
+            await _context.SaveChangesAsync();
         }
     }
 }

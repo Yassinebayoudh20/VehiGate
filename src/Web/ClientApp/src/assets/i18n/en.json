@@ -37,5 +37,7 @@
   "USER_ADDED_SUCCESSFULLY": "User added successfully",
   "LAST_NAME_REQUIRED": "Last Name is required",
   "ADD_NEW_USER": "add new user",
-  "EDIT_USER": "edit user"
+  "EDIT_USER": "edit user",
+  "ADD_NEW_CUSTOMER": "add new customer"
+
 }

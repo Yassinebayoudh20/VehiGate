@@ -26,19 +26,20 @@
         </div>
 
         <app-contact-info controlKey="contactInfo" [displayInputs]="['email', 'phoneNumber','contact']" class="col-12 md:col-5"></app-contact-info>
-        <div class="flex md:justify-content-end gap-2">
+      </form>
+      <div class="flex md:justify-content-end gap-2">
         <button pButton type="button" pRipple icon="pi pi-arrow-left" label="{{ 'BACK' | transloco | titlecase }}" class="p-button" (click)="goBack()"></button>
         <button
           pButton
           type="button"
+          [disabled]="!this.form.valid || !this.form.dirty"
           pRipple
           icon="pi pi-save"
           label="{{ 'SAVE' | transloco | titlecase }}"
           class="p-button p-button-success"
           (click)="onSubmit()"
         ></button>
-        </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>

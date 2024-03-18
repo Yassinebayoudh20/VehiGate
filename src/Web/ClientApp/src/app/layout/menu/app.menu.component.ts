@@ -1,5 +1,4 @@
-import { CUSTOMER_UPSERT_FORM, CUSTOMERS_LIST_PATH } from './../../core/paths';
-import { COMPANIES_LIST_PATH, COMPANY_UPSERT_FORM, CUSTOMER_UPSERT_FORM } from './../../core/paths';
+import { COMPANIES_LIST_PATH, COMPANY_UPSERT_FORM, CUSTOMER_UPSERT_FORM, CUSTOMERS_LIST_PATH } from './../../core/paths';
 import { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { LayoutService } from '../service/app.layout.service';
@@ -33,7 +32,7 @@ export class AppMenuComponent implements OnInit {
           },
           {
             label: 'Customers Management',
-            icon: 'pi pi-fw pi-id-card',
+            icon: 'pi pi-fw pi-users',
             items: [
               { label: 'Customers', icon: 'pi pi-list', routerLink: [CUSTOMERS_LIST_PATH] },
               { label: 'Add Customer', icon: 'pi pi-plus', routerLink: [CUSTOMER_UPSERT_FORM] },

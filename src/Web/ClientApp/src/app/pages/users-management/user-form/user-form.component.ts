@@ -43,7 +43,6 @@ export class UserFormComponent implements OnInit {
         lastName: [null, [Validators.required, Validators.minLength(2), noWhiteSpaceValidator()]],
         password: [null, [Validators.required, Validators.minLength(6), noWhiteSpaceValidator()]],
         role: [null, [Validators.required]],
-
       });
       if (this.isEditing) {
         this.fetchUserDetails(userId);

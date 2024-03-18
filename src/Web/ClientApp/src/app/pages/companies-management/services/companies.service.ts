@@ -12,6 +12,10 @@ export class CompaniesService {
     return this.companiesClient.getCompanies(params.pageNumber, params.pageSize, params.searchBy, params.orderBy, params.sortOrder);
   }
 
+  getCompany(companyId : string){
+    return this.companiesClient.getCompanyById(companyId);
+  }
+
   addNewCompany(companyCmd: CreateCompanyCommand) {
     return this.companiesClient.createCompany(companyCmd);
   }

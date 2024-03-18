@@ -15,7 +15,7 @@ import { Component, OnInit, Input, inject } from '@angular/core';
 })
 export class ContactInfoComponent implements OnInit {
   @Input({ required: true }) controlKey = '';
-  @Input() displayInputs: string[] = []; // Add input for display inputs
+  @Input() displayInputs: string[] = [];
 
   parentContainer = inject(ControlContainer);
   form: AbstractControl;

@@ -33,18 +33,12 @@ namespace VehiGate.Application.Companies.Commands.UpdateCompany
                 .NotEmpty().WithMessage("Id is required.");
 
             RuleFor(x => x.Name)
-                .NotEmpty().WithMessage("Name is required.")
                 .MaximumLength(100).WithMessage("Name must not exceed 100 characters.")
                 .MustAsync(BeUniqueName).WithMessage("Name must be unique.");
 
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required.")
                 .EmailAddress().WithMessage("Invalid email format.")
                 .MustAsync(BeUniqueEmail).WithMessage("Email must be unique.");
-
-            RuleFor(x => x.Address).NotEmpty().WithMessage("Address is required.").MaximumLength(200);
-            RuleFor(x => x.Phone).NotEmpty().WithMessage("Phone is required.");
-            RuleFor(x => x.Contact).NotEmpty().WithMessage("Contact is required.").MaximumLength(50);
         }
 
         private async Task<bool> BeUniqueName(UpdateCompanyCommand command, string name, CancellationToken cancellationToken)
@@ -59,7 +53,6 @@ namespace VehiGate.Application.Companies.Commands.UpdateCompany
             return existingCompany == null;
         }
     }
-
 
     public class UpdateCompanyCommandHandler : IRequestHandler<UpdateCompanyCommand, CompanyDto>
     {

@@ -1,1 +1,38 @@
-<p>company-form works!</p>
+<div class="grid">
+    <div class="col-12">
+      <div class="card">
+        <h5>{{ pageTitle | transloco | titlecase }}</h5>
+        <form [formGroup]="form" class="p-fluid p-formgrid grid">
+          <div class="col-12 md:col-7">
+            <div class="field ">
+              <label>{{ 'NAME' | transloco | titlecase }}</label>
+              <span class="p-input-icon-left">
+                <i class="pi pi-user"></i>
+                <input pInputText type="text" formControlName="name" placeholder="{{ 'NAME' | transloco | titlecase }}" />
+              </span>
+              <div *ngIf="form.get('name').invalid && (form.get('name').dirty || form.get('name').touched)">
+                <small class="text-red-500" *ngIf="form.get('name').errors.required">{{ 'NAME_IS_REQUIRED' | transloco | titlecase }}</small>
+                <small class="text-red-500" *ngIf="form.get('name').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
+              </div>
+            </div>
+          </div>
+          <app-contact-info controlKey="contactInfo" [displayInputs]="['email', 'phoneNumber','contact','address']" class="col-12 md:col-5"></app-contact-info>
+        </form>
+        <div class="flex md:justify-content-end gap-2">
+          <button pButton type="button" pRipple icon="pi pi-arrow-left" label="{{ 'BACK' | transloco | titlecase }}" class="p-button" (click)="goBack()"></button>
+          <button
+            pButton
+            type="button"
+            [loading]="requestProcessing"
+            [disabled]="!this.form.valid || !this.form.dirty"
+            pRipple
+            icon="pi pi-save"
+            label="{{ 'SAVE' | transloco | titlecase }}"
+            class="p-button p-button-success"
+            (click)="onSubmit()"
+          ></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

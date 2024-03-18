@@ -1,3 +1,7 @@
+import { CUSTOMERS_LIST_PATH } from './../../../core/paths';
+import { CustomerService } from './../services/customer.service';
+import { CrudService } from 'src/app/shared/components/crud/crud.service';
+import { CreateCustomerCommand, UpdateCustomerCommand } from './../../../web-api-client';
 import { noWhiteSpaceValidator } from 'src/app/core/validators/white-space.validator';
 import { FormState } from 'src/app/core/data/models/form-state.enum';
 import { TranslocoService } from '@ngneat/transloco';
@@ -14,8 +18,16 @@ export class CustomerFormComponent implements OnInit {
   form: FormGroup;
   isEditing: boolean = false;
   pageTitle: string;
+  requestProcessing = false;
 
-  constructor(private formBuilder: FormBuilder, private transloco: TranslocoService, private router: Router, private aRoute: ActivatedRoute) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private customerService: CustomerService,
+    private crudService: CrudService,
+    private transloco: TranslocoService,
+    private router: Router,
+    private aRoute: ActivatedRoute
+  ) {}
   ngOnInit(): void {
     const customerId = this.aRoute.snapshot.params.id;
 
@@ -27,7 +39,7 @@ export class CustomerFormComponent implements OnInit {
         distance: [null, [Validators.required]],
       });
       if (this.isEditing) {
-        this.fetchCUstomerDetails(customerId);
+        this.fetchCustomerDetails(customerId);
       }
     });
   }
@@ -37,12 +49,78 @@ export class CustomerFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    //logic
+    if (this.form.invalid) {
+      return;
+    }
+
+    this.requestProcessing = true;
+
+    const command = this.isEditing ? this.createUpdateCustomerCommand() : this.CreateCustomerCommand();
+    const customerServiceMethod = this.isEditing ? this.customerService.updateCustomer : this.customerService.createNewCustomer;
+
+    const methodParams = this.isEditing ? [this.aRoute.snapshot.params.id, command] : [command];
+
+    customerServiceMethod.apply(this.customerService, methodParams).subscribe({
+      next: () => this.handleSuccess(),
+      error: () => this.handleError(),
+      complete: () => (this.requestProcessing = false),
+    });
   }
-  fetchCUstomerDetails(customerId: string) {
-    //logic
+  private CreateCustomerCommand(): CreateCustomerCommand {
+    const customerCmd = new CreateCustomerCommand();
+    customerCmd.name = this.form.get('name').value;
+    customerCmd.email = this.form.get('contactInfo').get('email').value;
+    customerCmd.phone = this.form.get('contactInfo').get('phoneNumber').value;
+    customerCmd.contact = this.form.get('contactInfo').get('contact').value;
+    customerCmd.distance = this.form.get('distance').value;
+    return customerCmd;
+  }
+  fetchCustomerDetails(customerId: string) {
+    this.customerService.getCustomerDetails(customerId).subscribe({
+      next: (customerData) => {
+        this.form.patchValue({
+          name: customerData.name,
+          distance: customerData.distance,
+          contactInfo: {
+            email: customerData.email,
+            phoneNumber: customerData.phone,
+            contact: customerData.contact,
+          },
+        });
+      },
+    });
+  }
+  private createUpdateCustomerCommand(): UpdateCustomerCommand {
+    const updateCmd = new UpdateCustomerCommand();
+    updateCmd.id = this.aRoute.snapshot.params.id;
+
+    if (this.form.get('name').dirty) {
+      updateCmd.name = this.form.get('name').value;
+    }
+    if (this.form.get('contactInfo').get('email').dirty) {
+      updateCmd.email = this.form.get('contactInfo').get('email').value;
+    }
+    if (this.form.get('contactInfo').get('phoneNumber').dirty) {
+      updateCmd.phone = this.form.get('contactInfo').get('phoneNumber').value;
+    }
+    if (this.form.get('contactInfo').get('contact').dirty) {
+      updateCmd.contact = this.form.get('contactInfo').get('contact').value;
+    }
+    if (this.form.get('distance').dirty) {
+      updateCmd.distance = this.form.get('distance').value;
+    }
+
+    return updateCmd;
+  }
+  private handleSuccess() {
+    this.crudService.executeToaster.next({ isSuccess: true, message: this.transloco.translate('CUSTOMER_ADDED_SUCCESSFULLY') });
+    this.router.navigate([CUSTOMERS_LIST_PATH]);
+  }
+
+  private handleError() {
+    this.requestProcessing = false;
   }
   goBack() {
-    // this.router.navigate([CUSTOMERS_LIST_PATH]);
+    this.router.navigate([CUSTOMERS_LIST_PATH]);
   }
 }

@@ -32,6 +32,7 @@
         <button
           pButton
           type="button"
+          [loading]="requestProcessing"
           [disabled]="!this.form.valid || !this.form.dirty"
           pRipple
           icon="pi pi-save"

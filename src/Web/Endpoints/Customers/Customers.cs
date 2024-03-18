@@ -1,10 +1,12 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using VehiGate.Application.Common.Models;
 using VehiGate.Application.Customers.Commands.CreateCustomer;
 using VehiGate.Application.Customers.Commands.DeleteCustomer;
 using VehiGate.Application.Customers.Commands.UpdateCustomer;
 using VehiGate.Application.Customers.Queries.GetCustomer;
+using VehiGate.Application.Customers.Queries.GetCustomerById;
 using VehiGate.Application.Customers.Queries.GetCustomers;
 
 namespace VehiGate.Web.Endpoints.Customers
@@ -48,14 +50,13 @@ namespace VehiGate.Web.Endpoints.Customers
             return Results.NoContent();
         }
 
-        private async Task<IResult> GetCustomer(ISender sender, string id)
+        private async Task<CustomerDto> GetCustomer(ISender sender, string id)
         {
             var query = new GetCustomerQuery { Id = id };
-            var result = await sender.Send(query);
-            return result != null ? Results.Ok(result) : Results.NotFound();
+            return await sender.Send(query);
         }
 
-        private async Task<IResult> GetCustomers(ISender sender, [FromQuery] int pageNumber = 1,
+        private async Task<PagedResult<CustomerDto>> GetCustomers(ISender sender, [FromQuery] int pageNumber = 1,
                                                    [FromQuery] int pageSize = 10,
                                                    [FromQuery] string? searchBy = null,
                                                    [FromQuery] string? orderBy = null,
@@ -70,8 +71,8 @@ namespace VehiGate.Web.Endpoints.Customers
                 SortOrder = SortOrder,
             };
 
-            var result = await sender.Send(query);
-            return Results.Ok(result);
+            return await sender.Send(query);
+
         }
     }
 }

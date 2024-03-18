@@ -1911,10 +1911,10 @@ export class DriversClient implements IDriversClient {
 
 export interface ICustomersClient {
     createCustomer(command: CreateCustomerCommand): Observable<void>;
-    getCustomers(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void>;
+    getCustomers(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<PagedResultOfCustomerDto>;
     updateCustomer(id: string, command: UpdateCustomerCommand): Observable<void>;
     deleteCustomer(id: string): Observable<void>;
-    getCustomer(id: string): Observable<void>;
+    getCustomer(id: string): Observable<CustomerDto>;
 }
 
 @Injectable({
@@ -1978,7 +1978,7 @@ export class CustomersClient implements ICustomersClient {
         return _observableOf(null as any);
     }
 
-    getCustomers(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void> {
+    getCustomers(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<PagedResultOfCustomerDto> {
         let url_ = this.baseUrl + "/api/Customers?";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
@@ -2002,6 +2002,7 @@ export class CustomersClient implements ICustomersClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -2012,14 +2013,14 @@ export class CustomersClient implements ICustomersClient {
                 try {
                     return this.processGetCustomers(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<PagedResultOfCustomerDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<PagedResultOfCustomerDto>;
         }));
     }
 
-    protected processGetCustomers(response: HttpResponseBase): Observable<void> {
+    protected processGetCustomers(response: HttpResponseBase): Observable<PagedResultOfCustomerDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2028,7 +2029,10 @@ export class CustomersClient implements ICustomersClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultOfCustomerDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -2136,7 +2140,7 @@ export class CustomersClient implements ICustomersClient {
         return _observableOf(null as any);
     }
 
-    getCustomer(id: string): Observable<void> {
+    getCustomer(id: string): Observable<CustomerDto> {
         let url_ = this.baseUrl + "/api/Customers/{Id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -2147,6 +2151,7 @@ export class CustomersClient implements ICustomersClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -2157,14 +2162,14 @@ export class CustomersClient implements ICustomersClient {
                 try {
                     return this.processGetCustomer(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<CustomerDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<CustomerDto>;
         }));
     }
 
-    protected processGetCustomer(response: HttpResponseBase): Observable<void> {
+    protected processGetCustomer(response: HttpResponseBase): Observable<CustomerDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2173,7 +2178,10 @@ export class CustomersClient implements ICustomersClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CustomerDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -3920,6 +3928,126 @@ export interface IUpdateCustomerCommand {
     contact?: string | undefined;
     phone?: string | undefined;
     email?: string | undefined;
+}
+
+export class CustomerDto implements ICustomerDto {
+    id?: string | undefined;
+    name?: string | undefined;
+    distance?: string | undefined;
+    contact?: string | undefined;
+    phone?: string | undefined;
+    email?: string | undefined;
+
+    constructor(data?: ICustomerDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.distance = _data["distance"];
+            this.contact = _data["contact"];
+            this.phone = _data["phone"];
+            this.email = _data["email"];
+        }
+    }
+
+    static fromJS(data: any): CustomerDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CustomerDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["distance"] = this.distance;
+        data["contact"] = this.contact;
+        data["phone"] = this.phone;
+        data["email"] = this.email;
+        return data;
+    }
+}
+
+export interface ICustomerDto {
+    id?: string | undefined;
+    name?: string | undefined;
+    distance?: string | undefined;
+    contact?: string | undefined;
+    phone?: string | undefined;
+    email?: string | undefined;
+}
+
+export class PagedResultOfCustomerDto implements IPagedResultOfCustomerDto {
+    data?: CustomerDto[] | undefined;
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+
+    constructor(data?: IPagedResultOfCustomerDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(CustomerDto.fromJS(item));
+            }
+            this.pageNumber = _data["pageNumber"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+        }
+    }
+
+    static fromJS(data: any): PagedResultOfCustomerDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultOfCustomerDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item.toJSON());
+        }
+        data["pageNumber"] = this.pageNumber;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        return data;
+    }
+}
+
+export interface IPagedResultOfCustomerDto {
+    data?: CustomerDto[] | undefined;
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
 }
 
 export class CreateCompanyCommand implements ICreateCompanyCommand {

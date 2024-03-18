@@ -1,0 +1,69 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card">
+      <h5>{{ pageTitle | transloco | titlecase }}</h5>
+      <form [formGroup]="form" class="p-fluid p-formgrid grid">
+        <div class="col-12 md:col-7">
+          <div class="field ">
+            <label>{{ 'FIRST_NAME' | transloco | titlecase }}</label>
+            <span class="p-input-icon-left">
+              <i class="pi pi-user"></i>
+              <input pInputText type="text" formControlName="firstName" placeholder="{{ 'FIRST_NAME' | transloco | titlecase }}" />
+            </span>
+            <div *ngIf="form.get('firstName').invalid && (form.get('firstName').dirty || form.get('firstName').touched)">
+              <small class="text-red-500" *ngIf="form.get('firstName').errors.required">{{ 'FIRST_NAME_IS_REQUIRED' | transloco | titlecase }}</small>
+              <small class="text-red-500" *ngIf="form.get('firstName').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
+            </div>
+          </div>
+          <div class="field ">
+            <label>{{ 'LAST_NAME' | transloco | titlecase }}</label>
+            <span class="p-input-icon-left">
+              <i class="pi pi-user"></i>
+              <input pInputText type="text" formControlName="lastName" placeholder="{{ 'LAST_NAME' | transloco | titlecase }}" />
+            </span>
+            <div *ngIf="form.get('lastName').invalid && (form.get('lastName').dirty || form.get('lastName').touched)">
+              <small class="text-red-500" *ngIf="form.get('lastName').errors.required">{{ 'LAST_NAME_IS_REQUIRED' | transloco | titlecase }}</small>
+              <small class="text-red-500" *ngIf="form.get('lastName').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase | transloco | titlecase }}</small>
+            </div>
+          </div>
+
+          <div class="field ">
+            <label>{{ 'DRIVER_LICENCE_NUMBER' | transloco | titlecase }}</label>
+            <span class="p-input-icon-left">
+              <i class="pi pi-id-card"></i>
+              <input pInputText type="text" formControlName="driverLicenceNumber" placeholder="{{ 'DRIVER_LICENCE_NUMBER' | transloco | titlecase }}" />
+            </span>
+            <div *ngIf="form.get('driverLicenceNumber').invalid && (form.get('driverLicenceNumber').dirty || form.get('driverLicenceNumber').touched)">
+              <small class="text-red-500" *ngIf="form.get('driverLicenceNumber').errors.required">{{ 'DRIVER_LICENCE_NUMBER_IS_REQUIRED' | transloco | titlecase }}</small>
+              <small class="text-red-500" *ngIf="form.get('driverLicenceNumber').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
+            </div>
+          </div>
+          <!-- <div class="field">
+            <label htmlFor="state">{{ 'ROLE' | transloco | titlecase }}</label>
+            <p-dropdown [options]="userRolesList$ | async" optionLabel="name" optionValue="name" formControlName="role" [placeholder]="'role' | titlecase"></p-dropdown>
+            <div *ngIf="form.get('role').invalid && (form.get('role').dirty || form.get('role').touched)">
+              <small class="text-red-500">{{ 'ROLE_IS_REQUIRED' | transloco | titlecase }}</small>
+              <small class="text-red-500" *ngIf="form.get('role').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
+            </div>
+          </div> -->
+        </div>
+
+        <app-contact-info controlKey="contactInfo" [displayInputs]="['email', 'phoneNumber']" class="col-12 md:col-5"></app-contact-info>
+      </form>
+      <div class="flex md:justify-content-end gap-2">
+        <button pButton type="button" pRipple icon="pi pi-arrow-left" label="{{ 'BACK' | transloco | titlecase }}" class="p-button" (click)="goBack()"></button>
+        <button
+          pButton
+          type="button"
+          [loading]="requestProcessing"
+          [disabled]="!this.form.valid || !this.form.dirty"
+          pRipple
+          icon="pi pi-save"
+          label="{{ 'SAVE' | transloco | titlecase }}"
+          class="p-button p-button-success"
+          (click)="onSubmit()"
+        ></button>
+      </div>
+    </div>
+  </div>
+</div>

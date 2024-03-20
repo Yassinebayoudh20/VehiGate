@@ -1,4 +1,4 @@
-import { COMPANIES_LIST_PATH, COMPANY_UPSERT_FORM, CUSTOMER_UPSERT_FORM, CUSTOMERS_LIST_PATH } from './../../core/paths';
+import { COMPANIES_LIST_PATH, COMPANY_UPSERT_FORM, CUSTOMER_UPSERT_FORM, CUSTOMERS_LIST_PATH, DRIVER_UPSERT_FORM, DRIVERS_LIST_PATH } from './../../core/paths';
 import { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { LayoutService } from '../service/app.layout.service';
@@ -44,6 +44,14 @@ export class AppMenuComponent implements OnInit {
             items: [
               { label: 'Companies', icon: 'pi pi-list', routerLink: [COMPANIES_LIST_PATH] },
               { label: 'Add Company', icon: 'pi pi-plus', routerLink: [COMPANY_UPSERT_FORM] },
+            ],
+          },
+          {
+            label: 'Drivers Management',
+            icon: 'pi pi-fw pi-user',
+            items: [
+              { label: 'Drivers', icon: 'pi pi-list', routerLink: [DRIVERS_LIST_PATH] },
+              { label: 'Add Driver', icon: 'pi pi-plus', routerLink: [DRIVER_UPSERT_FORM] },
             ],
           },
         ],

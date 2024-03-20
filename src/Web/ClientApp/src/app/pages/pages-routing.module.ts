@@ -11,10 +11,10 @@ const routes: Routes = [
         path: 'users',
         loadChildren: () => import('./users-management/users-management.module').then((m) => m.UsersManagementModule),
       },
-      // {
-      //   path: 'drivers',
-      //   loadChildren: () => import('./drivers-management/drivers-management.module').then((m) => m.DriversManagementModule),
-      // },
+      {
+        path: 'drivers',
+        loadChildren: () => import('./drivers-management/drivers-management.module').then((m) => m.DriversManagementModule),
+      },
       // {
       //   path: 'vehicles',
       //   loadChildren: () => import('./vehicles-management/vehicles-management.module').then((m) => m.VehiclesManagementModule),

@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using VehiGate.Application.Common.Models;
+using VehiGate.Application.Customers.Queries.GetCustomerById;
 using VehiGate.Application.Drivers.Commands.CreateDriver;
 using VehiGate.Application.Drivers.Commands.DeleteDriver;
 using VehiGate.Application.Drivers.Commands.UpdateDriver;
@@ -45,14 +48,13 @@ namespace VehiGate.Web.Endpoints.Drivers
             return Results.NoContent();
         }
 
-        private async Task<IResult> GetDriverById(ISender sender, string id)
+        private async Task<DriverDto> GetDriverById(ISender sender, string id)
         {
             var query = new GetDriverQuery { Id = id };
-            var result = await sender.Send(query);
-            return result != null ? Results.Ok(result) : Results.NotFound();
+            return await sender.Send(query);
         }
 
-        private async Task<IResult> GetDrivers(ISender sender, [FromQuery] int pageNumber = 1,
+        private async Task<PagedResult<DriverDto>> GetDrivers(ISender sender, [FromQuery] int pageNumber = 1,
                                                    [FromQuery] int pageSize = 10,
                                                    [FromQuery] string? searchBy = null,
                                                    [FromQuery] string? orderBy = null,
@@ -67,8 +69,7 @@ namespace VehiGate.Web.Endpoints.Drivers
                 SortOrder = sortOrder,
             };
 
-            var result = await sender.Send(query);
-            return Results.Ok(result);
+            return await sender.Send(query);
         }
     }
 }

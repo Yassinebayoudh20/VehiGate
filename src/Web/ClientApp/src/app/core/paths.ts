@@ -14,4 +14,10 @@ export const USER_UPSERT_FORM = '/pages/users/upsert';
  * customers Management
  */
  export const COMPANIES_LIST_PATH = '/pages/companies';
- export const COMPANY_UPSERT_FORM = '/pages/companies/upsert'; 
+ export const COMPANY_UPSERT_FORM = '/pages/companies/upsert';
+
+  /**
+ * drivers Management
+ */
+   export const DRIVERS_LIST_PATH = '/pages/drivers';
+   export const DRIVER_UPSERT_FORM = '/pages/drivers/upsert';

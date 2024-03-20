@@ -1636,10 +1636,10 @@ export class VehicleInspectionsClient implements IVehicleInspectionsClient {
 
 export interface IDriversClient {
     createDriver(command: CreateDriverCommand): Observable<void>;
-    getDrivers(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void>;
+    getDrivers(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<PagedResultOfDriverDto>;
     updateDriver(id: string, command: UpdateDriverCommand): Observable<void>;
     deleteDriver(id: string): Observable<void>;
-    getDriverById(id: string): Observable<void>;
+    getDriverById(id: string): Observable<DriverDto>;
 }
 
 @Injectable({
@@ -1703,7 +1703,7 @@ export class DriversClient implements IDriversClient {
         return _observableOf(null as any);
     }
 
-    getDrivers(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void> {
+    getDrivers(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<PagedResultOfDriverDto> {
         let url_ = this.baseUrl + "/api/Drivers?";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
@@ -1727,6 +1727,7 @@ export class DriversClient implements IDriversClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -1737,14 +1738,14 @@ export class DriversClient implements IDriversClient {
                 try {
                     return this.processGetDrivers(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<PagedResultOfDriverDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<PagedResultOfDriverDto>;
         }));
     }
 
-    protected processGetDrivers(response: HttpResponseBase): Observable<void> {
+    protected processGetDrivers(response: HttpResponseBase): Observable<PagedResultOfDriverDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1753,7 +1754,10 @@ export class DriversClient implements IDriversClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultOfDriverDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -1861,7 +1865,7 @@ export class DriversClient implements IDriversClient {
         return _observableOf(null as any);
     }
 
-    getDriverById(id: string): Observable<void> {
+    getDriverById(id: string): Observable<DriverDto> {
         let url_ = this.baseUrl + "/api/Drivers/{Id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -1872,6 +1876,7 @@ export class DriversClient implements IDriversClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -1882,14 +1887,14 @@ export class DriversClient implements IDriversClient {
                 try {
                     return this.processGetDriverById(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<DriverDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<DriverDto>;
         }));
     }
 
-    protected processGetDriverById(response: HttpResponseBase): Observable<void> {
+    protected processGetDriverById(response: HttpResponseBase): Observable<DriverDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1898,7 +1903,10 @@ export class DriversClient implements IDriversClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = DriverDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -3820,6 +3828,130 @@ export interface IUpdateDriverCommand {
     email?: string | undefined;
     phone?: string | undefined;
     driverLicenseNumber?: string | undefined;
+}
+
+export class DriverDto implements IDriverDto {
+    id?: string | undefined;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    email?: string | undefined;
+    phone?: string | undefined;
+    companyName?: string | undefined;
+    driverLicenseNumber?: string | undefined;
+
+    constructor(data?: IDriverDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.email = _data["email"];
+            this.phone = _data["phone"];
+            this.companyName = _data["companyName"];
+            this.driverLicenseNumber = _data["driverLicenseNumber"];
+        }
+    }
+
+    static fromJS(data: any): DriverDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new DriverDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["email"] = this.email;
+        data["phone"] = this.phone;
+        data["companyName"] = this.companyName;
+        data["driverLicenseNumber"] = this.driverLicenseNumber;
+        return data;
+    }
+}
+
+export interface IDriverDto {
+    id?: string | undefined;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    email?: string | undefined;
+    phone?: string | undefined;
+    companyName?: string | undefined;
+    driverLicenseNumber?: string | undefined;
+}
+
+export class PagedResultOfDriverDto implements IPagedResultOfDriverDto {
+    data?: DriverDto[] | undefined;
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+
+    constructor(data?: IPagedResultOfDriverDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(DriverDto.fromJS(item));
+            }
+            this.pageNumber = _data["pageNumber"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+        }
+    }
+
+    static fromJS(data: any): PagedResultOfDriverDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultOfDriverDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item.toJSON());
+        }
+        data["pageNumber"] = this.pageNumber;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        return data;
+    }
+}
+
+export interface IPagedResultOfDriverDto {
+    data?: DriverDto[] | undefined;
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
 }
 
 export class CreateCustomerCommand implements ICreateCustomerCommand {

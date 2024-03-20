@@ -18,6 +18,8 @@
   "FIRST_NAME_IS_REQUIRED": "Missing value for 'FIRST_NAME_IS_REQUIRED'",
   "LAST_NAME": "Missing value for 'LAST_NAME'",
   "LAST_NAME_IS_REQUIRED": "Missing value for 'LAST_NAME_IS_REQUIRED'",
+  "DRIVER_LICENCE_NUMBER": "Missing value for 'DRIVER_LICENCE_NUMBER'",
+  "DRIVER_LICENCE_NUMBER_IS_REQUIRED": "Missing value for 'DRIVER_LICENCE_NUMBER_IS_REQUIRED'",
   "PASSWORD_IS_REQUIRED": "Missing value for 'PASSWORD_IS_REQUIRED'",
   "ROLE": "Missing value for 'ROLE'",
   "ROLE_IS_REQUIRED": "Missing value for 'ROLE_IS_REQUIRED'",
@@ -34,6 +36,8 @@
   "SEARCH": "Missing value for 'SEARCH'",
   "ACTIONS": "Missing value for 'ACTIONS'",
   "NO_DATA_WERE_FOUND": "Missing value for 'NO_DATA_WERE_FOUND'",
+  "CUSTOMER_ADDED_SUCCESSFULLY": "Missing value for 'CUSTOMER_ADDED_SUCCESSFULLY'",
+  "DRIVER_ADDED_SUCCESSFULLY": "Missing value for 'DRIVER_ADDED_SUCCESSFULLY'",
   "USER_ADDED_SUCCESSFULLY": "Missing value for 'USER_ADDED_SUCCESSFULLY'",
   "ADD_NEW_USER": "Missing value for 'ADD_NEW_USER'",
   "EDIT_USER": "Missing value for 'EDIT_USER'"

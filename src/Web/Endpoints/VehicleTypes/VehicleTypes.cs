@@ -23,7 +23,7 @@ namespace VehiGate.Web.Endpoints.VehicleTypes
         private async Task<IResult> CreateVehicleType(ISender sender, CreateVehicleTypeCommand command)
         {
             var result = await sender.Send(command);
-            return Results.Created($"/vehicletypes/{result}", result);
+            return Results.Ok(result);
         }
 
         private async Task<IResult> UpdateVehicleType(ISender sender, string id, UpdateVehicleTypeCommand command)

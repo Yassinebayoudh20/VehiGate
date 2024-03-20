@@ -49,8 +49,6 @@ namespace VehiGate.Application.VehicleInspections.Queries.GetVehicleInspections
 
             var inspections = await query
                       .OrderByDescending(inspection => inspection.AuthorizedFrom)
-                      .Skip((request.PageNumber - 1) * request.PageSize)
-                      .Take(request.PageSize)
                       .Select(inspection => new VehicleInspectionDto
                       {
                           Id = inspection.Id,

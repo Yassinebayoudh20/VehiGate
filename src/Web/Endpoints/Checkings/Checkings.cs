@@ -24,7 +24,7 @@ namespace VehiGate.Web.Endpoints.Checkings
         private async Task<IResult> CreateCheckIn(ISender sender, CreateCheckInCommand command)
         {
             var result = await sender.Send(command);
-            return Results.Created($"/checkings/{result}", result);
+            return Results.Ok(result);
         }
 
         private async Task<IResult> UpdateCheckOut(ISender sender, string id, UpdateCheckOutCommand command)

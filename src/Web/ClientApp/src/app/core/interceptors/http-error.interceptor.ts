@@ -19,8 +19,8 @@ export class HttpErrorInterceptor implements HttpInterceptor {
               reader.onload = (e: Event) => {
                 try {
                   const errorMessage = JSON.parse((<any>e.target).result);
-                  if (errorMessage.error && this.isValidationProblemDetails(errorMessage.error)) {
-                    this.handleValidationProblemDetails(errorMessage.error);
+                  if (errorMessage.errors && this.isValidationProblemDetails(errorMessage)) {
+                    this.handleValidationProblemDetails(errorMessage);
                   } else {
                     this.handleProblemDetails(errorMessage);
                   }
@@ -65,7 +65,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     const errorMessages = Object.keys(errors)
       .map((key) => `${key}: ${errors[key]}`)
       .join('\n');
-    this.errorHandlingService.handleFluentValidationErrors(errorMessages);
+    this.errorHandlingService.handleFluentValidationErrors(errors);
   }
 
   private isValidationProblemDetails(error: any): boolean {

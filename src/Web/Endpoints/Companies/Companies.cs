@@ -24,7 +24,7 @@ public class Companies : EndpointGroupBase
     private async Task<IResult> CreateCompany(ISender sender, CreateCompanyCommand command)
     {
         var result = await sender.Send(command);
-        return Results.Created($"/companies/{result}", result);
+        return Results.Ok(result);
     }
 
     private async Task<IResult> UpdateCompany(ISender sender, string id, UpdateCompanyCommand command)

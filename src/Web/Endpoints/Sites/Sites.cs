@@ -26,7 +26,7 @@ namespace VehiGate.Web.Endpoints.Sites
         private async Task<IResult> CreateSite(ISender sender, CreateSiteCommand command)
         {
             var result = await sender.Send(command);
-            return Results.Created($"/sites/{result}", new {Id = result});
+            return Results.Ok(result);
         }
 
         private async Task<IResult> UpdateSite(ISender sender, string id, UpdateSiteCommand command)
@@ -70,7 +70,7 @@ namespace VehiGate.Web.Endpoints.Sites
             };
 
             return await sender.Send(query);
-            
+
         }
     }
 }

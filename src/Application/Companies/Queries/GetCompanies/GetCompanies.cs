@@ -61,11 +61,7 @@ namespace VehiGate.Application.Companies.Queries.GetCompanies
                 query = query.OrderByProperty(request.OrderBy, ascending: sortOrder).ToList();
             }
 
-            var totalCount = query.Count();
-
-            var companies = query
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize).ToList();
+            var companies = query.ToList();
 
             var companyDtos = companies.Select(company => new CompanyDto
             {

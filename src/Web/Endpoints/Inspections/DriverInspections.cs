@@ -23,7 +23,7 @@ namespace VehiGate.Web.Endpoints.VehicleInspections
         private async Task<IResult> CreateDriverInspection(ISender sender, CreateDriverInspectionCommand command)
         {
             var result = await sender.Send(command);
-            return Results.Created($"/driverinspections/{result}", result);
+            return Results.Ok(result);
         }
 
         private async Task<IResult> UpdateDriverInspection(ISender sender, string id, UpdateDriverInspectionCommand command)

@@ -27,7 +27,7 @@ namespace VehiGate.Web.Endpoints.Customers
         private async Task<IResult> CreateCustomer(ISender sender, CreateCustomerCommand command)
         {
             var result = await sender.Send(command);
-            return Results.Created($"/customers/{result}", result);
+            return Results.Ok(result);
         }
 
         private async Task<IResult> UpdateCustomer(ISender sender, string id, UpdateCustomerCommand command)

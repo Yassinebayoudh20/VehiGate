@@ -26,7 +26,7 @@ namespace VehiGate.Web.Endpoints.Drivers
         private async Task<IResult> CreateDriver(ISender sender, CreateDriverCommand command)
         {
             var result = await sender.Send(command);
-            return Results.Created($"/drivers/{result}", result);
+            return Results.Ok(result);
         }
 
         private async Task<IResult> UpdateDriver(ISender sender, string id, UpdateDriverCommand command)

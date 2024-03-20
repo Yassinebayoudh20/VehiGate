@@ -55,12 +55,8 @@ namespace VehiGate.Application.Sites.Queries.GetSites
                 query = query.OrderByProperty(request.OrderBy, ascending: sortOrder).ToList();
             }
 
-            var totalCount = query.Count();
 
-            var sites = query
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
+            var sites = query.ToList();
 
             List<SiteDto> sitesDto = new List<SiteDto>();
 

@@ -42,10 +42,7 @@ namespace VehiGate.Application.Drivers.Queries.GetDrivers
 
             int totalCount = drivers.Count;
 
-            drivers = drivers
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
+            drivers = drivers.ToList();
 
             List<DriverDto> driverDtos = new List<DriverDto>();
 

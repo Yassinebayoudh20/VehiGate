@@ -55,8 +55,6 @@ namespace VehiGate.Application.VehicleTypes.Queries.GetVehicleTypes
 
             var vehicleTypes = await query
                 .OrderBy(vt => vt.Name)
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
                 .ToListAsync(cancellationToken);
 
             var vehicleTypeDtos = vehicleTypes.Select(vt => new VehicleTypeDto

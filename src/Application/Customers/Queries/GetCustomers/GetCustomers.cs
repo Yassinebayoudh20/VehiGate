@@ -54,12 +54,7 @@ namespace VehiGate.Application.Customers.Queries.GetCustomers
                 query = query.OrderByProperty(request.OrderBy, ascending: sortOrder).ToList();
             }
 
-            var totalCount = query.Count();
-
-            var customers = query
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
+            var customers = query.ToList();
 
             List<CustomerDto> customerDtos = new List<CustomerDto>();
 

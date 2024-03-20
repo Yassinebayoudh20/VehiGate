@@ -50,8 +50,6 @@ namespace VehiGate.Application.Vehicles.Queries.GetVehicles
             var totalCount = await query.CountAsync(cancellationToken);
 
             List<Vehicle> vehicles = await query
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
                 .ToListAsync(cancellationToken);
 
             List<VehicleDto> vehicleDtos = vehicles.Select(v => new VehicleDto

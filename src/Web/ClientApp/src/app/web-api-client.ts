@@ -811,10 +811,10 @@ export class UsersClient implements IUsersClient {
 
 export interface ISitesClient {
     createSite(command: CreateSiteCommand): Observable<void>;
-    getSites(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void>;
+    getSites(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<PagedResultOfSiteDto>;
     updateSite(id: string, command: UpdateSiteCommand): Observable<void>;
     deleteSite(id: string): Observable<void>;
-    getSiteById(id: string): Observable<void>;
+    getSiteById(id: string): Observable<SiteDto>;
 }
 
 @Injectable({
@@ -878,7 +878,7 @@ export class SitesClient implements ISitesClient {
         return _observableOf(null as any);
     }
 
-    getSites(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void> {
+    getSites(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<PagedResultOfSiteDto> {
         let url_ = this.baseUrl + "/api/Sites?";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
@@ -902,6 +902,7 @@ export class SitesClient implements ISitesClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -912,14 +913,14 @@ export class SitesClient implements ISitesClient {
                 try {
                     return this.processGetSites(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<PagedResultOfSiteDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<PagedResultOfSiteDto>;
         }));
     }
 
-    protected processGetSites(response: HttpResponseBase): Observable<void> {
+    protected processGetSites(response: HttpResponseBase): Observable<PagedResultOfSiteDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -928,7 +929,10 @@ export class SitesClient implements ISitesClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultOfSiteDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -1036,7 +1040,7 @@ export class SitesClient implements ISitesClient {
         return _observableOf(null as any);
     }
 
-    getSiteById(id: string): Observable<void> {
+    getSiteById(id: string): Observable<SiteDto> {
         let url_ = this.baseUrl + "/api/Sites/{Id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -1047,6 +1051,7 @@ export class SitesClient implements ISitesClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -1057,14 +1062,14 @@ export class SitesClient implements ISitesClient {
                 try {
                     return this.processGetSiteById(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<SiteDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<SiteDto>;
         }));
     }
 
-    protected processGetSiteById(response: HttpResponseBase): Observable<void> {
+    protected processGetSiteById(response: HttpResponseBase): Observable<SiteDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1073,7 +1078,10 @@ export class SitesClient implements ISitesClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SiteDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -3476,6 +3484,122 @@ export interface IUpdateSiteCommand {
     contact?: string | undefined;
     phone?: string | undefined;
     email?: string | undefined;
+}
+
+export class SiteDto implements ISiteDto {
+    id?: string | undefined;
+    address?: string | undefined;
+    contact?: string | undefined;
+    phone?: string | undefined;
+    email?: string | undefined;
+
+    constructor(data?: ISiteDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.address = _data["address"];
+            this.contact = _data["contact"];
+            this.phone = _data["phone"];
+            this.email = _data["email"];
+        }
+    }
+
+    static fromJS(data: any): SiteDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new SiteDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["address"] = this.address;
+        data["contact"] = this.contact;
+        data["phone"] = this.phone;
+        data["email"] = this.email;
+        return data;
+    }
+}
+
+export interface ISiteDto {
+    id?: string | undefined;
+    address?: string | undefined;
+    contact?: string | undefined;
+    phone?: string | undefined;
+    email?: string | undefined;
+}
+
+export class PagedResultOfSiteDto implements IPagedResultOfSiteDto {
+    data?: SiteDto[] | undefined;
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+
+    constructor(data?: IPagedResultOfSiteDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(SiteDto.fromJS(item));
+            }
+            this.pageNumber = _data["pageNumber"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+        }
+    }
+
+    static fromJS(data: any): PagedResultOfSiteDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultOfSiteDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item.toJSON());
+        }
+        data["pageNumber"] = this.pageNumber;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        return data;
+    }
+}
+
+export interface IPagedResultOfSiteDto {
+    data?: SiteDto[] | undefined;
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
 }
 
 export class CreateDriverInspectionCommand implements ICreateDriverInspectionCommand {

@@ -14,6 +14,13 @@ export const USER_UPSERT_FORM = '/pages/users/upsert';
  * customers Management
  */
  export const COMPANIES_LIST_PATH = '/pages/companies';
+ export const COMPANY_UPSERT_FORM = '/pages/companies/upsert'; 
+
+  /**
+ * sites Management
+ */
+  export const SITES_LIST_PATH = '/pages/sites';
+  export const SITE_UPSERT_FORM = '/pages/sites/upsert'; 
  export const COMPANY_UPSERT_FORM = '/pages/companies/upsert';
 
   /**

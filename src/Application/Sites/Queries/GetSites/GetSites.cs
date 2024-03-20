@@ -2,6 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using VehiGate.Application.Common.Interfaces;
@@ -36,7 +37,7 @@ namespace VehiGate.Application.Sites.Queries.GetSites
 
         public async Task<PagedResult<SiteDto>> Handle(GetSitesQuery request, CancellationToken cancellationToken)
         {
-            var query = _context.Sites.AsNoTracking();
+            var query = await _context.Sites.AsNoTracking().ToListAsync();
 
             if (!string.IsNullOrEmpty(request.SearchBy))
             {
@@ -45,24 +46,30 @@ namespace VehiGate.Application.Sites.Queries.GetSites
                     site.Contact.Contains(request.SearchBy) ||
                     site.Phone.Contains(request.SearchBy) ||
                     site.Email.Contains(request.SearchBy)
-                );
+                ).ToList();
             }
 
             if (!string.IsNullOrEmpty(request.OrderBy))
             {
                 bool sortOrder = request.SortOrder < 0 ? false : true;
-                query = (IQueryable<Site>)query.OrderByProperty(request.OrderBy, ascending: sortOrder).ToList();
+                query = query.OrderByProperty(request.OrderBy, ascending: sortOrder).ToList();
             }
 
-            var totalCount = await query.CountAsync(cancellationToken);
+            var totalCount = query.Count();
 
-            var sites = await query
+            var sites = query
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
-                .ProjectTo<SiteDto>(_mapper.ConfigurationProvider)
-                .ToListAsync(cancellationToken);
+                .ToList();
 
-            return PagedResult<SiteDto>.Create(sites, request.PageNumber, request.PageSize);
+            List<SiteDto> sitesDto = new List<SiteDto>();
+
+            foreach (var site in sites)
+            {
+                sitesDto.Add(new SiteDto { Address = site.Address, Contact = site.Contact, Email = site.Email, Id = site.Id, Phone = site.Phone });
+            }
+
+            return PagedResult<SiteDto>.Create(sitesDto, request.PageNumber, request.PageSize);
         }
     }
 }

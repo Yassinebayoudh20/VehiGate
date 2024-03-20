@@ -1,0 +1,24 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card">
+      <h5>{{ pageTitle | transloco | titlecase }}</h5>
+      <form [formGroup]="form" class="p-fluid p-formgrid grid">
+        <app-contact-info controlKey="contactInfo" [displayInputs]="['email', 'address', 'contact', 'phoneNumber']" class="col-12 md:col-5"></app-contact-info>
+      </form>
+      <div class="flex md:justify-content-end gap-2">
+        <button pButton type="button" pRipple icon="pi pi-arrow-left" label="{{ 'BACK' | transloco | titlecase }}" class="p-button" (click)="goBack()"></button>
+        <button
+          pButton
+          type="button"
+          [loading]="requestProcessing"
+          [disabled]="!form.valid || !form.dirty"
+          pRipple
+          icon="pi pi-save"
+          label="{{ 'SAVE' | transloco | titlecase }}"
+          class="p-button p-button-success"
+          (click)="onSubmit()"
+        ></button>
+      </div>
+    </div>
+  </div>
+</div>

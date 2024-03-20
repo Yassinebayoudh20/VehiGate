@@ -27,15 +27,12 @@ export class ContactInfoComponent implements OnInit {
   ngOnInit(): void {
     const formGroupConfig = {};
 
-    // Check if displayInputs array is empty
     if (this.displayInputs.length === 0) {
-      // If displayInputs is empty, add all form controls
       formGroupConfig['phoneNumber'] = [null, [Validators.required, noWhiteSpaceValidator()]];
       formGroupConfig['email'] = [null, [Validators.required, Validators.email, noWhiteSpaceValidator()]];
       formGroupConfig['contact'] = [null, [Validators.required, noWhiteSpaceValidator()]];
       formGroupConfig['address'] = [null, [Validators.required, noWhiteSpaceValidator()]];
     } else {
-      // Loop through displayInputs and add controls accordingly
       this.displayInputs.forEach(inputName => {
         switch (inputName) {
           case 'phoneNumber':
@@ -54,7 +51,6 @@ export class ContactInfoComponent implements OnInit {
       });
     }
 
-    // Add controls to the parentFormGroup based on displayInputs or all controls
     this.parentFormGroup.addControl(this.controlKey, this.formBuilder.group(formGroupConfig));
 
     this.form = this.parentContainer.control.get(this.controlKey);

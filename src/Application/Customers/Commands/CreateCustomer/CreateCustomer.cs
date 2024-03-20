@@ -49,7 +49,7 @@ namespace VehiGate.Application.Customers.Commands.CreateCustomer
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return customer.Id; // Return the ID of the newly created customer
+            return customer.Id;
         }
     }
 }

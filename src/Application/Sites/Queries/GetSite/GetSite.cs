@@ -32,7 +32,6 @@ namespace VehiGate.Application.Sites.Queries.GetSite
         {
             var site = await _context.Sites
                 .AsNoTracking()
-                .ProjectTo<SiteDto>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
 
             if (site == null)
@@ -40,7 +39,8 @@ namespace VehiGate.Application.Sites.Queries.GetSite
                 throw new NotFoundException(nameof(Site), request.Id);
             }
 
-            return site;
+            return new SiteDto { Address = site.Address, Contact = site.Contact, Email = site.Email, Id = site.Id, Phone = site.Phone };
+
         }
     }
 }

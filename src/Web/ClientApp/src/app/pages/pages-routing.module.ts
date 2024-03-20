@@ -19,10 +19,10 @@ const routes: Routes = [
       //   path: 'vehicles',
       //   loadChildren: () => import('./vehicles-management/vehicles-management.module').then((m) => m.VehiclesManagementModule),
       // },
-      // {
-      //   path: 'sites',
-      //   loadChildren: () => import('./sites-management/sites-management.module').then((m) => m.SitesManagementModule),
-      // },
+      {
+        path: 'sites',
+        loadChildren: () => import('./sites-management/sites-management.module').then((m) => m.SitesManagementModule),
+      },
       // {
       //   path: 'genres',
       //   loadChildren: () => import('./genres-management/genres-management.module').then((m) => m.GenresManagementModule),

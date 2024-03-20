@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using VehiGate.Application.Common.Models;
 using VehiGate.Application.Sites.Commands.CreateSite;
 using VehiGate.Application.Sites.Commands.DeleteSite;
 using VehiGate.Application.Sites.Commands.UpdateSite;
@@ -25,7 +26,7 @@ namespace VehiGate.Web.Endpoints.Sites
         private async Task<IResult> CreateSite(ISender sender, CreateSiteCommand command)
         {
             var result = await sender.Send(command);
-            return Results.Created($"/sites/{result}", result);
+            return Results.Created($"/sites/{result}", new {Id = result});
         }
 
         private async Task<IResult> UpdateSite(ISender sender, string id, UpdateSiteCommand command)
@@ -47,14 +48,13 @@ namespace VehiGate.Web.Endpoints.Sites
             return Results.NoContent();
         }
 
-        private async Task<IResult> GetSiteById(ISender sender, string id)
+        private async Task<SiteDto> GetSiteById(ISender sender, string id)
         {
             var query = new GetSiteQuery { Id = id };
-            var result = await sender.Send(query);
-            return result != null ? Results.Ok(result) : Results.NotFound();
+            return await sender.Send(query);
         }
 
-        private async Task<IResult> GetSites(ISender sender, [FromQuery] int pageNumber = 1,
+        private async Task<PagedResult<SiteDto>> GetSites(ISender sender, [FromQuery] int pageNumber = 1,
                                                    [FromQuery] int pageSize = 10,
                                                    [FromQuery] string? searchBy = null,
                                                    [FromQuery] string? orderBy = null,
@@ -69,8 +69,8 @@ namespace VehiGate.Web.Endpoints.Sites
                 SortOrder = SortOrder,
             };
 
-            var result = await sender.Send(query);
-            return Results.Ok(result);
+            return await sender.Send(query);
+            
         }
     }
 }

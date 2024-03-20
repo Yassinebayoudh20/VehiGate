@@ -48,7 +48,7 @@ export class AppMenuComponent implements OnInit {
           },
           {
             label: 'Drivers Management',
-            icon: 'pi pi-fw pi-ticket',
+            icon: 'pi pi-fw pi-user',
             items: [
               { label: 'Drivers', icon: 'pi pi-list', routerLink: [DRIVERS_LIST_PATH] },
               { label: 'Add Driver', icon: 'pi pi-plus', routerLink: [DRIVER_UPSERT_FORM] },

@@ -10,6 +10,7 @@ using VehiGate.Application.Common.Security;
 using VehiGate.Domain.Entities;
 using VehiGate.Web.Infrastructure;
 using VehiGate.Application.DriverInspections.Queries.GetDriverInspection;
+using VehiGate.Application.Common.Helpers;
 
 namespace VehiGate.Application.DriverInspections.Queries.GetDriverInspections
 {
@@ -44,18 +45,22 @@ namespace VehiGate.Application.DriverInspections.Queries.GetDriverInspections
 
         public async Task<PagedResult<DriverInspectionDto>> Handle(GetDriverInspectionsQuery request, CancellationToken cancellationToken)
         {
-            var query = _context.DriverInspections.Include(i => i.Driver).AsNoTracking();
+            var query = await _context.DriverInspections.Include(i => i.Driver)
+                .Include(inspection => inspection.DriverInspectionChecklists)
+                .ThenInclude(checklist => checklist.Checklist)
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
 
-            var totalCount = await query.CountAsync(cancellationToken);
+            var totalCount = query.Count();
 
-            var inspections = await query
+            var inspections = query
                       .OrderByDescending(inspection => inspection.AuthorizedFrom)
                       .Select(inspection => new DriverInspectionDto
                       {
                           Id = inspection.Id,
                           AuthorizedFrom = inspection.AuthorizedFrom,
                           AuthorizedTo = inspection.AuthorizedTo,
-                          IsAuthorized = DateTime.Now.CompareTo(inspection.AuthorizedFrom.Date) >= 0 && DateTime.Now.CompareTo(inspection.AuthorizedTo.Date) <= 0,
+                          IsAuthorized = inspection.IsAuthorized,
                           Notes = inspection.Notes,
                           DriversFields = inspection.DriversFields,
                           Driver = new DriverInformation
@@ -65,7 +70,7 @@ namespace VehiGate.Application.DriverInspections.Queries.GetDriverInspections
                               Name = null
                           }
                       })
-                      .ToListAsync(cancellationToken);
+                      .ToList();
 
             foreach (var inspection in inspections)
             {

@@ -26,5 +26,11 @@ public class Vehicle : BaseAuditableEntity
 
     public DateOnly InsuranceTo { get; set; }
 
+    public DateTime AuthorizedFrom { get; set; }
+
+    public DateTime AuthorizedTo { get; set; }
+
+    public bool IsAuthorized { get; set; }
+
     public virtual ICollection<VehicleInspection> VehicleInspections { get; set; } = new List<VehicleInspection>();
 }

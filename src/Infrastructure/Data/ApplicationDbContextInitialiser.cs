@@ -110,6 +110,8 @@ public class ApplicationDbContextInitialiser
         await SeedDriverInspectionsAsync();
 
         await SeedCheckingsAsync();
+
+        await SeedCheckingListItemAsync();
     }
 
     private async Task SeedCompaniesAsync()
@@ -409,7 +411,6 @@ public class ApplicationDbContextInitialiser
             var drivers = await _context.Drivers.ToListAsync();
             var vehicles = await _context.Vehicles.Include(i => i.VehicleType).ToListAsync();
 
-
             var checkings = new List<Checking>
         {
             new Checking
@@ -436,6 +437,66 @@ public class ApplicationDbContextInitialiser
         };
 
             _context.Checkings.AddRange(checkings);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task SeedCheckingListItemAsync()
+    {
+        if (!_context.Checklists.Any())
+        {
+            List<Checklist> checklists = new List<Checklist>
+            {
+              new Checklist { Name = CheckListItemsKeys.DRIVER_LICENSE , AssociatedTo = CheckListAssociation.Driver},
+              new Checklist { Name = CheckListItemsKeys.CAP_TRAINING_CERTIFICATE , AssociatedTo = CheckListAssociation.Driver},
+              new Checklist { Name = CheckListItemsKeys.MEDICAL_CERTIFICATE , AssociatedTo = CheckListAssociation.Driver},
+              new Checklist { Name = CheckListItemsKeys.MIN_6_CONES , AssociatedTo = CheckListAssociation.Driver},
+              new Checklist { Name = CheckListItemsKeys.PHONE_OFF_BEFORE_DEPOT , AssociatedTo = CheckListAssociation.Driver},
+              new Checklist { Name = CheckListItemsKeys.SAFETY_GEAR , AssociatedTo = CheckListAssociation.Driver},
+
+              new Checklist { Name = CheckListItemsKeys.REGISTRATION_DOCUMENTS, AssociatedTo = CheckListAssociation.Vehicle },
+              new Checklist { Name = CheckListItemsKeys.TAX_DISC, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.VEHICLE_REGISTRATION_CERTIFICATE, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.INSURANCE, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.TECHNICAL_INSPECTIONS, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.START_UP_TEST, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.POWER_CUT_OFF, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.FIRE_EXTINGUISHER, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.GOOD_TIRE_CONDITION, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.AUDIBLE_REVERSING_ALARM, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.GOOD_MIRROR_CONDITION, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.VARIOUS_LEAKS, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.ELECTRICAL_SIGNALING_INSTALLATION, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.SEATBELT, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.TMD_REGULATORY_SIGNAGE, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.SAFETY_DATA_SHEET, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.FOOTHOLDS_HANDRAILS, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.CABIN_FIRE_EXTINGUISHER, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.SPARE_WHEEL_JACK, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.WHEEL_CHOCKS, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.WARNING_TRIANGLES, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.FIRST_AID_KIT, AssociatedTo = CheckListAssociation.Vehicle},
+              new Checklist { Name = CheckListItemsKeys.CLEANLINESS, AssociatedTo = CheckListAssociation.Vehicle},
+
+              new Checklist { Name = CheckListItemsKeys.REGISTRATION_DOCUMENTS, AssociatedTo = CheckListAssociation.Tank },
+              new Checklist { Name = CheckListItemsKeys.INSURANCE, AssociatedTo = CheckListAssociation.Tank },
+              new Checklist { Name = CheckListItemsKeys.TAX_DISC, AssociatedTo = CheckListAssociation.Tank },
+              new Checklist { Name = CheckListItemsKeys.TECHNICAL_INSPECTIONS, AssociatedTo = CheckListAssociation.Tank },
+              new Checklist { Name = CheckListItemsKeys.VEHICLE_REGISTRATION_CERTIFICATE, AssociatedTo = CheckListAssociation.Tank },
+              new Checklist { Name = CheckListItemsKeys.GOOD_TIRE_CONDITION, AssociatedTo = CheckListAssociation.Tank },
+              new Checklist { Name = CheckListItemsKeys.VARIOUS_LEAKS, AssociatedTo = CheckListAssociation.Tank },
+              new Checklist { Name = CheckListItemsKeys.ELECTRICAL_SIGNALING_INSTALLATION, AssociatedTo = CheckListAssociation.Tank },
+              new Checklist { Name = CheckListItemsKeys.PRESENCE_OF_CAPS_ON_VALVES, AssociatedTo = CheckListAssociation.Tank },
+              new Checklist { Name = CheckListItemsKeys.PRESENCE_OF_GROUNDING_TERMINAL, AssociatedTo = CheckListAssociation.Tank },
+              new Checklist { Name = CheckListItemsKeys.FOOTHOLDS_HANDRAILS, AssociatedTo = CheckListAssociation.Tank },
+              new Checklist { Name = CheckListItemsKeys.TRAILER_FIRE_EXTINGUISHERS, AssociatedTo = CheckListAssociation.Tank },
+              new Checklist { Name = CheckListItemsKeys.MINIMUM_TREAD_DEPTH, AssociatedTo = CheckListAssociation.Tank },
+              new Checklist { Name = CheckListItemsKeys.MIN_6_CONES, AssociatedTo = CheckListAssociation.Tank },
+              new Checklist { Name = CheckListItemsKeys.REFLECTIVE_STRIPES, AssociatedTo = CheckListAssociation.Tank },
+              new Checklist { Name = CheckListItemsKeys.CLEANLINESS, AssociatedTo = CheckListAssociation.Tank },
+            };
+
+            _context.Checklists.AddRange(checklists);
             await _context.SaveChangesAsync();
         }
     }

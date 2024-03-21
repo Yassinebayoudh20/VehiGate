@@ -54,7 +54,7 @@ namespace VehiGate.Application.VehicleInspections.Queries.GetVehicleInspections
                           Id = inspection.Id,
                           AuthorizedFrom = inspection.AuthorizedFrom,
                           AuthorizedTo = inspection.AuthorizedTo,
-                          IsAuthorized = DateTime.Now.CompareTo(inspection.AuthorizedFrom.Date) >= 0 && DateTime.Now.CompareTo(inspection.AuthorizedTo.Date) <= 0,
+                          IsAuthorized = inspection.IsAuthorized,
                           Notes = inspection.Notes,
                           Msdn = inspection.Msdn,
                           IsDamaged = inspection.IsDamaged,

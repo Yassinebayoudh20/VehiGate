@@ -42,7 +42,6 @@ namespace VehiGate.Application.VehicleInspections.Queries.GetVehicleInspection
 
         private async Task<VehicleInspectionDto> MapToDto(VehicleInspection vehicleInspection)
         {
-            bool isAuthorized = DateTime.Now.CompareTo(vehicleInspection.AuthorizedFrom.Date) >= 0 && DateTime.Now.CompareTo(vehicleInspection.AuthorizedTo.Date) <= 0;
 
             var userById = await _identityService.GetUserById(vehicleInspection.Driver.UserId);
 
@@ -51,7 +50,7 @@ namespace VehiGate.Application.VehicleInspections.Queries.GetVehicleInspection
                 Id = vehicleInspection.Id,
                 AuthorizedFrom = vehicleInspection.AuthorizedFrom,
                 AuthorizedTo = vehicleInspection.AuthorizedTo,
-                IsAuthorized = isAuthorized,
+                IsAuthorized = vehicleInspection.IsAuthorized,
                 Notes = vehicleInspection.Notes,
                 Msdn = vehicleInspection.Msdn,
                 IsDamaged = vehicleInspection.IsDamaged,

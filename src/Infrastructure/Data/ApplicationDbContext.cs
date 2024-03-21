@@ -29,6 +29,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
     public DbSet<Checking> Checkings => Set<Checking>();
 
+    public DbSet<DriverInspectionChecklist> DriverInspectionChecklists => Set<DriverInspectionChecklist>();
+
+    public DbSet<VehicleInspectionChecklist> VehicleInspectionChecklists => Set<VehicleInspectionChecklist>();
+
+    public DbSet<Checklist> Checklists => Set<Checklist>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

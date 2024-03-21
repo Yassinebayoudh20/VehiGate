@@ -3,6 +3,8 @@ using MediatR;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using VehiGate.Application.CheckLists.Queries;
+using VehiGate.Application.Common.Helpers;
 using VehiGate.Application.Common.Interfaces;
 using VehiGate.Application.Common.Security;
 using VehiGate.Application.VehicleInspections.Commands.CreateVehicleInspection;
@@ -19,8 +21,9 @@ namespace VehiGate.Application.VehicleInspections.Commands.CreateVehicleInspecti
         public bool IsDamaged { get; set; } = false;
         public string Msdn { get; set; }
         public string Notes { get; set; }
-        public DateTime AuthorizedFrom { get; set; }
-        public DateTime AuthorizedTo { get; set; }
+        public DateTime AuthorizedFrom { get; set; } = DateTime.UtcNow;
+        public DateTime AuthorizedTo { get; set; } = DateTime.UtcNow;
+        public List<CheckListDto> Checklists { get; set; }
     }
 
     public class CreateVehicleInspectionCommandValidator : AbstractValidator<CreateVehicleInspectionCommand>
@@ -60,9 +63,44 @@ public class CreateVehicleInspectionCommandHandler : IRequestHandler<CreateVehic
             AuthorizedTo = request.AuthorizedTo,
         };
 
+        if (request.Checklists != null && request.Checklists.Any())
+        {
+            foreach (var checklistDto in request.Checklists)
+            {
+                var checklist = await _context.Checklists.FindAsync(checklistDto.Id);
+
+                if (checklist != null)
+                {
+                    var inspectionChecklist = new VehicleInspectionChecklist
+                    {
+                        VehicleInspection = vehicleInspection,
+                        Checklist = checklist,
+                        State = checklistDto.State,
+                        Note = checklistDto.Note
+                    };
+
+                    _context.VehicleInspectionChecklists.Add(inspectionChecklist);
+                }
+            }
+        }
+
+        vehicleInspection.IsAuthorized = InspectionHelper.IsAuthorized(vehicleInspection.AuthorizedFrom, vehicleInspection.AuthorizedTo) && request.Checklists.All(checklist => checklist.State);
+
         _context.VehicleInspections.Add(vehicleInspection);
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        var vehicle = _context.Vehicles.FirstOrDefault(d => d.Id == request.VehicleId);
+
+        if (vehicle != null)
+        {
+            vehicle.AuthorizedFrom = request.AuthorizedFrom;
+            vehicle.AuthorizedTo = request.AuthorizedTo;
+            vehicle.IsAuthorized = vehicleInspection.IsAuthorized;
+
+            _context.Vehicles.Update(vehicle);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
 
         return vehicleInspection.Id;
     }

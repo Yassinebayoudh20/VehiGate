@@ -3,6 +3,8 @@ using MediatR;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using VehiGate.Application.CheckLists.Queries;
+using VehiGate.Application.Common.Helpers;
 using VehiGate.Application.Common.Interfaces;
 using VehiGate.Domain.Entities;
 
@@ -11,10 +13,11 @@ namespace VehiGate.Application.DriverInspections.Commands.CreateDriverInspection
     public record CreateDriverInspectionCommand : IRequest<Unit>
     {
         public string Notes { get; init; }
-        public DateTime AuthorizedFrom { get; init; }
-        public DateTime AuthorizedTo { get; init; }
+        public DateTime AuthorizedFrom { get; set; } = DateTime.UtcNow;
+        public DateTime AuthorizedTo { get; set; } = DateTime.UtcNow;
         public string DriverId { get; init; }
         public string DriversFields { get; init; }
+        public List<CheckListDto> Checklists { get; init; }
     }
 
     public class CreateDriverInspectionCommandValidator : AbstractValidator<CreateDriverInspectionCommand>
@@ -50,8 +53,42 @@ namespace VehiGate.Application.DriverInspections.Commands.CreateDriverInspection
                 DriversFields = request.DriversFields
             };
 
+            if (request.Checklists != null && request.Checklists.Any())
+            {
+                foreach (var checklistDto in request.Checklists)
+                {
+                    var checklist = await _context.Checklists.FindAsync(checklistDto.Id);
+
+                    if (checklist != null)
+                    {
+                        var inspectionChecklist = new DriverInspectionChecklist
+                        {
+                            DriverInspection = driverInspection,
+                            Checklist = checklist,
+                            State = checklistDto.State,
+                            Note = checklistDto.Note
+                        };
+
+                        _context.DriverInspectionChecklists.Add(inspectionChecklist);
+                    }
+                }
+            }
+
+            driverInspection.IsAuthorized = InspectionHelper.IsAuthorized(driverInspection.AuthorizedFrom, driverInspection.AuthorizedTo) && request.Checklists.All(checklist => checklist.State);
+
             _context.DriverInspections.Add(driverInspection);
             await _context.SaveChangesAsync(cancellationToken);
+
+            var driver = _context.Drivers.FirstOrDefault(d => d.Id == request.DriverId);
+
+            if (driver != null)
+            {
+                driver.AuthorizedFrom = request.AuthorizedFrom;
+                driver.AuthorizedTo = request.AuthorizedTo;
+                driver.IsAuthorized = driverInspection.IsAuthorized;
+                _context.Drivers.Update(driver);
+                await _context.SaveChangesAsync(cancellationToken);
+            }
 
             return Unit.Value;
         }

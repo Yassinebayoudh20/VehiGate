@@ -55,7 +55,7 @@ namespace VehiGate.Application.DriverInspections.Queries.GetDriverInspection
                 DriversFields = inspection.DriversFields,
                 AuthorizedFrom = inspection.AuthorizedFrom,
                 AuthorizedTo = inspection.AuthorizedTo,
-                IsAuthorized = DateTime.Now.CompareTo(inspection.AuthorizedFrom.Date) >= 0 && DateTime.Now.CompareTo(inspection.AuthorizedTo.Date) <= 0,
+                IsAuthorized = inspection.IsAuthorized,
                 Notes = inspection.Notes
             };
         }

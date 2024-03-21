@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace VehiGate.Domain.Entities;
+
 public class VehicleInspection : BaseInspection
 {
     public string DriverId { get; set; }
@@ -20,4 +21,6 @@ public class VehicleInspection : BaseInspection
     public bool IsDamaged { get; set; }
 
     public string Msdn { get; set; }
+
+    public ICollection<VehicleInspectionChecklist> VehicleInspectionChecklists { get; set; }
 }

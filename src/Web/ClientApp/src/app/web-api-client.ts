@@ -3608,6 +3608,7 @@ export class CreateDriverInspectionCommand implements ICreateDriverInspectionCom
     authorizedTo?: Date;
     driverId?: string | undefined;
     driversFields?: string | undefined;
+    checklists?: CheckListDto[] | undefined;
 
     constructor(data?: ICreateDriverInspectionCommand) {
         if (data) {
@@ -3625,6 +3626,11 @@ export class CreateDriverInspectionCommand implements ICreateDriverInspectionCom
             this.authorizedTo = _data["authorizedTo"] ? new Date(_data["authorizedTo"].toString()) : <any>undefined;
             this.driverId = _data["driverId"];
             this.driversFields = _data["driversFields"];
+            if (Array.isArray(_data["checklists"])) {
+                this.checklists = [] as any;
+                for (let item of _data["checklists"])
+                    this.checklists!.push(CheckListDto.fromJS(item));
+            }
         }
     }
 
@@ -3642,6 +3648,11 @@ export class CreateDriverInspectionCommand implements ICreateDriverInspectionCom
         data["authorizedTo"] = this.authorizedTo ? this.authorizedTo.toISOString() : <any>undefined;
         data["driverId"] = this.driverId;
         data["driversFields"] = this.driversFields;
+        if (Array.isArray(this.checklists)) {
+            data["checklists"] = [];
+            for (let item of this.checklists)
+                data["checklists"].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -3652,6 +3663,51 @@ export interface ICreateDriverInspectionCommand {
     authorizedTo?: Date;
     driverId?: string | undefined;
     driversFields?: string | undefined;
+    checklists?: CheckListDto[] | undefined;
+}
+
+export class CheckListDto implements ICheckListDto {
+    id?: string | undefined;
+    state?: boolean;
+    note?: string | undefined;
+
+    constructor(data?: ICheckListDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.state = _data["state"];
+            this.note = _data["note"];
+        }
+    }
+
+    static fromJS(data: any): CheckListDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CheckListDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["state"] = this.state;
+        data["note"] = this.note;
+        return data;
+    }
+}
+
+export interface ICheckListDto {
+    id?: string | undefined;
+    state?: boolean;
+    note?: string | undefined;
 }
 
 export class UpdateDriverInspectionCommand implements IUpdateDriverInspectionCommand {
@@ -3661,6 +3717,7 @@ export class UpdateDriverInspectionCommand implements IUpdateDriverInspectionCom
     authorizedTo?: Date;
     driverId?: string | undefined;
     driversFields?: string | undefined;
+    checklists?: CheckListDto[] | undefined;
 
     constructor(data?: IUpdateDriverInspectionCommand) {
         if (data) {
@@ -3679,6 +3736,11 @@ export class UpdateDriverInspectionCommand implements IUpdateDriverInspectionCom
             this.authorizedTo = _data["authorizedTo"] ? new Date(_data["authorizedTo"].toString()) : <any>undefined;
             this.driverId = _data["driverId"];
             this.driversFields = _data["driversFields"];
+            if (Array.isArray(_data["checklists"])) {
+                this.checklists = [] as any;
+                for (let item of _data["checklists"])
+                    this.checklists!.push(CheckListDto.fromJS(item));
+            }
         }
     }
 
@@ -3697,6 +3759,11 @@ export class UpdateDriverInspectionCommand implements IUpdateDriverInspectionCom
         data["authorizedTo"] = this.authorizedTo ? this.authorizedTo.toISOString() : <any>undefined;
         data["driverId"] = this.driverId;
         data["driversFields"] = this.driversFields;
+        if (Array.isArray(this.checklists)) {
+            data["checklists"] = [];
+            for (let item of this.checklists)
+                data["checklists"].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -3708,6 +3775,7 @@ export interface IUpdateDriverInspectionCommand {
     authorizedTo?: Date;
     driverId?: string | undefined;
     driversFields?: string | undefined;
+    checklists?: CheckListDto[] | undefined;
 }
 
 export class CreateVehicleInspectionCommand implements ICreateVehicleInspectionCommand {
@@ -3719,6 +3787,7 @@ export class CreateVehicleInspectionCommand implements ICreateVehicleInspectionC
     notes?: string | undefined;
     authorizedFrom?: Date;
     authorizedTo?: Date;
+    checklists?: CheckListDto[] | undefined;
 
     constructor(data?: ICreateVehicleInspectionCommand) {
         if (data) {
@@ -3739,6 +3808,11 @@ export class CreateVehicleInspectionCommand implements ICreateVehicleInspectionC
             this.notes = _data["notes"];
             this.authorizedFrom = _data["authorizedFrom"] ? new Date(_data["authorizedFrom"].toString()) : <any>undefined;
             this.authorizedTo = _data["authorizedTo"] ? new Date(_data["authorizedTo"].toString()) : <any>undefined;
+            if (Array.isArray(_data["checklists"])) {
+                this.checklists = [] as any;
+                for (let item of _data["checklists"])
+                    this.checklists!.push(CheckListDto.fromJS(item));
+            }
         }
     }
 
@@ -3759,6 +3833,11 @@ export class CreateVehicleInspectionCommand implements ICreateVehicleInspectionC
         data["notes"] = this.notes;
         data["authorizedFrom"] = this.authorizedFrom ? this.authorizedFrom.toISOString() : <any>undefined;
         data["authorizedTo"] = this.authorizedTo ? this.authorizedTo.toISOString() : <any>undefined;
+        if (Array.isArray(this.checklists)) {
+            data["checklists"] = [];
+            for (let item of this.checklists)
+                data["checklists"].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -3772,6 +3851,7 @@ export interface ICreateVehicleInspectionCommand {
     notes?: string | undefined;
     authorizedFrom?: Date;
     authorizedTo?: Date;
+    checklists?: CheckListDto[] | undefined;
 }
 
 export class UpdateVehicleInspectionCommand implements IUpdateVehicleInspectionCommand {
@@ -3784,6 +3864,7 @@ export class UpdateVehicleInspectionCommand implements IUpdateVehicleInspectionC
     notes?: string | undefined;
     authorizedFrom?: Date;
     authorizedTo?: Date;
+    checklists?: CheckListDto[] | undefined;
 
     constructor(data?: IUpdateVehicleInspectionCommand) {
         if (data) {
@@ -3805,6 +3886,11 @@ export class UpdateVehicleInspectionCommand implements IUpdateVehicleInspectionC
             this.notes = _data["notes"];
             this.authorizedFrom = _data["authorizedFrom"] ? new Date(_data["authorizedFrom"].toString()) : <any>undefined;
             this.authorizedTo = _data["authorizedTo"] ? new Date(_data["authorizedTo"].toString()) : <any>undefined;
+            if (Array.isArray(_data["checklists"])) {
+                this.checklists = [] as any;
+                for (let item of _data["checklists"])
+                    this.checklists!.push(CheckListDto.fromJS(item));
+            }
         }
     }
 
@@ -3826,6 +3912,11 @@ export class UpdateVehicleInspectionCommand implements IUpdateVehicleInspectionC
         data["notes"] = this.notes;
         data["authorizedFrom"] = this.authorizedFrom ? this.authorizedFrom.toISOString() : <any>undefined;
         data["authorizedTo"] = this.authorizedTo ? this.authorizedTo.toISOString() : <any>undefined;
+        if (Array.isArray(this.checklists)) {
+            data["checklists"] = [];
+            for (let item of this.checklists)
+                data["checklists"].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -3840,6 +3931,7 @@ export interface IUpdateVehicleInspectionCommand {
     notes?: string | undefined;
     authorizedFrom?: Date;
     authorizedTo?: Date;
+    checklists?: CheckListDto[] | undefined;
 }
 
 export class CreateDriverCommand implements ICreateDriverCommand {
@@ -3962,6 +4054,7 @@ export class DriverDto implements IDriverDto {
     phone?: string | undefined;
     companyName?: string | undefined;
     driverLicenseNumber?: string | undefined;
+    isAuthorized?: boolean;
 
     constructor(data?: IDriverDto) {
         if (data) {
@@ -3981,6 +4074,7 @@ export class DriverDto implements IDriverDto {
             this.phone = _data["phone"];
             this.companyName = _data["companyName"];
             this.driverLicenseNumber = _data["driverLicenseNumber"];
+            this.isAuthorized = _data["isAuthorized"];
         }
     }
 
@@ -4000,6 +4094,7 @@ export class DriverDto implements IDriverDto {
         data["phone"] = this.phone;
         data["companyName"] = this.companyName;
         data["driverLicenseNumber"] = this.driverLicenseNumber;
+        data["isAuthorized"] = this.isAuthorized;
         return data;
     }
 }
@@ -4012,6 +4107,7 @@ export interface IDriverDto {
     phone?: string | undefined;
     companyName?: string | undefined;
     driverLicenseNumber?: string | undefined;
+    isAuthorized?: boolean;
 }
 
 export class PagedResultOfDriverDto implements IPagedResultOfDriverDto {

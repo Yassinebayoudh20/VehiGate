@@ -17,6 +17,12 @@ public class Driver : BaseAuditableEntity
 
     public string DriverLicenseNumber { get; set; }
 
+    public DateTime AuthorizedFrom { get; set; }
+
+    public DateTime AuthorizedTo { get; set; }
+
+    public bool IsAuthorized { get; set; }
+
     public virtual ICollection<VehicleInspection> VehicleInspections { get; set; } = new List<VehicleInspection>();
 
     public virtual ICollection<DriverInspection> DriverInspections { get; set; } = new List<DriverInspection>();

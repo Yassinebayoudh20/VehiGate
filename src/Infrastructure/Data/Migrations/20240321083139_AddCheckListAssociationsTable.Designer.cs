@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VehiGate.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using VehiGate.Infrastructure.Data;
 namespace VehiGate.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240321083139_AddCheckListAssociationsTable")]
+    partial class AddCheckListAssociationsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -330,12 +333,6 @@ namespace VehiGate.Infrastructure.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("AuthorizedFrom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("AuthorizedTo")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("CompanyId")
                         .HasColumnType("nvarchar(450)");
 
@@ -349,9 +346,6 @@ namespace VehiGate.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("IsAuthorized")
-                        .HasColumnType("bit");
 
                     b.Property<DateTimeOffset>("LastModified")
                         .HasColumnType("datetimeoffset");
@@ -395,9 +389,6 @@ namespace VehiGate.Infrastructure.Data.Migrations
 
                     b.Property<string>("InspectorId")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsAuthorized")
-                        .HasColumnType("bit");
 
                     b.Property<DateTimeOffset>("LastModified")
                         .HasColumnType("datetimeoffset");
@@ -492,12 +483,6 @@ namespace VehiGate.Infrastructure.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("AuthorizedFrom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("AuthorizedTo")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("CompanyId")
                         .HasColumnType("nvarchar(450)");
 
@@ -515,9 +500,6 @@ namespace VehiGate.Infrastructure.Data.Migrations
 
                     b.Property<DateOnly>("InsuranceTo")
                         .HasColumnType("date");
-
-                    b.Property<bool>("IsAuthorized")
-                        .HasColumnType("bit");
 
                     b.Property<DateTimeOffset>("LastModified")
                         .HasColumnType("datetimeoffset");
@@ -568,9 +550,6 @@ namespace VehiGate.Infrastructure.Data.Migrations
 
                     b.Property<string>("InspectorId")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsAuthorized")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDamaged")
                         .HasColumnType("bit");

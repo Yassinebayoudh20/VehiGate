@@ -1,4 +1,5 @@
-﻿using VehiGate.Application.Common.Interfaces;
+﻿using VehiGate.Application.Common.Helpers;
+using VehiGate.Application.Common.Interfaces;
 using VehiGate.Application.Common.Models;
 using VehiGate.Application.Common.Security;
 using VehiGate.Application.Vehicles.Queries.GetVehicle;
@@ -52,21 +53,37 @@ namespace VehiGate.Application.Vehicles.Queries.GetVehicles
             List<Vehicle> vehicles = await query
                 .ToListAsync(cancellationToken);
 
-            List<VehicleDto> vehicleDtos = vehicles.Select(v => new VehicleDto
+            List<VehicleDto> vehiclesDtos = new List<VehicleDto>();
+
+            foreach (var vehicle in vehicles)
             {
-                Id = v.Id,
-                VehicleTypeName = v.VehicleType?.Name,
-                CompanyName = v.Company?.Name,
-                InsuranceCompany = v.InsuranceCompany,
-                Name = v.Name,
-                PlateNumber = v.PlateNumber,
-                InsuranceFrom = v.InsuranceFrom,
-                InsuranceTo = v.InsuranceTo
-            }).ToList();
+                var isAuthorized = InspectionHelper.IsAuthorized(vehicle.AuthorizedFrom, vehicle.AuthorizedTo) && vehicle.IsAuthorized;
+
+                if (vehicle.IsAuthorized != isAuthorized)
+                {
+                    vehicle.IsAuthorized = isAuthorized;
+                    _context.Vehicles.Update(vehicle);
+                }
+
+                vehiclesDtos.Add(new VehicleDto
+                {
+                    Id = vehicle.Id,
+                    VehicleTypeName = vehicle.VehicleType?.Name,
+                    CompanyName = vehicle.Company?.Name,
+                    InsuranceCompany = vehicle.InsuranceCompany,
+                    Name = vehicle.Name,
+                    IsAuthorized = isAuthorized,
+                    PlateNumber = vehicle.PlateNumber,
+                    InsuranceFrom = vehicle.InsuranceFrom,
+                    InsuranceTo = vehicle.InsuranceTo
+                });
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
 
             if (!string.IsNullOrEmpty(request.SearchBy))
             {
-                vehicleDtos = vehicleDtos.Where(vehicle =>
+                vehiclesDtos = vehiclesDtos.Where(vehicle =>
                     (vehicle.Name?.Contains(request.SearchBy) ?? false) ||
                     (vehicle.PlateNumber?.Contains(request.SearchBy) ?? false) ||
                     (vehicle.InsuranceCompany?.Contains(request.SearchBy) ?? false)
@@ -76,11 +93,10 @@ namespace VehiGate.Application.Vehicles.Queries.GetVehicles
             if (!string.IsNullOrEmpty(request.OrderBy))
             {
                 bool sortOrder = request.SortOrder < 0 ? false : true;
-                vehicleDtos = vehicleDtos.OrderByProperty(request.OrderBy, ascending: sortOrder).ToList();
+                vehiclesDtos = vehiclesDtos.OrderByProperty(request.OrderBy, ascending: sortOrder).ToList();
             }
 
-            return PagedResult<VehicleDto>.Create(vehicleDtos, request.PageNumber, request.PageSize);
+            return PagedResult<VehicleDto>.Create(vehiclesDtos, request.PageNumber, request.PageSize);
         }
-
     }
 }

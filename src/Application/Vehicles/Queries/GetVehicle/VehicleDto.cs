@@ -10,4 +10,5 @@ public class VehicleDto
     public string PlateNumber { get; set; }
     public DateOnly InsuranceFrom { get; set; }
     public DateOnly InsuranceTo { get; set; }
+    public bool IsAuthorized { get; set; }
 }

@@ -2434,6 +2434,30 @@
           "driversFields": {
             "type": "string",
             "nullable": true
+          },
+          "checklists": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/CheckListDto"
+            }
+          }
+        }
+      },
+      "CheckListDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "boolean"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -2464,6 +2488,13 @@
           "driversFields": {
             "type": "string",
             "nullable": true
+          },
+          "checklists": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/CheckListDto"
+            }
           }
         }
       },
@@ -2500,6 +2531,13 @@
           "authorizedTo": {
             "type": "string",
             "format": "date-time"
+          },
+          "checklists": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/CheckListDto"
+            }
           }
         }
       },
@@ -2540,6 +2578,13 @@
           "authorizedTo": {
             "type": "string",
             "format": "date-time"
+          },
+          "checklists": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/CheckListDto"
+            }
           }
         }
       },
@@ -2634,6 +2679,9 @@
           "driverLicenseNumber": {
             "type": "string",
             "nullable": true
+          },
+          "isAuthorized": {
+            "type": "boolean"
           }
         }
       },

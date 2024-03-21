@@ -1,4 +1,5 @@
-﻿using VehiGate.Application.Common.Interfaces;
+﻿using VehiGate.Application.Common.Helpers;
+using VehiGate.Application.Common.Interfaces;
 using VehiGate.Application.Common.Models;
 using VehiGate.Application.Common.Security;
 using VehiGate.Application.Drivers.Queries.GetDriver;
@@ -57,6 +58,7 @@ namespace VehiGate.Application.Drivers.Queries.GetDrivers
                         Id = driver.Id,
                         DriverLicenseNumber = driver.DriverLicenseNumber,
                         FirstName = userInfo.FirstName,
+                        IsAuthorized = driver.IsAuthorized,
                         LastName = userInfo.LastName,
                         CompanyName = driver.Company.Name,
                         Email = userInfo.Email,

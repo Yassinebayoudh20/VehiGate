@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
+using Microsoft.Extensions.Hosting;
 using VehiGate.Application.Common.Behaviours;
+using VehiGate.Application.Common.Crons;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -11,13 +13,23 @@ public static class DependencyInjection
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-        services.AddMediatR(cfg => {
+        services.AddMediatR(cfg =>
+        {
             cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
         });
+
+        services.Configure<HostOptions>(options =>
+        {
+            options.ServicesStartConcurrently = true;
+            options.ServicesStopConcurrently = false;
+        });
+
+        services.AddHostedService<UpdateVehicleAuthorizationBackgroundService>();
+        services.AddHostedService<UpdateDriverAuthorizationBackgroundService>();
 
         return services;
     }

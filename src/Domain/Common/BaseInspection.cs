@@ -15,4 +15,6 @@ public abstract class BaseInspection : BaseAuditableEntity
     public DateTime AuthorizedFrom { get; set; }
 
     public DateTime AuthorizedTo { get; set; }
+
+    public bool IsAuthorized { get; set; }
 }

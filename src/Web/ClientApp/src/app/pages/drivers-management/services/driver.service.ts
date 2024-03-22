@@ -3,16 +3,15 @@ import { Injectable } from '@angular/core';
 import { CreateDriverCommand, DriversClient, UpdateDriverCommand } from 'src/app/web-api-client';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DriverService {
-
   constructor(private driversClient: DriversClient) {}
   getAllDrivers(params: PaginationParams) {
     return this.driversClient.getDrivers(params.pageNumber, params.pageSize, params.searchBy, params.orderBy, params.sortOrder);
   }
-  createrNewDriver(createCmd: CreateDriverCommand) {
-    return this.driversClient.createDriver(createCmd)
+  createNewDriver(createCmd: CreateDriverCommand) {
+    return this.driversClient.createDriver(createCmd);
   }
 
   updateDriver(driverId: string, updateCmd: UpdateDriverCommand) {
@@ -22,7 +21,4 @@ export class DriverService {
   getDriverDetails(driverId: string) {
     return this.driversClient.getDriverById(driverId);
   }
-  // getCampanies() {
-  //   return this.driversClient.getCompanies()
-  // }
 }

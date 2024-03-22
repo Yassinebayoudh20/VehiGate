@@ -5,28 +5,30 @@ import { DriverService } from './../services/driver.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CrudService } from 'src/app/shared/components/crud/crud.service';
 import { TranslocoService } from '@ngneat/transloco';
-import { RoleInfo, CreateDriverCommand, UpdateDriverCommand } from 'src/app/web-api-client';
+import { RoleInfo, CreateDriverCommand, UpdateDriverCommand, PagedResultOfCompanyDto } from 'src/app/web-api-client';
 import { Observable } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
+import { CompaniesService } from '../../companies-management/services/companies.service';
+import { DEFAULT_PAGE_SIZE } from 'src/app/core/constants';
 
 @Component({
   selector: 'app-driver-form',
   templateUrl: './driver-form.component.html',
-  styleUrls: ['./driver-form.component.css']
+  styleUrls: ['./driver-form.component.css'],
 })
-export class DriverFormComponent implements OnInit{
-
+export class DriverFormComponent implements OnInit {
   form: FormGroup;
   isEditing: boolean = false;
   pageTitle: string;
-  // driverCompaniesList$: Observable<RoleInfo[]> = new Observable();
+  companiesList$: Observable<PagedResultOfCompanyDto> = new Observable();
   requestProcessing = false;
 
   constructor(
     private formBuilder: FormBuilder,
     private transloco: TranslocoService,
     private crudService: CrudService,
+    private companiesService: CompaniesService,
     private router: Router,
     private driverService: DriverService,
     private aRoute: ActivatedRoute
@@ -37,13 +39,12 @@ export class DriverFormComponent implements OnInit{
     this.aRoute.queryParams.subscribe((params) => {
       this.isEditing = params['action'] === FormState.EDITING ? true : false;
       this.resolvePageTitle();
-      // this.initializeCompanyist();
+      this.loadCompanies();
       this.form = this.formBuilder.group({
         firstName: [null, [Validators.required, Validators.minLength(2), noWhiteSpaceValidator()]],
         lastName: [null, [Validators.required, Validators.minLength(2), noWhiteSpaceValidator()]],
-        driverLicenceNumber:[null, [Validators.required, Validators.minLength(1), noWhiteSpaceValidator()]],
+        driverLicenceNumber: [null, [Validators.required, Validators.minLength(1), noWhiteSpaceValidator()]],
         company: [null, [Validators.required]],
-
       });
       if (this.isEditing) {
         this.fetchDriverDetails(driverId);
@@ -54,9 +55,13 @@ export class DriverFormComponent implements OnInit{
     this.pageTitle = this.isEditing ? 'EDIT_DRIVER' : 'ADD_NEW_DRIVER';
   }
 
-  // initializeUserRolesList() {
-  //   this.driverCompaniesList$ = this.userService.getUserRoles();
-  // }
+  loadCompanies(pageNumber: number = 1) {
+    this.companiesList$ = this.companiesService.getAllCompanies({ pageNumber: pageNumber, pageSize: DEFAULT_PAGE_SIZE });
+  }
+
+  onLoadMoreData($event) {
+    this.loadCompanies($event);
+  }
 
   onSubmit(): void {
     if (this.form.invalid) {
@@ -66,7 +71,7 @@ export class DriverFormComponent implements OnInit{
     this.requestProcessing = true;
 
     const command = this.isEditing ? this.createUpdateDriverCommand() : this.createDriverCommand();
-    const userServiceMethod = this.isEditing ? this.driverService.updateDriver : this.driverService.createrNewDriver;
+    const userServiceMethod = this.isEditing ? this.driverService.updateDriver : this.driverService.createNewDriver;
 
     const methodParams = this.isEditing ? [this.aRoute.snapshot.params.id, command] : [command];
 
@@ -87,8 +92,8 @@ export class DriverFormComponent implements OnInit{
           // company: driverData.roles[0],
           contactInfo: {
             email: driverData.email,
-            phoneNumber: driverData.phone
-          }
+            phoneNumber: driverData.phone,
+          },
         });
       },
     });
@@ -139,6 +144,4 @@ export class DriverFormComponent implements OnInit{
   goBack() {
     this.router.navigate([DRIVERS_LIST_PATH]);
   }
-
-
 }

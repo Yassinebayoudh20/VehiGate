@@ -1,0 +1,13 @@
+.p-dropdown-items-wrapper {
+  overflow-y: auto;
+  height: 20rem;
+}
+
+.p-dropdown-label {
+  padding-left: 2.5rem;
+  cursor: pointer;
+}
+
+.p-dropdown-item{
+    cursor: pointer;
+}

@@ -1,0 +1,17 @@
+<div class="p-dropdown p-component p-inputwrapper p-dropdown-clearable" [ngClass]="{ 'p-dropdown-open': isOpen }" (click)="toggleDropdown($event)">
+  <div class="p-element p-dropdown-label p-inputtext p-placeholder">
+    {{ selectedItem ? selectedItem[optionName] : 'Select an item' }}
+  </div>
+
+  <div class="p-dropdown-panel p-component" *ngIf="isOpen">
+    <div class="p-dropdown-items-wrapper" (scroll)="onScroll()" #scrollContainer>
+      <div class="p-dropdown-items">
+        <div *ngFor="let item of items" class="p-dropdown-item p-element" (click)="selectItem(item)">
+          {{ item[optionName] }}
+        </div>
+
+        <div *ngIf="loading" class="loading-text">Loading...</div>
+      </div>
+    </div>
+  </div>
+</div>

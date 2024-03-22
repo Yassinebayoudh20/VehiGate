@@ -4,7 +4,7 @@
       <h5>{{ pageTitle | transloco | titlecase }}</h5>
       <form [formGroup]="form" class="p-fluid p-formgrid grid">
         <div class="col-12 md:col-7">
-          <div class="field ">
+          <div class="field">
             <label>{{ 'FIRST_NAME' | transloco | titlecase }}</label>
             <span class="p-input-icon-left">
               <i class="pi pi-user"></i>
@@ -15,7 +15,7 @@
               <small class="text-red-500" *ngIf="form.get('firstName').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
             </div>
           </div>
-          <div class="field ">
+          <div class="field">
             <label>{{ 'LAST_NAME' | transloco | titlecase }}</label>
             <span class="p-input-icon-left">
               <i class="pi pi-user"></i>
@@ -27,7 +27,7 @@
             </div>
           </div>
 
-          <div class="field ">
+          <div class="field">
             <label>{{ 'DRIVER_LICENCE_NUMBER' | transloco | titlecase }}</label>
             <span class="p-input-icon-left">
               <i class="pi pi-id-card"></i>
@@ -38,14 +38,14 @@
               <small class="text-red-500" *ngIf="form.get('driverLicenceNumber').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
             </div>
           </div>
-          <!-- <div class="field">
-            <label htmlFor="state">{{ 'ROLE' | transloco | titlecase }}</label>
-            <p-dropdown [options]="userRolesList$ | async" optionLabel="name" optionValue="name" formControlName="role" [placeholder]="'role' | titlecase"></p-dropdown>
-            <div *ngIf="form.get('role').invalid && (form.get('role').dirty || form.get('role').touched)">
+          <div class="field">
+            <label htmlFor="state">{{ 'COMPANY' | transloco | titlecase }}</label>
+            <app-dropdown-v-scroll [items$]="this.companiesList$" (loadMoreDataEmitter)="onLoadMoreData($event)"></app-dropdown-v-scroll>
+            <div *ngIf="form.get('company').invalid && (form.get('company').dirty || form.get('company').touched)">
               <small class="text-red-500">{{ 'ROLE_IS_REQUIRED' | transloco | titlecase }}</small>
-              <small class="text-red-500" *ngIf="form.get('role').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
+              <small class="text-red-500" *ngIf="form.get('company').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
             </div>
-          </div> -->
+          </div>
         </div>
 
         <app-contact-info controlKey="contactInfo" [displayInputs]="['email', 'phoneNumber']" class="col-12 md:col-5"></app-contact-info>

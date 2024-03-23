@@ -5,7 +5,7 @@ import { DriverService } from './../services/driver.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CrudService } from 'src/app/shared/components/crud/crud.service';
 import { TranslocoService } from '@ngneat/transloco';
-import { RoleInfo, CreateDriverCommand, UpdateDriverCommand, PagedResultOfCompanyDto, CompanyDto } from 'src/app/web-api-client';
+import { RoleInfo, CreateDriverCommand, UpdateDriverCommand, PagedResultOfCompanyDto, CompanyDto, DriverDto } from 'src/app/web-api-client';
 import { Observable } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
@@ -24,6 +24,7 @@ export class DriverFormComponent implements OnInit {
   pageTitle: string;
   companiesList$: Observable<PagedResultOfCompanyDto> = null;
   requestProcessing = false;
+  driverModel: DriverDto = null;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -91,6 +92,7 @@ export class DriverFormComponent implements OnInit {
   fetchDriverDetails(userId: string) {
     this.driverService.getDriverDetails(userId).subscribe({
       next: (driverData) => {
+        this.driverModel = driverData;
         this.form.patchValue({
           firstName: driverData.firstName,
           lastName: driverData.lastName,

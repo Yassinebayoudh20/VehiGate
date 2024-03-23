@@ -41,10 +41,10 @@
           <div class="field">
             <label htmlFor="state">{{ 'COMPANY' | transloco | titlecase }}</label>
             <app-dropdown-v-scroll
-              *ngIf="this.companiesList$"
+              *ngIf="(isEditing && driverModel) || !isEditing"
               [isRequired]="true"
               [items$]="this.companiesList$"
-              [selected]="form.get('company')?.value"
+              [selected]="driverModel?.companyId"
               (loadMoreDataEmitter)="onLoadMoreData($event)"
               (selectedItemChange)="getSelectedCompany($event)"
             ></app-dropdown-v-scroll>

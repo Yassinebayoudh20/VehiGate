@@ -49,6 +49,7 @@ export class DropdownVScrollComponent implements OnChanges {
         };
         if (this.selected) {
           this.selectedItem = this.items.find((i) => i.id === this.selected);
+          if (!this.selectedItem) this.loadMoreDataEmitter.emit(this.itemsPaginationOptions.pageNumber + 1);
         }
         this.loading = false;
       });

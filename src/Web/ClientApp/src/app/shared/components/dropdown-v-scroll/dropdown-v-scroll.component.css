@@ -1,13 +1,40 @@
-.p-dropdown-items-wrapper {
-  overflow-y: auto;
-  height: 20rem;
-}
-
-.p-dropdown-label {
-  padding-left: 2.5rem;
+.p-dropdown {
+  position: relative;
   cursor: pointer;
 }
 
-.p-dropdown-item{
-    cursor: pointer;
+.p-dropdown-panel {
+  position: absolute;
+  z-index: 2;
+  width: 100%;
+}
+
+.p-dropdown-items-wrapper {
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+}
+
+.p-dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.loading-indicator {
+  color: white;
 }

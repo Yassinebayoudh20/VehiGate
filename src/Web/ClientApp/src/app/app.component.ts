@@ -11,7 +11,7 @@ import { MessageService } from 'primeng/api';
 export class AppComponent implements OnInit {
   constructor(
     private errorHandlingService: ErrorHandlingService,
-    private toasterService: ToasterService // Inject ToastComponent
+    private toasterService: ToasterService
   ) {}
 
   ngOnInit() {

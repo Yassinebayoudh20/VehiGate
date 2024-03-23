@@ -3996,6 +3996,7 @@ export class UpdateDriverCommand implements IUpdateDriverCommand {
     lastName?: string | undefined;
     email?: string | undefined;
     phone?: string | undefined;
+    companyId?: string | undefined;
     driverLicenseNumber?: string | undefined;
 
     constructor(data?: IUpdateDriverCommand) {
@@ -4014,6 +4015,7 @@ export class UpdateDriverCommand implements IUpdateDriverCommand {
             this.lastName = _data["lastName"];
             this.email = _data["email"];
             this.phone = _data["phone"];
+            this.companyId = _data["companyId"];
             this.driverLicenseNumber = _data["driverLicenseNumber"];
         }
     }
@@ -4032,6 +4034,7 @@ export class UpdateDriverCommand implements IUpdateDriverCommand {
         data["lastName"] = this.lastName;
         data["email"] = this.email;
         data["phone"] = this.phone;
+        data["companyId"] = this.companyId;
         data["driverLicenseNumber"] = this.driverLicenseNumber;
         return data;
     }
@@ -4043,6 +4046,7 @@ export interface IUpdateDriverCommand {
     lastName?: string | undefined;
     email?: string | undefined;
     phone?: string | undefined;
+    companyId?: string | undefined;
     driverLicenseNumber?: string | undefined;
 }
 
@@ -4053,6 +4057,7 @@ export class DriverDto implements IDriverDto {
     email?: string | undefined;
     phone?: string | undefined;
     companyName?: string | undefined;
+    companyId?: string | undefined;
     driverLicenseNumber?: string | undefined;
     isAuthorized?: boolean;
 
@@ -4073,6 +4078,7 @@ export class DriverDto implements IDriverDto {
             this.email = _data["email"];
             this.phone = _data["phone"];
             this.companyName = _data["companyName"];
+            this.companyId = _data["companyId"];
             this.driverLicenseNumber = _data["driverLicenseNumber"];
             this.isAuthorized = _data["isAuthorized"];
         }
@@ -4093,6 +4099,7 @@ export class DriverDto implements IDriverDto {
         data["email"] = this.email;
         data["phone"] = this.phone;
         data["companyName"] = this.companyName;
+        data["companyId"] = this.companyId;
         data["driverLicenseNumber"] = this.driverLicenseNumber;
         data["isAuthorized"] = this.isAuthorized;
         return data;
@@ -4106,6 +4113,7 @@ export interface IDriverDto {
     email?: string | undefined;
     phone?: string | undefined;
     companyName?: string | undefined;
+    companyId?: string | undefined;
     driverLicenseNumber?: string | undefined;
     isAuthorized?: boolean;
 }

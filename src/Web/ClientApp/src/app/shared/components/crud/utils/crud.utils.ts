@@ -27,8 +27,8 @@ export function getColumnValue(entity: any, column: string): any {
 }
 
 function isExcludedProperty(property: string): boolean {
-  const excludedProperties = ['id', 'createdAt', 'updatedAt']; //! Extract to constants
-  return excludedProperties.includes(property);
+  const excludedProperties = ['createdAt', 'updatedAt','isAuthorized'];
+  return excludedProperties.includes(property) || property.toLowerCase().includes('id');
 }
 
 export function getPageNumber(event: TableLazyLoadEvent): number {

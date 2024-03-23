@@ -15,13 +15,14 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FieldsetModule } from 'primeng/fieldset';
 import { DropdownVScrollComponent } from './components/dropdown-v-scroll/dropdown-v-scroll.component';
 import { DropdownModule } from 'primeng/dropdown';
+import { LoaderComponent } from './components/loader/loader.component';
 
 
 
 const PRIME_UI_MODULES = [TableModule, MultiSelectModule, ToolbarModule, FileUploadModule,DropdownModule, ToastModule,InputTextModule, FieldsetModule];
 
 @NgModule({
-  declarations: [CrudComponent, ContactInfoComponent, DropdownVScrollComponent],
+  declarations: [CrudComponent, ContactInfoComponent, DropdownVScrollComponent, LoaderComponent],
   imports: [CommonModule, FormsModule,TranslocoModule, ReactiveFormsModule , ...PRIME_UI_MODULES],
   exports: [CrudComponent, ContactInfoComponent,DropdownVScrollComponent],
 })

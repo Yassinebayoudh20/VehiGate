@@ -73,11 +73,12 @@ export class CompanyFormComponent implements OnInit {
 
     const command = this.isEditing ? this.createUpdateCompanyCommand() : this.createCompanyCommand();
     const userServiceMethod = this.isEditing ? this.companyService.updateCompany : this.companyService.addNewCompany;
+    const successMessage = this.isEditing ? this.transloco.translate('COMPANY_UPDATED_SUCCESSFULLY') : this.transloco.translate('COMPANY_ADDED_SUCCESSFULLY');
 
     const methodParams = this.isEditing ? [this.aRoute.snapshot.params.id, command] : [command];
 
     userServiceMethod.apply(this.companyService, methodParams).subscribe({
-      next: () => this.handleSuccess(),
+      next: () => this.handleSuccess(successMessage),
       error: () => this.handleError(),
       complete: () => (this.requestProcessing = false),
     });
@@ -115,8 +116,8 @@ export class CompanyFormComponent implements OnInit {
     return updateCmd;
   }
 
-  private handleSuccess() {
-    this.crudService.executeToaster.next({ isSuccess: true, message: this.transloco.translate('USER_ADDED_SUCCESSFULLY') });
+  private handleSuccess(message: string) {
+    this.crudService.setExecuteToaster({ isSuccess: true, message: message });
     this.router.navigate([COMPANIES_LIST_PATH]);
   }
 

@@ -6,6 +6,9 @@ import { PaginationParamsService } from 'src/app/shared/services/pagination-para
 import { Router } from '@angular/router';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
+import { CrudService } from 'src/app/shared/components/crud/crud.service';
+import { ToasterService } from 'src/app/shared/services/toaster.service';
+import { ToasterResponse } from 'src/app/shared/components/models/toaster-response';
 
 @Component({
   selector: 'app-drivers-list',
@@ -16,11 +19,17 @@ export class DriversListComponent implements OnInit, OnDestroy {
   data$: Observable<PagedResultOfDriverDto>;
   destroy$: Subject<boolean> = new Subject();
 
-  constructor(private driverService: DriverService, private paramsService: PaginationParamsService, private router: Router) {}
+  constructor(private crudService: CrudService, private toasterService: ToasterService, private driverService: DriverService, private paramsService: PaginationParamsService, private router: Router) {}
 
   ngOnInit(): void {
     this.paramsService.params$.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.data$ = this.driverService.getAllDrivers(params);
+    });
+
+    this.crudService.getExecuteToaster().subscribe({
+      next: (response: ToasterResponse) => {
+        this.toasterService.showSuccess(response.message);
+      },
     });
   }
 

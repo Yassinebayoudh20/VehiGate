@@ -28,19 +28,26 @@
           </div>
 
           <div class="field">
-            <label>{{ 'DRIVER_LICENCE_NUMBER' | transloco | titlecase }}</label>
+            <label>{{ 'DRIVER_LICENSE_NUMBER' | transloco | titlecase }}</label>
             <span class="p-input-icon-left">
               <i class="pi pi-id-card"></i>
-              <input pInputText type="text" formControlName="driverLicenceNumber" placeholder="{{ 'DRIVER_LICENCE_NUMBER' | transloco | titlecase }}" />
+              <input pInputText type="text" formControlName="driverLicenseNumber" placeholder="{{ 'DRIVER_LICENSE_NUMBER' | transloco | titlecase }}" />
             </span>
-            <div *ngIf="form.get('driverLicenceNumber').invalid && (form.get('driverLicenceNumber').dirty || form.get('driverLicenceNumber').touched)">
-              <small class="text-red-500" *ngIf="form.get('driverLicenceNumber').errors.required">{{ 'DRIVER_LICENCE_NUMBER_IS_REQUIRED' | transloco | titlecase }}</small>
-              <small class="text-red-500" *ngIf="form.get('driverLicenceNumber').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
+            <div *ngIf="form.get('driverLicenseNumber').invalid && (form.get('driverLicenseNumber').dirty || form.get('driverLicenseNumber').touched)">
+              <small class="text-red-500" *ngIf="form.get('driverLicenseNumber').errors.required">{{ 'DRIVER_LICENCE_NUMBER_IS_REQUIRED' | transloco | titlecase }}</small>
+              <small class="text-red-500" *ngIf="form.get('driverLicenseNumber').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
             </div>
           </div>
           <div class="field">
             <label htmlFor="state">{{ 'COMPANY' | transloco | titlecase }}</label>
-            <app-dropdown-v-scroll [items$]="this.companiesList$" (loadMoreDataEmitter)="onLoadMoreData($event)"></app-dropdown-v-scroll>
+            <app-dropdown-v-scroll
+              *ngIf="this.companiesList$"
+              [isRequired]="true"
+              [items$]="this.companiesList$"
+              [selected]="form.get('company')?.value"
+              (loadMoreDataEmitter)="onLoadMoreData($event)"
+              (selectedItemChange)="getSelectedCompany($event)"
+            ></app-dropdown-v-scroll>
             <div *ngIf="form.get('company').invalid && (form.get('company').dirty || form.get('company').touched)">
               <small class="text-red-500">{{ 'ROLE_IS_REQUIRED' | transloco | titlecase }}</small>
               <small class="text-red-500" *ngIf="form.get('company').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>

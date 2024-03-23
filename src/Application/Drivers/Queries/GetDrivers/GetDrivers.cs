@@ -61,6 +61,7 @@ namespace VehiGate.Application.Drivers.Queries.GetDrivers
                         IsAuthorized = driver.IsAuthorized,
                         LastName = userInfo.LastName,
                         CompanyName = driver.Company.Name,
+                        CompanyId = driver.Company.Id,
                         Email = userInfo.Email,
                         Phone = userInfo.PhoneNumber
                     };

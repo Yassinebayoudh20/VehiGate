@@ -10,8 +10,10 @@ import { TranslocoModule } from '@ngneat/transloco';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ToastModule } from 'primeng/toast';
 
-const PRIME_UI_MODULES = [InputTextModule, ButtonModule];
+
+const PRIME_UI_MODULES = [InputTextModule, ButtonModule,ToastModule];
 
 @NgModule({
   declarations: [SitesComponent, SitesListComponent, SiteFormComponent],

@@ -8,6 +8,9 @@ import { FormState } from 'src/app/core/data/models/form-state.enum';
 import { CreateSiteCommand, UpdateSiteCommand } from 'src/app/web-api-client';
 import { SITES_LIST_PATH } from 'src/app/core/paths';
 import { SitesService } from '../services/sites.service';
+import { ToasterResponse } from 'src/app/shared/components/models/toaster-response';
+import { ToasterService } from 'src/app/shared/services/toaster.service';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-site-form',
@@ -26,6 +29,7 @@ export class SiteFormComponent implements OnInit {
     private crudService: CrudService,
     private transloco: TranslocoService,
     private router: Router,
+    private toasterService: ToasterService,
     private route: ActivatedRoute
   ) {}
 
@@ -55,11 +59,12 @@ export class SiteFormComponent implements OnInit {
 
     const command = this.isEditing ? this.createUpdateSiteCommand() : this.createSiteCommand();
     const siteServiceMethod = this.isEditing ? this.siteService.updateSite : this.siteService.addNewSite;
+    const successMessage = this.isEditing ? this.transloco.translate('SITE_UPDATED_SUCCESSFULLY') : this.transloco.translate('SITE_ADDED_SUCCESSFULLY');
 
     const methodParams = this.isEditing ? [this.route.snapshot.params.id, command] : [command];
 
     siteServiceMethod.apply(this.siteService, methodParams).subscribe({
-      next: () => this.handleSuccess(),
+      next: () => this.handleSuccess(successMessage),
       error: (error) => this.handleError(error),
       complete: () => (this.requestProcessing = false),
     });
@@ -107,13 +112,13 @@ export class SiteFormComponent implements OnInit {
     return updateCmd;
   }
 
-  private handleSuccess() {
-    this.crudService.executeToaster.next({ isSuccess: true, message: this.transloco.translate('SITE_ADDED_SUCCESSFULLY') });
+  private handleSuccess(message) {
+    this.crudService.setExecuteToaster({ isSuccess: true, message: message });
     this.router.navigate([SITES_LIST_PATH]);
   }
 
   private handleError(error) {
-    console.error(error)
+    console.error(error);
     this.requestProcessing = false;
   }
 

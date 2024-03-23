@@ -55,6 +55,7 @@ public class CreateDriverCommandHandler : IRequestHandler<CreateDriverCommand, s
             FirstName = request.FirstName,
             LastName = request.LastName,
             Email = request.Email,
+            PhoneNumber = request.Phone,
             Password = GenerateRandomPassword() //Will need to provide a way to change driver password
         });
 

@@ -1,10 +1,4 @@
-﻿using FluentValidation;
-using MediatR;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using VehiGate.Application.Common.Exceptions;
-using VehiGate.Application.Common.Interfaces;
+﻿using VehiGate.Application.Common.Interfaces;
 using VehiGate.Application.Common.Security;
 using VehiGate.Application.Users.Commands.UpdateUserInfo;
 using VehiGate.Domain.Entities;
@@ -19,6 +13,7 @@ namespace VehiGate.Application.Drivers.Commands.UpdateDriver
         public string LastName { get; init; }
         public string Email { get; init; }
         public string Phone { get; init; }
+        public string CompanyId { get; init; }
         public string DriverLicenseNumber { get; init; }
     }
 
@@ -49,12 +44,28 @@ namespace VehiGate.Application.Drivers.Commands.UpdateDriver
         public async Task<Unit> Handle(UpdateDriverCommand request, CancellationToken cancellationToken)
         {
             var driver = await _context.Drivers.FindAsync(request.Id);
+
             if (driver == null)
             {
                 throw new NotFoundException(nameof(Driver), request.Id);
             }
 
-            driver.DriverLicenseNumber = request.DriverLicenseNumber;
+            if (!string.IsNullOrEmpty(request.CompanyId))
+            {
+                var company = await _context.Companies.FindAsync(request.CompanyId);
+
+                if (company == null)
+                {
+                    throw new NotFoundException(nameof(Company), request.CompanyId);
+                }
+
+                driver.CompanyId = request.CompanyId;
+            }
+
+            if (!string.IsNullOrEmpty(request.DriverLicenseNumber))
+            {
+                driver.DriverLicenseNumber = request.DriverLicenseNumber;
+            }
 
             var updateUserResult = await _identityService.UpdateUserAsync(driver.UserId, new UpdateUserDto
             {

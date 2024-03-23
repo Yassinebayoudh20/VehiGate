@@ -5,12 +5,13 @@ import { DriverService } from './../services/driver.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CrudService } from 'src/app/shared/components/crud/crud.service';
 import { TranslocoService } from '@ngneat/transloco';
-import { RoleInfo, CreateDriverCommand, UpdateDriverCommand, PagedResultOfCompanyDto } from 'src/app/web-api-client';
+import { RoleInfo, CreateDriverCommand, UpdateDriverCommand, PagedResultOfCompanyDto, CompanyDto } from 'src/app/web-api-client';
 import { Observable } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { CompaniesService } from '../../companies-management/services/companies.service';
 import { DEFAULT_PAGE_SIZE } from 'src/app/core/constants';
+import { setFormFieldAndMarkAsDirty } from 'src/app/core/utils';
 
 @Component({
   selector: 'app-driver-form',
@@ -21,7 +22,7 @@ export class DriverFormComponent implements OnInit {
   form: FormGroup;
   isEditing: boolean = false;
   pageTitle: string;
-  companiesList$: Observable<PagedResultOfCompanyDto> = new Observable();
+  companiesList$: Observable<PagedResultOfCompanyDto> = null;
   requestProcessing = false;
 
   constructor(
@@ -43,7 +44,7 @@ export class DriverFormComponent implements OnInit {
       this.form = this.formBuilder.group({
         firstName: [null, [Validators.required, Validators.minLength(2), noWhiteSpaceValidator()]],
         lastName: [null, [Validators.required, Validators.minLength(2), noWhiteSpaceValidator()]],
-        driverLicenceNumber: [null, [Validators.required, Validators.minLength(1), noWhiteSpaceValidator()]],
+        driverLicenseNumber: [null, [Validators.required, Validators.minLength(1), noWhiteSpaceValidator()]],
         company: [null, [Validators.required]],
       });
       if (this.isEditing) {
@@ -59,6 +60,10 @@ export class DriverFormComponent implements OnInit {
     this.companiesList$ = this.companiesService.getAllCompanies({ pageNumber: pageNumber, pageSize: DEFAULT_PAGE_SIZE });
   }
 
+  getSelectedCompany($event: CompanyDto) {
+    setFormFieldAndMarkAsDirty(this.form, 'company', $event.id);
+  }
+
   onLoadMoreData($event) {
     this.loadCompanies($event);
   }
@@ -72,11 +77,12 @@ export class DriverFormComponent implements OnInit {
 
     const command = this.isEditing ? this.createUpdateDriverCommand() : this.createDriverCommand();
     const userServiceMethod = this.isEditing ? this.driverService.updateDriver : this.driverService.createNewDriver;
+    const successMessage = this.isEditing ? this.transloco.translate('DRIVER_UPDATED_SUCCESSFULLY') : this.transloco.translate('DRIVER_ADDED_SUCCESSFULLY');
 
     const methodParams = this.isEditing ? [this.aRoute.snapshot.params.id, command] : [command];
 
     userServiceMethod.apply(this.driverService, methodParams).subscribe({
-      next: () => this.handleSuccess(),
+      next: () => this.handleSuccess(successMessage),
       error: () => this.handleError(),
       complete: () => (this.requestProcessing = false),
     });
@@ -88,8 +94,8 @@ export class DriverFormComponent implements OnInit {
         this.form.patchValue({
           firstName: driverData.firstName,
           lastName: driverData.lastName,
-          driverLicenceNumber: driverData.driverLicenseNumber,
-          // company: driverData.roles[0],
+          driverLicenseNumber: driverData.driverLicenseNumber,
+          company: driverData.companyId,
           contactInfo: {
             email: driverData.email,
             phoneNumber: driverData.phone,
@@ -105,7 +111,7 @@ export class DriverFormComponent implements OnInit {
     registerCmd.lastName = this.form.get('lastName').value;
     registerCmd.email = this.form.get('contactInfo').get('email').value;
     registerCmd.driverLicenseNumber = this.form.get('driverLicenseNumber').value;
-    // registerCmd.companyId = [this.form.get('companyId').value];
+    registerCmd.companyId = this.form.get('company').value;
     registerCmd.phone = this.form.get('contactInfo').get('phoneNumber').value;
     return registerCmd;
   }
@@ -118,6 +124,9 @@ export class DriverFormComponent implements OnInit {
     }
     if (this.form.get('lastName').dirty) {
       updateCmd.lastName = this.form.get('lastName').value;
+    }
+    if (this.form.get('company').dirty) {
+      updateCmd.companyId = this.form.get('company').value;
     }
     if (this.form.get('contactInfo').get('email').dirty) {
       updateCmd.email = this.form.get('contactInfo').get('email').value;
@@ -132,8 +141,8 @@ export class DriverFormComponent implements OnInit {
     return updateCmd;
   }
 
-  private handleSuccess() {
-    this.crudService.executeToaster.next({ isSuccess: true, message: this.transloco.translate('DRIVER_ADDED_SUCCESSFULLY') });
+  private handleSuccess(message: string) {
+    this.crudService.setExecuteToaster({ isSuccess: true, message: message });
     this.router.navigate([DRIVERS_LIST_PATH]);
   }
 

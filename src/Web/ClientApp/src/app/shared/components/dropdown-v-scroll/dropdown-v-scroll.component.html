@@ -1,17 +1,24 @@
-<div class="p-dropdown p-component p-inputwrapper p-dropdown-clearable" [ngClass]="{ 'p-dropdown-open': isOpen }" (click)="toggleDropdown($event)">
+<div class="p-dropdown p-component p-inputwrapper p-dropdown-clearable" [ngClass]="{ 'p-invalid': isInvalid }" (click)="toggleDropdown($event)">
   <div class="p-element p-dropdown-label p-inputtext p-placeholder">
-    {{ selectedItem ? selectedItem[optionName] : 'Select an item' }}
+    {{ selectedItem ? selectedItem[optionName] : ('SELECT_AN_ITEM' | transloco | titlecase) }}
   </div>
 
   <div class="p-dropdown-panel p-component" *ngIf="isOpen">
     <div class="p-dropdown-items-wrapper" (scroll)="onScroll()" #scrollContainer>
       <div class="p-dropdown-items">
-        <div *ngFor="let item of items" class="p-dropdown-item p-element" (click)="selectItem(item)">
+        <div *ngFor="let item of items" class="p-dropdown-item p-element" (click)="selectItem($event, item)">
           {{ item[optionName] }}
         </div>
+      </div>
 
-        <div *ngIf="loading" class="loading-text">Loading...</div>
+      <div class="loading-overlay" *ngIf="loading">
+        <app-loader></app-loader>
       </div>
     </div>
   </div>
+</div>
+<div *ngIf="isInvalid">
+  <small class="text-red-500">
+    {{ errorMessage | titlecase }}
+  </small>
 </div>

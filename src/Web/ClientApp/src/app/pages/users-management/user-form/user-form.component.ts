@@ -48,7 +48,7 @@ export class UserFormComponent implements OnInit {
         this.fetchUserDetails(userId);
       }
     });
-    console.log(this.form)
+    console.log(this.form);
   }
 
   resolvePageTitle() {
@@ -68,11 +68,12 @@ export class UserFormComponent implements OnInit {
 
     const command = this.isEditing ? this.createUpdateUserCommand() : this.createRegisterCommand();
     const userServiceMethod = this.isEditing ? this.userService.updateUser : this.userService.registerNewUser;
+    const successMessage = this.isEditing ? this.transloco.translate('USER_UPDATED_SUCCESSFULLY') : this.transloco.translate('USER_ADDED_SUCCESSFULLY');
 
     const methodParams = this.isEditing ? [this.aRoute.snapshot.params.id, command] : [command];
 
     userServiceMethod.apply(this.userService, methodParams).subscribe({
-      next: () => this.handleSuccess(),
+      next: () => this.handleSuccess(successMessage),
       error: () => this.handleError(),
       complete: () => (this.requestProcessing = false),
     });
@@ -87,8 +88,8 @@ export class UserFormComponent implements OnInit {
           role: userData.roles[0],
           contactInfo: {
             email: userData.email,
-            phoneNumber: userData.phoneNumber
-          }
+            phoneNumber: userData.phoneNumber,
+          },
         });
         this.form.get('password').disable();
       },
@@ -128,8 +129,8 @@ export class UserFormComponent implements OnInit {
     return updateCmd;
   }
 
-  private handleSuccess() {
-    this.crudService.executeToaster.next({ isSuccess: true, message: this.transloco.translate('USER_ADDED_SUCCESSFULLY') });
+  private handleSuccess(message: string) {
+    this.crudService.setExecuteToaster({ isSuccess: true, message: message });
     this.router.navigate([USERS_LIST_PATH]);
   }
 

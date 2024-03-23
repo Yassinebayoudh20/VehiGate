@@ -57,11 +57,12 @@ export class CustomerFormComponent implements OnInit {
 
     const command = this.isEditing ? this.createUpdateCustomerCommand() : this.CreateCustomerCommand();
     const customerServiceMethod = this.isEditing ? this.customerService.updateCustomer : this.customerService.createNewCustomer;
+    const successMessage = this.isEditing ? this.transloco.translate('CUSTOMER_UPDATED_SUCCESSFULLY') : this.transloco.translate('CUSTOMER_ADDED_SUCCESSFULLY');
 
     const methodParams = this.isEditing ? [this.aRoute.snapshot.params.id, command] : [command];
 
     customerServiceMethod.apply(this.customerService, methodParams).subscribe({
-      next: () => this.handleSuccess(),
+      next: () => this.handleSuccess(successMessage),
       error: () => this.handleError(),
       complete: () => (this.requestProcessing = false),
     });
@@ -112,8 +113,8 @@ export class CustomerFormComponent implements OnInit {
 
     return updateCmd;
   }
-  private handleSuccess() {
-    this.crudService.executeToaster.next({ isSuccess: true, message: this.transloco.translate('CUSTOMER_ADDED_SUCCESSFULLY') });
+  private handleSuccess(message: string) {
+    this.crudService.setExecuteToaster({ isSuccess: true, message: message });
     this.router.navigate([CUSTOMERS_LIST_PATH]);
   }
 

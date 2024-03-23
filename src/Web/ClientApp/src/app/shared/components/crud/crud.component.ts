@@ -1,5 +1,5 @@
-import { Observable, Subject, debounceTime, tap } from 'rxjs';
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Observable, Subject, debounceTime, takeUntil, tap } from 'rxjs';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { LazyLoadEvent, MessageService } from 'primeng/api';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { UsersService } from 'src/app/pages/users-management/services/users.service';
@@ -18,7 +18,7 @@ import { DEFAULT_PAGE_SIZE } from 'src/app/core/constants';
   styleUrls: ['./crud.component.css'],
   providers: [MessageService, ToasterService],
 })
-export class CrudComponent implements OnChanges {
+export class CrudComponent implements OnChanges, OnDestroy {
   @Input() entities$!: Observable<any>;
 
   @Input() canAdd: boolean = true;
@@ -55,6 +55,8 @@ export class CrudComponent implements OnChanges {
 
   data: any;
 
+  destroy$: Subject<void> = new Subject<void>();
+
   constructor(private crudService: CrudService, private toasterService: ToasterService, private paramsService: PaginationParamsService) {}
 
   ngOnInit() {
@@ -62,12 +64,6 @@ export class CrudComponent implements OnChanges {
 
     this.searchTermChanged.pipe(debounceTime(300)).subscribe((searchTerm) => {
       this.dataTable.filterGlobal(searchTerm, 'contains');
-    });
-
-    this.crudService.executeToaster.subscribe((response: ToasterResponse) => {
-      if (response.isSuccess) {
-        this.toasterService.showSuccess(response.message);
-      }
     });
   }
 
@@ -78,15 +74,18 @@ export class CrudComponent implements OnChanges {
   }
 
   refreshData() {
-    this.entities$.pipe(tap((result: PagedResult) => {})).subscribe({
-      next: (result: PagedResult) => {
-        this.data = result.data;
-        this.columns = getColumns(result.data);
-        this.globalFilterFields = this.columns.map((column) => column.field);
-        this.totalRecords = result.totalCount;
-        this.loading = false;
-      },
-    });
+    this.entities$
+      .pipe(tap((result: PagedResult) => {}))
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (result: PagedResult) => {
+          this.data = result.data;
+          this.columns = getColumns(result.data);
+          this.globalFilterFields = this.columns.map((column) => column.field);
+          this.totalRecords = result.totalCount;
+          this.loading = false;
+        },
+      });
   }
 
   loadEntities(event: TableLazyLoadEvent) {
@@ -94,7 +93,7 @@ export class CrudComponent implements OnChanges {
     this.paramsService.updateParams({
       pageNumber: getPageNumber(event),
       pageSize: DEFAULT_PAGE_SIZE,
-      searchBy: event.globalFilter as string,
+      searchBy: (event.globalFilter as string)?.trim() || (event.globalFilter as string),
       orderBy: event.sortField as string,
       sortOrder: event.sortOrder,
     });
@@ -128,5 +127,10 @@ export class CrudComponent implements OnChanges {
   clear(table: Table) {
     table.clear();
     this.globalSearchInput.nativeElement.value = null;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

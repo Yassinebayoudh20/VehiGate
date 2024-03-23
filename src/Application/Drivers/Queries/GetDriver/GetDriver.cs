@@ -61,6 +61,7 @@ namespace VehiGate.Application.Drivers.Queries.GetDriver
                 Email = userInfo.Email,
                 Phone = userInfo.PhoneNumber,
                 CompanyName = driver.Company.Name,
+                CompanyId = driver.Company.Id,
                 DriverLicenseNumber = driver.DriverLicenseNumber
             };
         }

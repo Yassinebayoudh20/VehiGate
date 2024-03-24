@@ -23,10 +23,10 @@ const routes: Routes = [
         path: 'sites',
         loadChildren: () => import('./sites-management/sites-management.module').then((m) => m.SitesManagementModule),
       },
-      // {
-      //   path: 'genres',
-      //   loadChildren: () => import('./genres-management/genres-management.module').then((m) => m.GenresManagementModule),
-      // },
+      {
+        path: 'genres',
+        loadChildren: () => import('./genres-management/genres-management.module').then((m) => m.GenresManagementModule),
+      },
       {
         path: 'customers',
         loadChildren: () => import('./customers-management/customers-management.module').then((m) => m.CustomersManagementModule),

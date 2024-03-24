@@ -96,5 +96,11 @@
   "ADD_DRIVER": "Add Driver",
   "VEHICLES_MANAGEMENT": "Vehicles Management",
   "VEHICLES": "Vehicles",
-  "ADD_VEHICLE": "Add Vehicle"
+  "ADD_VEHICLE": "Add Vehicle",
+  "VEHICLE_TYPES": "vehicle types",
+  "ADD_TYPE": "add type",
+  "GENRE_UPDATED_SUCCESSFULLY": "Type updated successfully",
+  "GENRE_ADDED_SUCCESSFULLY": "Type added successfully",
+  "EDIT_GENRE": "edit type",
+  "ADD_NEW_GENRE": "add type"
 }

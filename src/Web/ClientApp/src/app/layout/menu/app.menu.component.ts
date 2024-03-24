@@ -7,6 +7,8 @@ import {
   DRIVERS_LIST_PATH,
   SITE_UPSERT_FORM,
   SITES_LIST_PATH,
+  VEHICLE_TYPE_UPSERT_FORM,
+  VEHICLE_TYPES_LIST_PATH,
   VEHICLE_UPSERT_FORM,
   VEHICLES_LIST_PATH,
 } from './../../core/paths';
@@ -85,7 +87,9 @@ export class AppMenuComponent implements OnInit {
             iconClass: 'text-pink-500 ',
             items: [
               { label: 'VEHICLES', icon: 'pi pi-list', routerLink: [VEHICLES_LIST_PATH] },
+              { label: 'VEHICLE_TYPES', icon: 'pi pi-list', routerLink: [VEHICLE_TYPES_LIST_PATH] },
               { label: 'ADD_VEHICLE', icon: 'pi pi-plus', routerLink: [VEHICLE_UPSERT_FORM] },
+              { label: 'ADD_TYPE', icon: 'pi pi-plus', routerLink: [VEHICLE_TYPE_UPSERT_FORM] },
             ],
           },
         ],

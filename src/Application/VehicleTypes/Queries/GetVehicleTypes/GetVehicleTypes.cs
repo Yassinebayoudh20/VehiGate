@@ -10,6 +10,7 @@ using VehiGate.Application.Common.Interfaces;
 using VehiGate.Application.Common.Models;
 using VehiGate.Application.Common.Security;
 using VehiGate.Application.VehicleTypes.Queries.GetVehicleType;
+using VehiGate.Web.Infrastructure;
 
 namespace VehiGate.Application.VehicleTypes.Queries.GetVehicleTypes
 {
@@ -42,22 +43,25 @@ namespace VehiGate.Application.VehicleTypes.Queries.GetVehicleTypes
 
         public async Task<PagedResult<VehicleTypeDto>> Handle(GetVehicleTypesQuery request, CancellationToken cancellationToken)
         {
-            var query = _context.VehicleTypes.AsQueryable();
+            var query = await _context.VehicleTypes.ToListAsync(cancellationToken);
 
             if (!string.IsNullOrEmpty(request.SearchBy))
             {
                 query = query.Where(vehicleType =>
                     vehicleType.Name.Contains(request.SearchBy)
-                );
+                ).ToList();
             }
 
-            var totalCount = await query.CountAsync(cancellationToken);
+            if (!string.IsNullOrEmpty(request.OrderBy))
+            {
+                bool sortOrder = request.SortOrder < 0 ? false : true;
+                query = query.OrderByProperty(request.OrderBy, ascending: sortOrder).ToList();
+            }
 
-            var vehicleTypes = await query
-                .OrderBy(vt => vt.Name)
-                .ToListAsync(cancellationToken);
+            var totalCount = query.Count();
 
-            var vehicleTypeDtos = vehicleTypes.Select(vt => new VehicleTypeDto
+
+            var vehicleTypeDtos = query.Select(vt => new VehicleTypeDto
             {
                 Id = vt.Id,
                 Name = vt.Name

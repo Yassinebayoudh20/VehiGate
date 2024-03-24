@@ -18,6 +18,7 @@ import { AppConfigModule } from './config/config.module';
 import { AppSidebarComponent } from './sidebar/app.sidebar.component';
 import { AppLayoutComponent } from './app.layout.component';
 import { CommonModule } from '@angular/common';
+import { TranslocoModule } from '@ngneat/transloco';
 
 @NgModule({
   declarations: [AppMenuitemComponent, AppTopBarComponent, AppFooterComponent, AppMenuComponent, AppSidebarComponent, AppLayoutComponent],
@@ -27,6 +28,7 @@ import { CommonModule } from '@angular/common';
     BrowserAnimationsModule,
     InputTextModule,
     MenuModule,
+    TranslocoModule,
     SidebarModule,
     BadgeModule,
     RadioButtonModule,

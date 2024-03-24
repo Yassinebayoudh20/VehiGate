@@ -15,10 +15,10 @@ const routes: Routes = [
         path: 'drivers',
         loadChildren: () => import('./drivers-management/drivers-management.module').then((m) => m.DriversManagementModule),
       },
-      // {
-      //   path: 'vehicles',
-      //   loadChildren: () => import('./vehicles-management/vehicles-management.module').then((m) => m.VehiclesManagementModule),
-      // },
+      {
+        path: 'vehicles',
+        loadChildren: () => import('./vehicles-management/vehicles-management.module').then((m) => m.VehiclesManagementModule),
+      },
       {
         path: 'sites',
         loadChildren: () => import('./sites-management/sites-management.module').then((m) => m.SitesManagementModule),

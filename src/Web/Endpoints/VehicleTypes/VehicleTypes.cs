@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using VehiGate.Application.Common.Models;
 using VehiGate.Application.VehicleTypes.Commands.CreateVehicleType;
 using VehiGate.Application.VehicleTypes.Commands.DeleteVehicleType;
 using VehiGate.Application.VehicleTypes.Commands.UpdateVehicleType;
@@ -45,14 +46,13 @@ namespace VehiGate.Web.Endpoints.VehicleTypes
             return Results.NoContent();
         }
 
-        private async Task<IResult> GetVehicleTypeById(ISender sender, string id)
+        private async Task<VehicleTypeDto> GetVehicleTypeById(ISender sender, string id)
         {
             var query = new GetVehicleTypeQuery { Id = id };
-            var result = await sender.Send(query);
-            return result != null ? Results.Ok(result) : Results.NotFound();
+            return await sender.Send(query);
         }
 
-        private async Task<IResult> GetVehicleTypes(ISender sender, [FromQuery] int pageNumber = 1,
+        private async Task<PagedResult<VehicleTypeDto>> GetVehicleTypes(ISender sender, [FromQuery] int pageNumber = 1,
                                                [FromQuery] int pageSize = 10,
                                                [FromQuery] string? searchBy = null,
                                                [FromQuery] string? orderBy = null,
@@ -67,8 +67,7 @@ namespace VehiGate.Web.Endpoints.VehicleTypes
                 SortOrder = SortOrder,
             };
 
-            var result = await sender.Send(query);
-            return Results.Ok(result);
+            return await sender.Send(query);
         }
     }
 }

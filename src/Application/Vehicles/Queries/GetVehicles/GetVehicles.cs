@@ -71,11 +71,14 @@ namespace VehiGate.Application.Vehicles.Queries.GetVehicles
                     VehicleTypeName = vehicle.VehicleType?.Name,
                     CompanyName = vehicle.Company?.Name,
                     InsuranceCompany = vehicle.InsuranceCompany,
+                    VehicleTypeId = vehicle.VehicleTypeId,
+                    CompanyId = vehicle.CompanyId,
                     Name = vehicle.Name,
+                    Model = vehicle.Model,
                     IsAuthorized = isAuthorized,
                     PlateNumber = vehicle.PlateNumber,
-                    InsuranceFrom = vehicle.InsuranceFrom,
-                    InsuranceTo = vehicle.InsuranceTo
+                    InsuranceFrom = vehicle.InsuranceFrom.ToString(),
+                    InsuranceTo = vehicle.InsuranceTo.ToString()
                 });
             }
 

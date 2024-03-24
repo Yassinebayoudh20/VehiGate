@@ -14,6 +14,7 @@ namespace VehiGate.Application.Vehicles.Commands.CreateVehicle
     {
         public string VehicleTypeId { get; init; }
         public string CompanyId { get; init; }
+        public string Model { get; init; }
         public string InsuranceCompany { get; init; }
         public string Name { get; init; }
         public string PlateNumber { get; init; }
@@ -61,6 +62,7 @@ namespace VehiGate.Application.Vehicles.Commands.CreateVehicle
                 CompanyId = request.CompanyId,
                 InsuranceCompany = request.InsuranceCompany,
                 Name = request.Name,
+                Model = request.Model,
                 PlateNumber = request.PlateNumber,
                 InsuranceFrom = request.InsuranceFrom,
                 InsuranceTo = request.InsuranceTo

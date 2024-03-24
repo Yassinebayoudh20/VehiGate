@@ -1,0 +1,10 @@
+<p-autoComplete
+  [(ngModel)]="selectedItem"
+  [placeholder]="'SEARCH' | transloco | titlecase"
+  (onSelect)="onItemSelect($event)"
+  [suggestions]="filteredItems"
+  (completeMethod)="filterItems($event)"
+  [field]="filterBy"
+  [class.ng-invalid]="!validateSelection() && isTouchedAndDirty"
+  [class.ng-dirty]="isTouchedAndDirty"
+></p-autoComplete>

@@ -20,6 +20,8 @@ public class Vehicle : BaseAuditableEntity
 
     public string Name { get; set; }
 
+    public string Model { get; set; }
+
     public string PlateNumber { get; set; }
 
     public DateOnly InsuranceFrom { get; set; }

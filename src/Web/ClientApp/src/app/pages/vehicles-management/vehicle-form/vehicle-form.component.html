@@ -1,0 +1,126 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card">
+      <h5>{{ pageTitle | transloco | titlecase }}</h5>
+      <form [formGroup]="form" class="p-fluid p-formgrid grid">
+        <div class="col-12 md:col-7">
+          <div class="field">
+            <label>{{ 'VEHICLE_TYPE' | transloco | titlecase }}</label>
+            <app-dropdown-v-scroll
+              *ngIf="(isEditing && vehicleModel) || !isEditing"
+              [isRequired]="true"
+              [items$]="this.vehicleTypesList$"
+              [selected]="vehicleModel?.vehicleTypeId"
+              (loadMoreDataEmitter)="onLoadMoreVehicleTypes($event)"
+              (selectedItemChange)="getSelectedVehicleType($event)"
+            ></app-dropdown-v-scroll>
+            <div *ngIf="form.get('vehicleTypeId').invalid && (form.get('vehicleTypeId').dirty || form.get('vehicleTypeId').touched)">
+              <small class="text-red-500" *ngIf="form.get('vehicleTypeId').errors.required">{{ 'VEHICLE_TYPE_ID_IS_REQUIRED' | transloco | titlecase }}</small>
+            </div>
+          </div>
+          <div class="field">
+            <label>{{ 'COMPANY' | transloco | titlecase }}</label>
+            <app-dropdown-v-scroll
+              *ngIf="(isEditing && vehicleModel) || !isEditing"
+              [isRequired]="true"
+              [items$]="this.companiesList$"
+              [selected]="vehicleModel?.companyId"
+              (loadMoreDataEmitter)="onLoadMoreData($event)"
+              (selectedItemChange)="getSelectedCompany($event)"
+            ></app-dropdown-v-scroll>
+            <div *ngIf="form.get('companyId').invalid && (form.get('companyId').dirty || form.get('companyId').touched)">
+              <small class="text-red-500">{{ 'COMPANY_IS_REQUIRED' | transloco | titlecase }}</small>
+            </div>
+          </div>
+          <div class="field">
+            <label>{{ 'INSURANCE_COMPANY' | transloco | titlecase }}</label>
+            <span class="p-input-icon-left">
+              <i class="pi pi-shield"></i>
+              <input pInputText type="text" formControlName="insuranceCompany" placeholder="{{ 'INSURANCE_COMPANY' | transloco | titlecase }}" />
+            </span>
+            <div *ngIf="form.get('insuranceCompany').invalid && (form.get('insuranceCompany').dirty || form.get('insuranceCompany').touched)">
+              <small class="text-red-500" *ngIf="form.get('insuranceCompany').errors.required">{{ 'INSURANCE_COMPANY_IS_REQUIRED' | transloco | titlecase }}</small>
+              <small class="text-red-500" *ngIf="form.get('insuranceCompany').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
+            </div>
+          </div>
+          <div class="field">
+            <label>{{ 'NAME' | transloco | titlecase }}</label>
+            <span class="p-input-icon-left">
+              <i class="pi pi-tag"></i>
+              <input pInputText type="text" formControlName="name" placeholder="{{ 'NAME' | transloco | titlecase }}" />
+            </span>
+            <div *ngIf="form.get('name').invalid && (form.get('name').dirty || form.get('name').touched)">
+              <small class="text-red-500" *ngIf="form.get('name').errors.required">{{ 'NAME_IS_REQUIRED' | transloco | titlecase }}</small>
+              <small class="text-red-500" *ngIf="form.get('name').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
+            </div>
+          </div>
+          <div class="field">
+            <label>{{ 'MODEL' | transloco | titlecase }}</label>
+            <span class="p-input-icon-left">
+              <i class="pi pi-bolt"></i>
+              <app-auto-complete
+                *ngIf="(isEditing && vehicleModel) || !isEditing"
+                [selected]="vehicleModel?.model"
+                [items$]="vehicleModesList$"
+                (inputValueChange)="onModelChanged($event)"
+                (selectedItemChange)="onSelectModelChanged($event)"
+              ></app-auto-complete>
+            </span>
+            <div *ngIf="form.get('model').invalid && (form.get('model').dirty || form.get('model').touched)">
+              <small class="text-red-500" *ngIf="form.get('model').errors.required">{{ 'MODEL_IS_REQUIRED' | transloco | titlecase }}</small>
+              <small class="text-red-500" *ngIf="form.get('model').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
+            </div>
+          </div>
+          <div class="field">
+            <label>{{ 'PLATE_NUMBER' | transloco | titlecase }}</label>
+            <span class="p-input-icon-left">
+              <i class="pi pi-id-card"></i>
+              <input pInputText type="text" formControlName="plateNumber" placeholder="{{ 'PLATE_NUMBER' | transloco | titlecase }}" />
+            </span>
+            <div *ngIf="form.get('plateNumber').invalid && (form.get('plateNumber').dirty || form.get('plateNumber').touched)">
+              <small class="text-red-500" *ngIf="form.get('plateNumber').errors.required">{{ 'PLATE_NUMBER_IS_REQUIRED' | transloco | titlecase }}</small>
+              <small class="text-red-500" *ngIf="form.get('plateNumber').hasError('whiteSpace')">{{ 'WHITE_SPACE_ERROR_TEXT' | transloco | titlecase }}</small>
+            </div>
+          </div>
+          <div class="field">
+            <label>{{ 'INSURANCE_FROM' | transloco | titlecase }}</label>
+            <span class="p-input-icon-left">
+              <i class="pi pi-calendar"></i>
+              <p-calendar formControlName="insuranceFrom" placeholder="{{ 'INSURANCE_FROM' | transloco | titlecase }}" [showIcon]="true"></p-calendar>
+            </span>
+            <div *ngIf="form.get('insuranceFrom').invalid && (form.get('insuranceFrom').dirty || form.get('insuranceFrom').touched)">
+              <small class="text-red-500" *ngIf="form.get('insuranceFrom').errors.required">{{ 'INSURANCE_FROM_IS_REQUIRED' | transloco | titlecase }}</small>
+            </div>
+          </div>
+          <div class="field">
+            <label>{{ 'INSURANCE_TO' | transloco | titlecase }}</label>
+            <span class="p-input-icon-left">
+              <i class="pi pi-calendar"></i>
+              <p-calendar formControlName="insuranceTo" placeholder="{{ 'INSURANCE_TO' | transloco | titlecase }}" [showIcon]="true"></p-calendar>
+            </span>
+            <div *ngIf="form.get('insuranceTo').invalid && (form.get('insuranceTo').dirty || form.get('insuranceTo').touched)">
+              <small class="text-red-500" *ngIf="form.get('insuranceTo').errors.required">{{ 'INSURANCE_TO_IS_REQUIRED' | transloco | titlecase }}</small>
+            </div>
+          </div>
+          <div *ngIf="form.hasError('dateRange')">
+            <small class="text-red-500">{{ 'INSURANCE_FROM_MUST_BE_BEFORE_INSURANCE_TO' | transloco | titlecase }}</small>
+          </div>
+        </div>
+      </form>
+      <div class="flex md:justify-content-end gap-2">
+        <button pButton type="button" pRipple icon="pi pi-arrow-left" label="{{ 'BACK' | transloco | titlecase }}" class="p-button" (click)="goBack()"></button>
+        <button
+          pButton
+          type="button"
+          [loading]="requestProcessing"
+          [disabled]="!this.form.valid || !this.form.dirty"
+          pRipple
+          icon="pi pi-save"
+          label="{{ 'SAVE' | transloco | titlecase }}"
+          class="p-button p-button-success"
+          (click)="onSubmit()"
+        ></button>
+      </div>
+    </div>
+  </div>
+</div>

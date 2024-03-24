@@ -16,14 +16,14 @@ import { FieldsetModule } from 'primeng/fieldset';
 import { DropdownVScrollComponent } from './components/dropdown-v-scroll/dropdown-v-scroll.component';
 import { DropdownModule } from 'primeng/dropdown';
 import { LoaderComponent } from './components/loader/loader.component';
+import { AutoCompleteComponent } from './components/auto-complete/auto-complete.component';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 
-
-
-const PRIME_UI_MODULES = [TableModule, MultiSelectModule, ToolbarModule, FileUploadModule,DropdownModule, ToastModule,InputTextModule, FieldsetModule];
+const PRIME_UI_MODULES = [TableModule, MultiSelectModule, ToolbarModule, FileUploadModule, DropdownModule, ToastModule, InputTextModule, FieldsetModule, AutoCompleteModule];
 
 @NgModule({
-  declarations: [CrudComponent, ContactInfoComponent, DropdownVScrollComponent, LoaderComponent],
-  imports: [CommonModule, FormsModule,TranslocoModule, ReactiveFormsModule , ...PRIME_UI_MODULES],
-  exports: [CrudComponent, ContactInfoComponent,DropdownVScrollComponent],
+  declarations: [CrudComponent, ContactInfoComponent, DropdownVScrollComponent, LoaderComponent, AutoCompleteComponent],
+  imports: [CommonModule, FormsModule, TranslocoModule, ReactiveFormsModule, ...PRIME_UI_MODULES],
+  exports: [CrudComponent, ContactInfoComponent, DropdownVScrollComponent,AutoCompleteComponent],
 })
 export class SharedModule {}

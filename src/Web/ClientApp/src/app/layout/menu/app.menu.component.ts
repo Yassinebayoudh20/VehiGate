@@ -1,4 +1,15 @@
-import { COMPANIES_LIST_PATH, COMPANY_UPSERT_FORM, CUSTOMER_UPSERT_FORM, CUSTOMERS_LIST_PATH, DRIVER_UPSERT_FORM, DRIVERS_LIST_PATH, SITE_UPSERT_FORM, SITES_LIST_PATH } from './../../core/paths';
+import {
+  COMPANIES_LIST_PATH,
+  COMPANY_UPSERT_FORM,
+  CUSTOMER_UPSERT_FORM,
+  CUSTOMERS_LIST_PATH,
+  DRIVER_UPSERT_FORM,
+  DRIVERS_LIST_PATH,
+  SITE_UPSERT_FORM,
+  SITES_LIST_PATH,
+  VEHICLE_UPSERT_FORM,
+  VEHICLES_LIST_PATH,
+} from './../../core/paths';
 import { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { LayoutService } from '../service/app.layout.service';
@@ -17,57 +28,64 @@ export class AppMenuComponent implements OnInit {
   ngOnInit() {
     this.model = [
       {
-        label: 'Home',
-        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }],
+        label: 'HOME',
+        items: [{ label: 'DASHBOARD', icon: 'pi pi-fw pi-home', routerLink: ['/'] }],
       },
       {
-        label: 'Management',
+        label: 'MANAGEMENT',
         items: [
           {
-            label: 'User Management',
+            label: 'USER_MANAGEMENT',
             icon: 'pi pi-fw pi-id-card',
             iconClass: 'text-blue-500',
             items: [
-              { label: 'Users', icon: 'pi pi-list', routerLink: [USERS_LIST_PATH] },
-              { label: 'Add User', icon: 'pi pi-plus', routerLink: [USER_UPSERT_FORM] },
+              { label: 'USERS', icon: 'pi pi-list', routerLink: [USERS_LIST_PATH] },
+              { label: 'ADD_USER', icon: 'pi pi-plus', routerLink: [USER_UPSERT_FORM] },
             ],
           },
           {
-            label: 'Customers Management',
+            label: 'CUSTOMERS_MANAGEMENT',
             icon: 'pi pi-fw pi-users',
             iconClass: 'text-green-500',
-
             items: [
-              { label: 'Customers', icon: 'pi pi-list', routerLink: [CUSTOMERS_LIST_PATH] },
-              { label: 'Add Customer', icon: 'pi pi-plus', routerLink: [CUSTOMER_UPSERT_FORM] },
+              { label: 'CUSTOMERS', icon: 'pi pi-list', routerLink: [CUSTOMERS_LIST_PATH] },
+              { label: 'ADD_CUSTOMER', icon: 'pi pi-plus', routerLink: [CUSTOMER_UPSERT_FORM] },
             ],
           },
           {
-            label: 'Companies Management',
+            label: 'COMPANIES_MANAGEMENT',
             icon: 'pi pi-fw pi-ticket',
             iconClass: 'text-purple-500',
-
             items: [
-              { label: 'Companies', icon: 'pi pi-list', routerLink: [COMPANIES_LIST_PATH] },
-              { label: 'Add Company', icon: 'pi pi-plus', routerLink: [COMPANY_UPSERT_FORM] },
+              { label: 'COMPANIES', icon: 'pi pi-list', routerLink: [COMPANIES_LIST_PATH] },
+              { label: 'ADD_COMPANY', icon: 'pi pi-plus', routerLink: [COMPANY_UPSERT_FORM] },
             ],
           },
           {
-            label: 'Sites Management',
+            label: 'SITES_MANAGEMENT',
             icon: 'pi pi-fw pi-map-marker',
             iconClass: 'text-red-500',
             items: [
-              { label: 'Sites', icon: 'pi pi-list', routerLink: [SITES_LIST_PATH] },
-              { label: 'Add Site', icon: 'pi pi-plus', routerLink: [SITE_UPSERT_FORM] },
+              { label: 'SITES', icon: 'pi pi-list', routerLink: [SITES_LIST_PATH] },
+              { label: 'ADD_SITE', icon: 'pi pi-plus', routerLink: [SITE_UPSERT_FORM] },
             ],
           },
           {
-            label: 'Drivers Management',
+            label: 'DRIVERS_MANAGEMENT',
             icon: 'pi pi-fw pi-user',
             iconClass: 'text-yellow-900',
             items: [
-              { label: 'Drivers', icon: 'pi pi-list', routerLink: [DRIVERS_LIST_PATH] },
-              { label: 'Add Driver', icon: 'pi pi-plus', routerLink: [DRIVER_UPSERT_FORM] },
+              { label: 'DRIVERS', icon: 'pi pi-list', routerLink: [DRIVERS_LIST_PATH] },
+              { label: 'ADD_DRIVER', icon: 'pi pi-plus', routerLink: [DRIVER_UPSERT_FORM] },
+            ],
+          },
+          {
+            label: 'VEHICLES_MANAGEMENT',
+            icon: 'pi pi-fw pi-car',
+            iconClass: 'text-pink-500 ',
+            items: [
+              { label: 'VEHICLES', icon: 'pi pi-list', routerLink: [VEHICLES_LIST_PATH] },
+              { label: 'ADD_VEHICLE', icon: 'pi pi-plus', routerLink: [VEHICLE_UPSERT_FORM] },
             ],
           },
         ],

@@ -92,7 +92,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResultOfVehicleDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -190,7 +197,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -286,7 +300,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResultOfVehicleTypeDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -384,7 +405,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleTypeDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -2078,6 +2106,10 @@
             "type": "string",
             "nullable": true
           },
+          "model": {
+            "type": "string",
+            "nullable": true
+          },
           "insuranceCompany": {
             "type": "string",
             "nullable": true
@@ -2124,6 +2156,10 @@
             "type": "string",
             "nullable": true
           },
+          "model": {
+            "type": "string",
+            "nullable": true
+          },
           "plateNumber": {
             "type": "string",
             "nullable": true
@@ -2135,6 +2171,90 @@
           "insuranceTo": {
             "type": "string",
             "format": "date"
+          }
+        }
+      },
+      "VehicleDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehicleTypeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehicleTypeId": {
+            "type": "string",
+            "nullable": true
+          },
+          "companyName": {
+            "type": "string",
+            "nullable": true
+          },
+          "companyId": {
+            "type": "string",
+            "nullable": true
+          },
+          "insuranceCompany": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "model": {
+            "type": "string",
+            "nullable": true
+          },
+          "plateNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "insuranceFrom": {
+            "type": "string",
+            "nullable": true
+          },
+          "insuranceTo": {
+            "type": "string",
+            "nullable": true
+          },
+          "isAuthorized": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PagedResultOfVehicleDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/VehicleDto"
+            }
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasPreviousPage": {
+            "type": "boolean"
+          },
+          "hasNextPage": {
+            "type": "boolean"
           }
         }
       },
@@ -2159,6 +2279,51 @@
           "name": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "VehicleTypeDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "PagedResultOfVehicleTypeDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/VehicleTypeDto"
+            }
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasPreviousPage": {
+            "type": "boolean"
+          },
+          "hasNextPage": {
+            "type": "boolean"
           }
         }
       },

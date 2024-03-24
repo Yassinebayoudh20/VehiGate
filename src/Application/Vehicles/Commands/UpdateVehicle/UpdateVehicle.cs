@@ -18,6 +18,7 @@ namespace VehiGate.Application.Vehicles.Commands.UpdateVehicle
         public string CompanyId { get; init; }
         public string InsuranceCompany { get; init; }
         public string Name { get; init; }
+        public string Model { get; init; }
         public string PlateNumber { get; init; }
         public DateOnly InsuranceFrom { get; init; }
         public DateOnly InsuranceTo { get; init; }
@@ -32,13 +33,7 @@ namespace VehiGate.Application.Vehicles.Commands.UpdateVehicle
             _context = context;
 
             RuleFor(x => x.Id).NotEmpty();
-            RuleFor(x => x.VehicleTypeId).NotEmpty();
-            RuleFor(x => x.CompanyId).NotEmpty();
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
-            RuleFor(x => x.PlateNumber).NotEmpty().MaximumLength(20);
-            RuleFor(x => x.InsuranceCompany).NotEmpty().MaximumLength(100);
-            RuleFor(x => x.InsuranceFrom).NotEmpty();
-            RuleFor(x => x.InsuranceTo).NotEmpty().GreaterThanOrEqualTo(x => x.InsuranceFrom);
+            RuleFor(x => x.InsuranceTo).GreaterThanOrEqualTo(x => x.InsuranceFrom);
 
             RuleFor(x => x.PlateNumber)
                 .MustAsync(async (command, plateNumber, cancellationToken) =>
@@ -88,6 +83,10 @@ namespace VehiGate.Application.Vehicles.Commands.UpdateVehicle
             if (request.PlateNumber != null)
             {
                 vehicle.PlateNumber = request.PlateNumber;
+            }
+            if (request.Model != null)
+            {
+                vehicle.Model = request.Model;
             }
             if (request.InsuranceFrom != default)
             {

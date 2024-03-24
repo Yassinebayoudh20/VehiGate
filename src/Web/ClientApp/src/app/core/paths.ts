@@ -28,3 +28,9 @@ export const USER_UPSERT_FORM = '/pages/users/upsert';
  */
    export const DRIVERS_LIST_PATH = '/pages/drivers';
    export const DRIVER_UPSERT_FORM = '/pages/drivers/upsert';
+
+     /**
+ * vehicles Management
+ */
+     export const VEHICLES_LIST_PATH = '/pages/vehicles';
+     export const VEHICLE_UPSERT_FORM = '/pages/vehicles/upsert';

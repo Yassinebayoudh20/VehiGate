@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, Observable, shareReplay, switchMap, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { LOCAL_STORAGE_TOKEN_NAME } from '../constants';
 import { UserInfo } from '../data/dtos/auth/user-info-dto';
@@ -29,8 +29,9 @@ export class AuthService {
     return this.authClient.authenticate(loginCommand).pipe(
       tap((tokenResponse: AuthenticationResponse) => {
         this.saveToken(tokenResponse.token);
-        this.updateUser();
-      })
+        //this.updateUser();
+      }),
+      shareReplay()
     );
   }
 
@@ -48,6 +49,8 @@ export class AuthService {
       })
     );
   }
+
+  getToken = (): string | null => localStorage.getItem(LOCAL_STORAGE_TOKEN_NAME);
 
   saveToken(token) {
     localStorage.setItem(LOCAL_STORAGE_TOKEN_NAME, token);
@@ -74,11 +77,12 @@ export class AuthService {
     return null;
   }
 
-  public updateUser(): void {
+  public getUserDetails(): UserInfo {
     const user = this.getUserFromToken();
     if (user) {
-      this.currentUserSubject.next(user);
+      return user;
     }
+    return null;
   }
 
   isLoggedIn(): boolean {

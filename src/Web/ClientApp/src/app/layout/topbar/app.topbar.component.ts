@@ -22,7 +22,10 @@ export class AppTopBarComponent implements OnInit, OnDestroy {
 
   logoutSubscription: Subscription;
 
-  constructor(public layoutService: LayoutService, private authService: AuthService) {}
+  authService = inject(AuthService);
+
+  constructor(public layoutService: LayoutService) {}
+
   ngOnInit(): void {
     this.currentUser$ = this.authService.currentUser;
 
@@ -35,6 +38,10 @@ export class AppTopBarComponent implements OnInit, OnDestroy {
         },
       },
     ];
+  }
+
+  isLoggedIn() {
+    return this.authService.isLoggedIn();
   }
 
   ngOnDestroy(): void {

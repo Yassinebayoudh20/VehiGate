@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using VehiGate.Application.Authentication.Commands.Login;
+﻿using VehiGate.Application.Authentication.Commands.Login;
 using VehiGate.Application.Authentication.Commands.Logout;
 using VehiGate.Application.Authentication.Commands.Register;
 using VehiGate.Application.Common.Models;
@@ -34,7 +33,7 @@ public class Authentication : EndpointGroupBase
         return await sender.Send(command);
     }
 
-    [Authorize]
+    
     public async Task<Result> SignOut(ISender sender, LogoutCommand command)
     {
         return await sender.Send(command);

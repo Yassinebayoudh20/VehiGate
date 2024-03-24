@@ -21,7 +21,7 @@
               <div *ngIf="loginForm.get('password').errors.required" class="text-red-500">{{ 'PASSWORD_REQUIRED' | transloco }}</div>
             </div>
 
-            <button type="submit" pButton pRipple [label]="'SIGN_IN' | transloco | titlecase" class="w-full mt-2 p-3 text-xl"></button>
+            <button type="submit" [disabled]="!this.loginForm.valid" [loading]="requestProcessing" pButton pRipple [label]="'SIGN_IN' | transloco | titlecase" class="w-full mt-2 p-3 text-xl"></button>
           </div>
         </div>
       </div>

@@ -19,6 +19,9 @@ import { AppSidebarComponent } from './sidebar/app.sidebar.component';
 import { AppLayoutComponent } from './app.layout.component';
 import { CommonModule } from '@angular/common';
 import { TranslocoModule } from '@ngneat/transloco';
+import { AvatarModule } from 'primeng/avatar';
+
+
 
 @NgModule({
   declarations: [AppMenuitemComponent, AppTopBarComponent, AppFooterComponent, AppMenuComponent, AppSidebarComponent, AppLayoutComponent],
@@ -29,6 +32,7 @@ import { TranslocoModule } from '@ngneat/transloco';
     InputTextModule,
     MenuModule,
     TranslocoModule,
+    AvatarModule,
     SidebarModule,
     BadgeModule,
     RadioButtonModule,

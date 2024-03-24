@@ -12,15 +12,14 @@
     <i class="pi pi-ellipsis-v"></i>
   </button>
 
-  <div #topbarmenu class="layout-topbar-menu" [ngClass]="{ 'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible }">
-    <div class="p-link inline-flex justify-content-center align-items-center">
-      <p class="font-bold">Welcome ,</p>
-      {{ (currentUser$ | async)?.name }}
+  <div *ngIf="isLoggedIn()" #topbarmenu class="layout-topbar-menu" [ngClass]="{ 'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible }">
+    <div *ngIf="authService.getUserDetails() as userDetails" class="p-link inline-flex justify-content-center align-items-center">
+      <p-avatar [label]="userDetails.name[0]" styleClass="mr-2" size="large"></p-avatar>
+      <div class="flex flex-column gap-1">
+        <small>{{ userDetails.name }}</small>
+        <p-badge [value]="userDetails.role"></p-badge>
+      </div>
     </div>
-    <button class="p-link layout-topbar-button">
-      <i class="pi pi-user"></i>
-      <span>Profile</span>
-    </button>
     <p-menu #settingsMenu [model]="settingsMenuItems" [popup]="true"></p-menu>
     <button class="p-link layout-topbar-button" (click)="settingsMenu.toggle($event)">
       <i class="pi pi-cog"></i>

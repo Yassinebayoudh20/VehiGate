@@ -2,9 +2,12 @@
 using VehiGate.Application.Authentication.Commands.Register;
 using VehiGate.Application.Common.Interfaces;
 using VehiGate.Application.Common.Models;
+using VehiGate.Application.Common.Security;
 using VehiGate.Infrastructure.Identity.models;
 
 namespace VehiGate.Application.Authentication.Commands.Logout;
+
+[Authorize]
 public record LogoutCommand : IRequest<Result>
 {
 }

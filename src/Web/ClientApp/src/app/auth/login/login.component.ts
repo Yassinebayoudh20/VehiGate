@@ -25,6 +25,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   valCheck: string[] = ['remember'];
   loginForm: FormGroup;
   loginSubscription: Subscription;
+  requestProcessing = false;
 
   constructor(public layoutService: LayoutService, private authService: AuthService, private formBuilder: FormBuilder, private router: Router) {}
 
@@ -37,14 +38,20 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     if (this.loginForm.valid) {
+      this.requestProcessing = true;
       const loginCmd = new LoginCommand();
       loginCmd.email = this.loginForm.get('email').value;
       loginCmd.password = this.loginForm.get('password').value;
-      this.loginSubscription = this.authService.login(loginCmd).subscribe((response) => {
-        this.navigateToDashboard();
-      });
+      this.loginSubscription = this.authService.login(loginCmd).subscribe(
+        (response) => {
+          this.requestProcessing = false;
+          this.navigateToDashboard();
+        },
+        () => (this.requestProcessing = false),
+        () => (this.requestProcessing = false)
+      );
     } else {
-      // Form validation failed
+      this.requestProcessing = false;
     }
   }
 

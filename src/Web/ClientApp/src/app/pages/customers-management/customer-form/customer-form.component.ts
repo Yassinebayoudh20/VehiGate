@@ -17,6 +17,7 @@ import { Component, OnInit } from '@angular/core';
 export class CustomerFormComponent implements OnInit {
   form: FormGroup;
   isEditing: boolean = false;
+  isViewing: boolean = false;
   pageTitle: string;
   requestProcessing = false;
 
@@ -33,15 +34,28 @@ export class CustomerFormComponent implements OnInit {
 
     this.aRoute.queryParams.subscribe((params) => {
       this.isEditing = params['action'] === FormState.EDITING ? true : false;
+      this.isViewing = params['action'] === FormState.VIEWING ? true : false;
       this.resolvePageTitle();
       this.form = this.formBuilder.group({
         name: [null, [Validators.required, Validators.minLength(2), noWhiteSpaceValidator()]],
         distance: [null, [Validators.required]],
       });
-      if (this.isEditing) {
+      if (this.isEditing || this.isViewing) {
         this.fetchCustomerDetails(customerId);
+
       }
     });
+
+  }
+
+  disableForm() {
+    if (this.isViewing) {
+      this.form.disable();
+      this.form.get('contactInfo').get('email').disable();
+      this.form.get('contactInfo').get('phoneNumber').disable();
+      this.form.get('contactInfo').get('contact').disable();
+
+    }
   }
 
   resolvePageTitle() {
@@ -88,6 +102,7 @@ export class CustomerFormComponent implements OnInit {
             contact: customerData.contact,
           },
         });
+        this.disableForm();
       },
     });
   }

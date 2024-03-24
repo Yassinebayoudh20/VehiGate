@@ -47,6 +47,11 @@ export class CustomersListComponent implements OnInit {
     this.router.navigate([`${CUSTOMER_UPSERT_FORM}/${customerId}`], { queryParams: { action: FormState.EDITING } });
   }
 
+  goToViewCustomerForm(customerId: string) {
+    this.router.navigate([`${CUSTOMER_UPSERT_FORM}/${customerId}`], { queryParams: { action: FormState.VIEWING } });
+  }
+
+
   ngOnDestroy() {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();

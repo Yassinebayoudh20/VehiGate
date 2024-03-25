@@ -59,6 +59,9 @@ export class VehiclesListComponent implements OnInit, OnDestroy {
     this.router.navigate([`${VEHICLE_UPSERT_FORM}/${vehicleId}`], { queryParams: { action: FormState.EDITING } });
   }
 
+  goToViewVehicleForm(vehicleId: string) {
+    this.router.navigate([`${VEHICLE_UPSERT_FORM}/${vehicleId}`], { queryParams: { action: FormState.VIEWING } });
+  }
   ngOnDestroy() {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();

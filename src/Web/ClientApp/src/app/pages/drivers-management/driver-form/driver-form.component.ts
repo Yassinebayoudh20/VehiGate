@@ -21,6 +21,7 @@ import { setFormFieldAndMarkAsDirty } from 'src/app/core/utils';
 export class DriverFormComponent implements OnInit {
   form: FormGroup;
   isEditing: boolean = false;
+  isViewing: boolean = false;
   pageTitle: string;
   companiesList$: Observable<PagedResultOfCompanyDto> = null;
   requestProcessing = false;
@@ -40,6 +41,7 @@ export class DriverFormComponent implements OnInit {
     const driverId = this.aRoute.snapshot.params.id;
     this.aRoute.queryParams.subscribe((params) => {
       this.isEditing = params['action'] === FormState.EDITING ? true : false;
+      this.isViewing = params['action'] === FormState.VIEWING ? true : false;
       this.resolvePageTitle();
       this.loadCompanies();
       this.form = this.formBuilder.group({
@@ -48,14 +50,25 @@ export class DriverFormComponent implements OnInit {
         driverLicenseNumber: [null, [Validators.required, Validators.minLength(1), noWhiteSpaceValidator()]],
         company: [null, [Validators.required]],
       });
-      if (this.isEditing) {
+      if (this.isEditing || this.isViewing) {
         this.fetchDriverDetails(driverId);
       }
     });
   }
-  
+
+  disableForm() {
+    if (this.isViewing) {
+      this.form.disable();
+      this.form.get('contactInfo').disable();
+    }
+  }
+
   resolvePageTitle() {
-    this.pageTitle = this.isEditing ? 'EDIT_DRIVER' : 'ADD_NEW_DRIVER';
+    if (this.isViewing) {
+      this.pageTitle = 'VIEW_DRIVER_DETAILS';
+    } else {
+      this.pageTitle = this.isEditing ? 'EDIT_DRIVER' : 'ADD_NEW_DRIVER';
+    }
   }
 
   loadCompanies(pageNumber: number = 1) {
@@ -104,6 +117,7 @@ export class DriverFormComponent implements OnInit {
             phoneNumber: driverData.phone,
           },
         });
+        this.disableForm();
       },
     });
   }

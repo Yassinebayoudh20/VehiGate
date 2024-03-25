@@ -42,6 +42,9 @@ export class UsersListComponent implements OnInit, OnDestroy {
     this.router.navigate([`${USER_UPSERT_FORM}/${userId}`], { queryParams: { action: FormState.EDITING } });
   }
 
+  goToViewUserForm(userId: string) {
+    this.router.navigate([`${USER_UPSERT_FORM}/${userId}`], { queryParams: { action: FormState.VIEWING } });
+  }
   ngOnDestroy() {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();

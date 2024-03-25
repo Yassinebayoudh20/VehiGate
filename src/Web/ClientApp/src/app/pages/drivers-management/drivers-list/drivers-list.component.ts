@@ -41,6 +41,10 @@ export class DriversListComponent implements OnInit, OnDestroy {
     this.router.navigate([`${DRIVER_UPSERT_FORM}/${driverId}`], { queryParams: { action: FormState.EDITING } });
   }
 
+  goToViewDriverForm(driverId: string) {
+    this.router.navigate([`${DRIVER_UPSERT_FORM}/${driverId}`], { queryParams: { action: FormState.VIEWING } });
+  }
+
   ngOnDestroy() {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();

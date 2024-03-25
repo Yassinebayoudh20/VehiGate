@@ -17,6 +17,7 @@ import { FormState } from 'src/app/core/data/models/form-state.enum';
 export class CompanyFormComponent implements OnInit {
   form: FormGroup;
   isEditing: boolean = false;
+  isViewing: boolean = false;
   pageTitle: string;
   requestProcessing = false;
 
@@ -34,16 +35,24 @@ export class CompanyFormComponent implements OnInit {
 
     this.aRoute.queryParams.subscribe((params) => {
       this.isEditing = params['action'] === FormState.EDITING ? true : false;
+      this.isViewing = params['action'] === FormState.VIEWING ? true : false;
+
       this.resolvePageTitle();
       this.form = this.formBuilder.group({
         name: [null, [Validators.required, noWhiteSpaceValidator()]],
       });
-      if (this.isEditing) {
+      if (this.isEditing || this.isViewing) {
         this.fetchUserDetails(companyId);
       }
     });
   }
 
+  disableForm() {
+    if (this.isViewing) {
+      this.form.disable();
+      this.form.get('contactInfo').disable();
+    }
+  }
   fetchUserDetails(companyId: string) {
     this.companyService.getCompany(companyId).subscribe({
       next: (companyData) => {
@@ -56,12 +65,17 @@ export class CompanyFormComponent implements OnInit {
             address: companyData.address,
           },
         });
+        this.disableForm();
       },
     });
   }
 
   resolvePageTitle() {
-    this.pageTitle = this.isEditing ? 'EDIT_COMPANY' : 'ADD_NEW_COMPANY';
+    if (this.isViewing) {
+      this.pageTitle = 'VIEW_COMPANY_DETAILS';
+    } else {
+      this.pageTitle = this.isEditing ? 'EDIT_COMPANY' : 'ADD_NEW_COMPANY';
+    }
   }
 
   onSubmit(): void {

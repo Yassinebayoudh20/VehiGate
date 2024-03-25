@@ -23,6 +23,7 @@ import { dateRangeValidator } from 'src/app/core/validators/date-range.validator
 export class VehicleFormComponent implements OnInit {
   form: FormGroup;
   isEditing: boolean = false;
+  isViewing: boolean = false;
   pageTitle: string;
   companiesList$: Observable<PagedResultOfCompanyDto> = null;
   vehicleTypesList$: Observable<PagedResultOfVehicleTypeDto> = null;
@@ -45,6 +46,7 @@ export class VehicleFormComponent implements OnInit {
     const vehicleId = this.aRoute.snapshot.params.id;
     this.aRoute.queryParams.subscribe((params) => {
       this.isEditing = params['action'] === FormState.EDITING ? true : false;
+      this.isViewing = params['action'] === FormState.VIEWING ? true : false;
       this.resolvePageTitle();
       this.loadCompanies();
       this.loadVehicleTypes();
@@ -64,20 +66,29 @@ export class VehicleFormComponent implements OnInit {
           validator: dateRangeValidator('insuranceFrom', 'insuranceTo'),
         }
       );
-      if (this.isEditing) {
+      if (this.isEditing || this.isViewing) {
         this.fetchVehicleDetails(vehicleId);
       }
     });
   }
 
+  disableForm() {
+    if (this.isViewing) {
+      this.form.disable();
+    }
+  }
   resolvePageTitle() {
+    if (this.isViewing) {
+      this.pageTitle = 'VIEW_VEHICLE_DETAILS';
+    } else {
     this.pageTitle = this.isEditing ? 'EDIT_VEHICLE' : 'ADD_NEW_VEHICLE';
+    }
   }
 
   onSelectModelChanged($event: any) {
     setFormFieldAndMarkAsDirty(this.form, 'model', $event);
   }
-  
+
   onModelChanged($event: string) {
     setFormFieldAndMarkAsDirty(this.form, 'model', $event);
   }
@@ -144,6 +155,7 @@ export class VehicleFormComponent implements OnInit {
           insuranceFrom: vehicleData.insuranceFrom,
           insuranceTo: vehicleData.insuranceTo,
         });
+        this.disableForm();
       },
     });
   }

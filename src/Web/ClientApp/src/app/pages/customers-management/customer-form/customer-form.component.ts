@@ -42,24 +42,23 @@ export class CustomerFormComponent implements OnInit {
       });
       if (this.isEditing || this.isViewing) {
         this.fetchCustomerDetails(customerId);
-
       }
     });
-
   }
 
   disableForm() {
     if (this.isViewing) {
       this.form.disable();
-      this.form.get('contactInfo').get('email').disable();
-      this.form.get('contactInfo').get('phoneNumber').disable();
-      this.form.get('contactInfo').get('contact').disable();
-
+      this.form.get('contactInfo').disable();
     }
   }
 
   resolvePageTitle() {
-    this.pageTitle = this.isEditing ? 'EDIT_CUSTOMER' : 'ADD_NEW_CUSTOMER';
+    if (this.isViewing) {
+      this.pageTitle = 'VIEW_CUSTOMER_DETAILS';
+    } else {
+      this.pageTitle = this.isEditing ? 'EDIT_CUSTOMER' : 'ADD_NEW_CUSTOMER';
+    }
   }
 
   onSubmit(): void {

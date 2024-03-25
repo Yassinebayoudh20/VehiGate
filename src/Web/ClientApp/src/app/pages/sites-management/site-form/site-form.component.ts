@@ -20,8 +20,10 @@ import { take } from 'rxjs';
 export class SiteFormComponent implements OnInit {
   form: FormGroup;
   isEditing: boolean = false;
+  isViewing: boolean = false;
   pageTitle: string;
   requestProcessing = false;
+
 
   constructor(
     private formBuilder: FormBuilder,
@@ -38,16 +40,26 @@ export class SiteFormComponent implements OnInit {
 
     this.route.queryParams.subscribe((params) => {
       this.isEditing = params['action'] === FormState.EDITING ? true : false;
+      this.isViewing = params['action'] === FormState.VIEWING ? true : false;
       this.resolvePageTitle();
       this.form = this.formBuilder.group({});
-      if (this.isEditing) {
+      if (this.isEditing || this.isViewing) {
         this.fetchSiteDetails(siteId);
       }
     });
   }
-
+  disableForm() {
+    if (this.isViewing) {
+      this.form.disable();
+      this.form.get('contactInfo').disable();
+    }
+  }
   resolvePageTitle() {
+    if (this.isViewing) {
+      this.pageTitle = 'VIEW_SITE_DETAILS';
+    } else {
     this.pageTitle = this.isEditing ? 'EDIT_SITE' : 'ADD_NEW_SITE';
+    }
   }
 
   onSubmit(): void {
@@ -88,6 +100,7 @@ export class SiteFormComponent implements OnInit {
           phoneNumber: siteData.phone,
           email: siteData.email,
         });
+        this.disableForm();
       },
     });
   }

@@ -46,6 +46,10 @@ export class CompaniesListComponent implements OnInit, OnDestroy {
     this.router.navigate([COMPANY_UPSERT_FORM]);
   }
 
+  goToViewCompanyForm(companyId: string) {
+    this.router.navigate([`${COMPANY_UPSERT_FORM}/${companyId}`], { queryParams: { action: FormState.VIEWING } });
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();

@@ -19,6 +19,7 @@ import { FormState } from 'src/app/core/data/models/form-state.enum';
 export class UserFormComponent implements OnInit {
   form: FormGroup;
   isEditing: boolean = false;
+  isViewing: boolean = false;
   pageTitle: string;
   userRolesList$: Observable<RoleInfo[]> = new Observable();
   requestProcessing = false;
@@ -36,6 +37,7 @@ export class UserFormComponent implements OnInit {
     const userId = this.aRoute.snapshot.params.id;
     this.aRoute.queryParams.subscribe((params) => {
       this.isEditing = params['action'] === FormState.EDITING ? true : false;
+      this.isViewing = params['action'] === FormState.VIEWING ? true : false;
       this.resolvePageTitle();
       this.initializeUserRolesList();
       this.form = this.formBuilder.group({
@@ -44,15 +46,24 @@ export class UserFormComponent implements OnInit {
         password: [null, [Validators.required, Validators.minLength(6), noWhiteSpaceValidator()]],
         role: [null, [Validators.required]],
       });
-      if (this.isEditing) {
+      if (this.isEditing || this.isViewing) {
         this.fetchUserDetails(userId);
       }
     });
-    console.log(this.form);
   }
 
+  disableForm() {
+    if (this.isViewing) {
+      this.form.disable();
+      this.form.get('contactInfo').disable();
+    }
+  }
   resolvePageTitle() {
+    if (this.isViewing) {
+      this.pageTitle = 'VIEW_USER_DETAILS';
+    } else {
     this.pageTitle = this.isEditing ? 'EDIT_USER' : 'ADD_NEW_USER';
+    }
   }
 
   initializeUserRolesList() {
@@ -92,6 +103,7 @@ export class UserFormComponent implements OnInit {
           },
         });
         this.form.get('password').disable();
+        this.disableForm();
       },
     });
   }

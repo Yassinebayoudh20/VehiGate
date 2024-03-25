@@ -44,6 +44,10 @@ export class SitesListComponent implements OnInit, OnDestroy {
     this.router.navigate([SITE_UPSERT_FORM]);
   }
 
+  goToViewSiteForm(siteId: string) {
+    this.router.navigate([`${SITE_UPSERT_FORM}/${siteId}`], { queryParams: { action: FormState.VIEWING } });
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();

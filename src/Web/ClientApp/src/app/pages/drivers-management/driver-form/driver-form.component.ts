@@ -50,6 +50,7 @@ export class DriverFormComponent implements OnInit {
         driverLicenseNumber: [null, [Validators.required, Validators.minLength(1), noWhiteSpaceValidator()]],
         company: [null, [Validators.required]],
       });
+      console.log(this.isViewing)
       if (this.isEditing || this.isViewing) {
         this.fetchDriverDetails(driverId);
       }

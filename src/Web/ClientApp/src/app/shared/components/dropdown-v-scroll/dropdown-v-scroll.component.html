@@ -1,4 +1,4 @@
-<div *ngIf="items && items.length > 0" class="p-dropdown p-component p-inputwrapper p-dropdown-clearable" [ngClass]="{ 'p-invalid': isInvalid }" (click)="toggleDropdown($event)">
+<div  *ngIf="items && items.length > 0" class="p-dropdown p-component p-inputwrapper p-dropdown-clearable" [ngClass]="{ 'p-invalid': isInvalid, 'p-disabled': isDisabled }" (click)="toggleDropdown($event)">
   <div class="p-element p-dropdown-label p-inputtext p-placeholder">
     {{ selectedItem ? selectedItem[optionName] : ('SELECT_AN_ITEM' | transloco | titlecase) }}
   </div>

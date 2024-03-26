@@ -13,6 +13,7 @@ export class DropdownVScrollComponent implements OnChanges {
   @Input() optionName: string = 'name';
   @Input() additionalInfo: string[] = [];
   @Input() isRequired: boolean = false;
+  @Input() isDisabled: boolean = false;
   @Input() selected: string = null;
   @Output() selectedItemChange = new EventEmitter<any>();
   @Output() loadMoreDataEmitter = new EventEmitter<number>();

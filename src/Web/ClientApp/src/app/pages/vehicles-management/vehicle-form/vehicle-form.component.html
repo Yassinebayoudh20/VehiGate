@@ -9,6 +9,7 @@
             <app-dropdown-v-scroll
               *ngIf="(isEditing && vehicleModel) || !isEditing"
               [isRequired]="true"
+              [isDisabled]="isViewing"
               [items$]="this.vehicleTypesList$"
               [selected]="vehicleModel?.vehicleTypeId"
               (loadMoreDataEmitter)="onLoadMoreVehicleTypes($event)"
@@ -23,6 +24,7 @@
             <app-dropdown-v-scroll
               *ngIf="(isEditing && vehicleModel) || !isEditing"
               [isRequired]="true"
+              [isDisabled]="isViewing"
               [items$]="this.companiesList$"
               [selected]="vehicleModel?.companyId"
               (loadMoreDataEmitter)="onLoadMoreData($event)"
@@ -64,6 +66,7 @@
                 [items$]="vehicleModesList$"
                 (inputValueChange)="onModelChanged($event)"
                 (selectedItemChange)="onSelectModelChanged($event)"
+                [isDisabled]="isViewing"
               ></app-auto-complete>
             </span>
             <div *ngIf="form.get('model').invalid && (form.get('model').dirty || form.get('model').touched)">

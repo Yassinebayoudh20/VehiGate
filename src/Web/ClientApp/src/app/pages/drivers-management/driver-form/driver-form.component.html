@@ -43,6 +43,7 @@
             <app-dropdown-v-scroll
               *ngIf="(isEditing && driverModel) || !isEditing"
               [isRequired]="true"
+              [isDisabled]="isViewing"
               [items$]="this.companiesList$"
               [selected]="driverModel?.companyId"
               (loadMoreDataEmitter)="onLoadMoreData($event)"

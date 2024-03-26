@@ -11,6 +11,7 @@ export class AutoCompleteComponent {
   @Input() items$: Observable<any[]> | undefined;
   @Input() filterBy: string = 'name';
   @Input() selected: string = null;
+  @Input() isDisabled: boolean = false;
   @Output() selectedItemChange: EventEmitter<any> = new EventEmitter<any>();
   @Output() inputValueChange: EventEmitter<string> = new EventEmitter<string>();
   selectedItem: any;

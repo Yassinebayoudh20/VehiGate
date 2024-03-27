@@ -1,0 +1,47 @@
+<div class="card">
+  <ng-container [formGroup]="form">
+    <div class="m-3">
+      <div class="text-lg m-2 font-bold capitalize"><i class="pi pi-user mr-2"></i>{{ 'SELECT_A_DRIVER' | transloco | titlecase }}</div>
+      <div>
+        <app-dropdown-v-scroll
+          [optionName]="'firstName'"
+          [additionalInfo]="['lastName']"
+          [isRequired]="true"
+          [items$]="this.driversList$"
+          (loadMoreDataEmitter)="onLoadMoreData($event)"
+          (selectedItemChange)="getSelectedDriver($event)"
+        ></app-dropdown-v-scroll>
+      </div>
+    </div>
+    <div class="m-3">
+      <div class="text-lg m-2 font-bold capitalize"><i class="pi pi-user mr-2"></i>{{ 'DRIVER_INFO' | transloco | titlecase }}</div>
+      <div>
+        <app-entity-info [info]="selectedDriver" [associatedTo]="CheckListAssociation.Driver"></app-entity-info>
+      </div>
+    </div>
+    <div class="m-3">
+      <div class="text-lg m-2 font-bold capitalize"><i class="pi pi-check-circle mr-2"></i>{{ 'DRIVER_ENTRANCE_INSPECTION_CHECKLIST' | transloco | titlecase }}</div>
+      <div>
+        <app-checklist [isEditable]="selectedDriver !== null" [items]="checkListItems$ | async" (noteChange)="onNoteChange($event)" (stateChange)="onStateChange($event)"></app-checklist>
+      </div>
+    </div>
+    <div class="m-3">
+      <div class="text-lg m-2 font-bold capitalize"><i class="pi pi-calendar mr-2"></i>{{ 'VALIDITY' | transloco | titlecase }}</div>
+      <div>
+        <app-data-entry-form [isEditable]="selectedDriver !== null" [isAuthorized]="isInspectionAuthorized"></app-data-entry-form>
+      </div>
+    </div>
+    <div class="flex md:justify-content-end gap-2">
+      <button pButton type="button" pRipple icon="pi pi-arrow-left" label="{{ 'BACK' | transloco | titlecase }}" class="p-button" (click)="goBack()"></button>
+      <button
+        pButton
+        type="button"
+        [disabled]="!selectedDriver || !isDateValid()"
+        pRipple
+        icon="pi pi-save"
+        label="{{ 'SAVE' | transloco | titlecase }}"
+        class="p-button p-button-success"
+        (click)="onSubmit()"
+      ></button></div
+  ></ng-container>
+</div>

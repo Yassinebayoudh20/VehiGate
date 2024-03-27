@@ -35,6 +35,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
     public DbSet<Checklist> Checklists => Set<Checklist>();
 
+    public DbSet<CheckItem> CheckItems => Set<CheckItem>();
+
+    public DbSet<CheckListItem> CheckListItems => Set<CheckListItem>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

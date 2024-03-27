@@ -26,7 +26,11 @@ public interface IApplicationDbContext
 
     DbSet<VehicleInspectionChecklist> VehicleInspectionChecklists { get; }
 
+    DbSet<CheckItem> CheckItems { get; }
+
     DbSet<Checklist> Checklists { get; }
+
+    DbSet<CheckListItem> CheckListItems { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

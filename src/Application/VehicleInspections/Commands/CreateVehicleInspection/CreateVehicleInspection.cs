@@ -1,21 +1,23 @@
 ﻿using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using VehiGate.Application.CheckLists.Queries;
+using VehiGate.Application.Common.Exceptions;
 using VehiGate.Application.Common.Helpers;
 using VehiGate.Application.Common.Interfaces;
 using VehiGate.Application.Common.Security;
-using VehiGate.Application.VehicleInspections.Commands.CreateVehicleInspection;
 using VehiGate.Domain.Entities;
+using System.Collections.Generic;
+using VehiGate.Application.CheckLists.Queries;
 
 namespace VehiGate.Application.VehicleInspections.Commands.CreateVehicleInspection
 {
     [Authorize]
     public class CreateVehicleInspectionCommand : IRequest<string>
     {
-        public string DriverId { get; set; }
         public string VehicleId { get; set; }
         public bool HasDocuments { get; set; } = false;
         public bool IsDamaged { get; set; } = false;
@@ -23,85 +25,90 @@ namespace VehiGate.Application.VehicleInspections.Commands.CreateVehicleInspecti
         public string Notes { get; set; }
         public DateTime AuthorizedFrom { get; set; } = DateTime.UtcNow;
         public DateTime AuthorizedTo { get; set; } = DateTime.UtcNow;
-        public List<CheckListDto> Checklists { get; set; }
+        public List<CheckListItemDto> CheckItems { get; init; }
     }
+
+
 
     public class CreateVehicleInspectionCommandValidator : AbstractValidator<CreateVehicleInspectionCommand>
     {
         public CreateVehicleInspectionCommandValidator()
         {
-            RuleFor(x => x.DriverId).NotEmpty();
             RuleFor(x => x.VehicleId).NotEmpty();
             RuleFor(x => x.AuthorizedFrom).NotEmpty().WithMessage("Authorized From date is required");
             RuleFor(x => x.AuthorizedTo).NotEmpty().WithMessage("Authorized To date is required");
             RuleFor(x => x.AuthorizedTo)
                 .Must((x, authorizedTo) => authorizedTo.Date >= x.AuthorizedFrom.Date)
-                   .WithMessage("Authorized To date must be greater than or equal Authorized From date");
+                .WithMessage("Authorized To date must be greater than or equal Authorized From date");
         }
     }
-}
 
-public class CreateVehicleInspectionCommandHandler : IRequestHandler<CreateVehicleInspectionCommand, string>
-{
-    private readonly IApplicationDbContext _context;
-
-    public CreateVehicleInspectionCommandHandler(IApplicationDbContext context)
+    public class CreateVehicleInspectionCommandHandler : IRequestHandler<CreateVehicleInspectionCommand, string>
     {
-        _context = context;
-    }
+        private readonly IApplicationDbContext _context;
 
-    public async Task<string> Handle(CreateVehicleInspectionCommand request, CancellationToken cancellationToken)
-    {
-        var vehicleInspection = new VehicleInspection
+        public CreateVehicleInspectionCommandHandler(IApplicationDbContext context)
         {
-            DriverId = request.DriverId,
-            VehicleId = request.VehicleId,
-            HasDocuments = request.HasDocuments,
-            IsDamaged = request.IsDamaged,
-            Msdn = request.Msdn,
-            AuthorizedFrom = request.AuthorizedFrom,
-            AuthorizedTo = request.AuthorizedTo,
-        };
+            _context = context;
+        }
 
-        if (request.Checklists != null && request.Checklists.Any())
+        public async Task<string> Handle(CreateVehicleInspectionCommand request, CancellationToken cancellationToken)
         {
-            foreach (var checklistDto in request.Checklists)
+            var vehicleInspection = new VehicleInspection
             {
-                var checklist = await _context.Checklists.FindAsync(checklistDto.Id);
+                VehicleId = request.VehicleId,
+                HasDocuments = request.HasDocuments,
+                IsDamaged = request.IsDamaged,
+                Msdn = request.Msdn,
+                AuthorizedFrom = request.AuthorizedFrom,
+                AuthorizedTo = request.AuthorizedTo,
+                Notes = request.Notes
+            };
 
-                if (checklist != null)
+            if (request.CheckItems != null && request.CheckItems.Count > 0)
+            {
+                var checklist = new Checklist();
+                var checkListItems = new List<CheckListItem>();
+
+                foreach (var item in request.CheckItems)
                 {
-                    var inspectionChecklist = new VehicleInspectionChecklist
+                    var checkItem = await _context.CheckItems.FindAsync(item.Id);
+
+                    if (checkItem != null)
                     {
-                        VehicleInspection = vehicleInspection,
-                        Checklist = checklist,
-                        State = checklistDto.State,
-                        Note = checklistDto.Note
-                    };
+                        var checkListItem = new CheckListItem
+                        {
+                            CheckItem = checkItem,
+                            State = item.State,
+                            Note = item.Note
+                        };
 
-                    _context.VehicleInspectionChecklists.Add(inspectionChecklist);
+                        checkListItems.Add(checkListItem);
+                    }
                 }
+
+                checklist.CheckListItems = checkListItems;
+                vehicleInspection.Checklist = checklist;
             }
-        }
+            vehicleInspection.IsAuthorized = InspectionHelper.IsAuthorized(vehicleInspection.AuthorizedFrom, vehicleInspection.AuthorizedTo)
+                                                && request.CheckItems.All(checklist => checklist.State);
 
-        vehicleInspection.IsAuthorized = InspectionHelper.IsAuthorized(vehicleInspection.AuthorizedFrom, vehicleInspection.AuthorizedTo) && request.Checklists.All(checklist => checklist.State);
-
-        _context.VehicleInspections.Add(vehicleInspection);
-
-        await _context.SaveChangesAsync(cancellationToken);
-
-        var vehicle = _context.Vehicles.FirstOrDefault(d => d.Id == request.VehicleId);
-
-        if (vehicle != null)
-        {
-            vehicle.AuthorizedFrom = request.AuthorizedFrom;
-            vehicle.AuthorizedTo = request.AuthorizedTo;
-            vehicle.IsAuthorized = vehicleInspection.IsAuthorized;
-
-            _context.Vehicles.Update(vehicle);
+            _context.VehicleInspections.Add(vehicleInspection);
             await _context.SaveChangesAsync(cancellationToken);
-        }
 
-        return vehicleInspection.Id;
+            var vehicle = _context.Vehicles.FirstOrDefault(d => d.Id == request.VehicleId);
+
+            if (vehicle != null)
+            {
+                vehicle.AuthorizedFrom = request.AuthorizedFrom;
+                vehicle.AuthorizedTo = request.AuthorizedTo;
+                vehicle.IsAuthorized = vehicleInspection.IsAuthorized;
+
+                _context.Vehicles.Update(vehicle);
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+
+            return vehicleInspection.Id.ToString();
+        }
     }
 }

@@ -2507,6 +2507,83 @@ export class CompaniesClient implements ICompaniesClient {
     }
 }
 
+export interface ICheckListsClient {
+    getCheckingItemsByAssociation(association: CheckListAssociation): Observable<CheckListItemDto[]>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class CheckListsClient implements ICheckListsClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    getCheckingItemsByAssociation(association: CheckListAssociation): Observable<CheckListItemDto[]> {
+        let url_ = this.baseUrl + "/api/CheckLists?";
+        if (association === undefined || association === null)
+            throw new Error("The parameter 'association' must be defined and cannot be null.");
+        else
+            url_ += "association=" + encodeURIComponent("" + association) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetCheckingItemsByAssociation(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetCheckingItemsByAssociation(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<CheckListItemDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<CheckListItemDto[]>;
+        }));
+    }
+
+    protected processGetCheckingItemsByAssociation(response: HttpResponseBase): Observable<CheckListItemDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(CheckListItemDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
 export interface ICheckingsClient {
     createCheckIn(command: CreateCheckInCommand): Observable<void>;
     getCheckingsByStatus(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void>;
@@ -3880,7 +3957,7 @@ export class CreateDriverInspectionCommand implements ICreateDriverInspectionCom
     authorizedTo?: Date;
     driverId?: string | undefined;
     driversFields?: string | undefined;
-    checklists?: CheckListDto[] | undefined;
+    checkItems?: CheckListItemDto[] | undefined;
 
     constructor(data?: ICreateDriverInspectionCommand) {
         if (data) {
@@ -3898,10 +3975,10 @@ export class CreateDriverInspectionCommand implements ICreateDriverInspectionCom
             this.authorizedTo = _data["authorizedTo"] ? new Date(_data["authorizedTo"].toString()) : <any>undefined;
             this.driverId = _data["driverId"];
             this.driversFields = _data["driversFields"];
-            if (Array.isArray(_data["checklists"])) {
-                this.checklists = [] as any;
-                for (let item of _data["checklists"])
-                    this.checklists!.push(CheckListDto.fromJS(item));
+            if (Array.isArray(_data["checkItems"])) {
+                this.checkItems = [] as any;
+                for (let item of _data["checkItems"])
+                    this.checkItems!.push(CheckListItemDto.fromJS(item));
             }
         }
     }
@@ -3920,10 +3997,10 @@ export class CreateDriverInspectionCommand implements ICreateDriverInspectionCom
         data["authorizedTo"] = this.authorizedTo ? this.authorizedTo.toISOString() : <any>undefined;
         data["driverId"] = this.driverId;
         data["driversFields"] = this.driversFields;
-        if (Array.isArray(this.checklists)) {
-            data["checklists"] = [];
-            for (let item of this.checklists)
-                data["checklists"].push(item.toJSON());
+        if (Array.isArray(this.checkItems)) {
+            data["checkItems"] = [];
+            for (let item of this.checkItems)
+                data["checkItems"].push(item.toJSON());
         }
         return data;
     }
@@ -3935,15 +4012,17 @@ export interface ICreateDriverInspectionCommand {
     authorizedTo?: Date;
     driverId?: string | undefined;
     driversFields?: string | undefined;
-    checklists?: CheckListDto[] | undefined;
+    checkItems?: CheckListItemDto[] | undefined;
 }
 
-export class CheckListDto implements ICheckListDto {
+export class CheckListItemDto implements ICheckListItemDto {
     id?: string | undefined;
+    name?: string | undefined;
+    association?: CheckListAssociation;
     state?: boolean;
     note?: string | undefined;
 
-    constructor(data?: ICheckListDto) {
+    constructor(data?: ICheckListItemDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -3955,14 +4034,16 @@ export class CheckListDto implements ICheckListDto {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.name = _data["name"];
+            this.association = _data["association"];
             this.state = _data["state"];
             this.note = _data["note"];
         }
     }
 
-    static fromJS(data: any): CheckListDto {
+    static fromJS(data: any): CheckListItemDto {
         data = typeof data === 'object' ? data : {};
-        let result = new CheckListDto();
+        let result = new CheckListItemDto();
         result.init(data);
         return result;
     }
@@ -3970,16 +4051,26 @@ export class CheckListDto implements ICheckListDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["name"] = this.name;
+        data["association"] = this.association;
         data["state"] = this.state;
         data["note"] = this.note;
         return data;
     }
 }
 
-export interface ICheckListDto {
+export interface ICheckListItemDto {
     id?: string | undefined;
+    name?: string | undefined;
+    association?: CheckListAssociation;
     state?: boolean;
     note?: string | undefined;
+}
+
+export enum CheckListAssociation {
+    Driver = 0,
+    Vehicle = 1,
+    Tank = 2,
 }
 
 export class UpdateDriverInspectionCommand implements IUpdateDriverInspectionCommand {
@@ -3989,7 +4080,8 @@ export class UpdateDriverInspectionCommand implements IUpdateDriverInspectionCom
     authorizedTo?: Date;
     driverId?: string | undefined;
     driversFields?: string | undefined;
-    checklists?: CheckListDto[] | undefined;
+    checkListId?: string | undefined;
+    checkItems?: CheckListItemDto[] | undefined;
 
     constructor(data?: IUpdateDriverInspectionCommand) {
         if (data) {
@@ -4008,10 +4100,11 @@ export class UpdateDriverInspectionCommand implements IUpdateDriverInspectionCom
             this.authorizedTo = _data["authorizedTo"] ? new Date(_data["authorizedTo"].toString()) : <any>undefined;
             this.driverId = _data["driverId"];
             this.driversFields = _data["driversFields"];
-            if (Array.isArray(_data["checklists"])) {
-                this.checklists = [] as any;
-                for (let item of _data["checklists"])
-                    this.checklists!.push(CheckListDto.fromJS(item));
+            this.checkListId = _data["checkListId"];
+            if (Array.isArray(_data["checkItems"])) {
+                this.checkItems = [] as any;
+                for (let item of _data["checkItems"])
+                    this.checkItems!.push(CheckListItemDto.fromJS(item));
             }
         }
     }
@@ -4031,10 +4124,11 @@ export class UpdateDriverInspectionCommand implements IUpdateDriverInspectionCom
         data["authorizedTo"] = this.authorizedTo ? this.authorizedTo.toISOString() : <any>undefined;
         data["driverId"] = this.driverId;
         data["driversFields"] = this.driversFields;
-        if (Array.isArray(this.checklists)) {
-            data["checklists"] = [];
-            for (let item of this.checklists)
-                data["checklists"].push(item.toJSON());
+        data["checkListId"] = this.checkListId;
+        if (Array.isArray(this.checkItems)) {
+            data["checkItems"] = [];
+            for (let item of this.checkItems)
+                data["checkItems"].push(item.toJSON());
         }
         return data;
     }
@@ -4047,11 +4141,11 @@ export interface IUpdateDriverInspectionCommand {
     authorizedTo?: Date;
     driverId?: string | undefined;
     driversFields?: string | undefined;
-    checklists?: CheckListDto[] | undefined;
+    checkListId?: string | undefined;
+    checkItems?: CheckListItemDto[] | undefined;
 }
 
 export class CreateVehicleInspectionCommand implements ICreateVehicleInspectionCommand {
-    driverId?: string | undefined;
     vehicleId?: string | undefined;
     hasDocuments?: boolean;
     isDamaged?: boolean;
@@ -4059,7 +4153,7 @@ export class CreateVehicleInspectionCommand implements ICreateVehicleInspectionC
     notes?: string | undefined;
     authorizedFrom?: Date;
     authorizedTo?: Date;
-    checklists?: CheckListDto[] | undefined;
+    checkItems?: CheckListItemDto[] | undefined;
 
     constructor(data?: ICreateVehicleInspectionCommand) {
         if (data) {
@@ -4072,7 +4166,6 @@ export class CreateVehicleInspectionCommand implements ICreateVehicleInspectionC
 
     init(_data?: any) {
         if (_data) {
-            this.driverId = _data["driverId"];
             this.vehicleId = _data["vehicleId"];
             this.hasDocuments = _data["hasDocuments"];
             this.isDamaged = _data["isDamaged"];
@@ -4080,10 +4173,10 @@ export class CreateVehicleInspectionCommand implements ICreateVehicleInspectionC
             this.notes = _data["notes"];
             this.authorizedFrom = _data["authorizedFrom"] ? new Date(_data["authorizedFrom"].toString()) : <any>undefined;
             this.authorizedTo = _data["authorizedTo"] ? new Date(_data["authorizedTo"].toString()) : <any>undefined;
-            if (Array.isArray(_data["checklists"])) {
-                this.checklists = [] as any;
-                for (let item of _data["checklists"])
-                    this.checklists!.push(CheckListDto.fromJS(item));
+            if (Array.isArray(_data["checkItems"])) {
+                this.checkItems = [] as any;
+                for (let item of _data["checkItems"])
+                    this.checkItems!.push(CheckListItemDto.fromJS(item));
             }
         }
     }
@@ -4097,7 +4190,6 @@ export class CreateVehicleInspectionCommand implements ICreateVehicleInspectionC
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["driverId"] = this.driverId;
         data["vehicleId"] = this.vehicleId;
         data["hasDocuments"] = this.hasDocuments;
         data["isDamaged"] = this.isDamaged;
@@ -4105,17 +4197,16 @@ export class CreateVehicleInspectionCommand implements ICreateVehicleInspectionC
         data["notes"] = this.notes;
         data["authorizedFrom"] = this.authorizedFrom ? this.authorizedFrom.toISOString() : <any>undefined;
         data["authorizedTo"] = this.authorizedTo ? this.authorizedTo.toISOString() : <any>undefined;
-        if (Array.isArray(this.checklists)) {
-            data["checklists"] = [];
-            for (let item of this.checklists)
-                data["checklists"].push(item.toJSON());
+        if (Array.isArray(this.checkItems)) {
+            data["checkItems"] = [];
+            for (let item of this.checkItems)
+                data["checkItems"].push(item.toJSON());
         }
         return data;
     }
 }
 
 export interface ICreateVehicleInspectionCommand {
-    driverId?: string | undefined;
     vehicleId?: string | undefined;
     hasDocuments?: boolean;
     isDamaged?: boolean;
@@ -4123,12 +4214,11 @@ export interface ICreateVehicleInspectionCommand {
     notes?: string | undefined;
     authorizedFrom?: Date;
     authorizedTo?: Date;
-    checklists?: CheckListDto[] | undefined;
+    checkItems?: CheckListItemDto[] | undefined;
 }
 
 export class UpdateVehicleInspectionCommand implements IUpdateVehicleInspectionCommand {
     id?: string | undefined;
-    driverId?: string | undefined;
     vehicleId?: string | undefined;
     hasDocuments?: boolean;
     isDamaged?: boolean;
@@ -4136,7 +4226,7 @@ export class UpdateVehicleInspectionCommand implements IUpdateVehicleInspectionC
     notes?: string | undefined;
     authorizedFrom?: Date;
     authorizedTo?: Date;
-    checklists?: CheckListDto[] | undefined;
+    checkItems?: CheckListItemDto[] | undefined;
 
     constructor(data?: IUpdateVehicleInspectionCommand) {
         if (data) {
@@ -4150,7 +4240,6 @@ export class UpdateVehicleInspectionCommand implements IUpdateVehicleInspectionC
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.driverId = _data["driverId"];
             this.vehicleId = _data["vehicleId"];
             this.hasDocuments = _data["hasDocuments"];
             this.isDamaged = _data["isDamaged"];
@@ -4158,10 +4247,10 @@ export class UpdateVehicleInspectionCommand implements IUpdateVehicleInspectionC
             this.notes = _data["notes"];
             this.authorizedFrom = _data["authorizedFrom"] ? new Date(_data["authorizedFrom"].toString()) : <any>undefined;
             this.authorizedTo = _data["authorizedTo"] ? new Date(_data["authorizedTo"].toString()) : <any>undefined;
-            if (Array.isArray(_data["checklists"])) {
-                this.checklists = [] as any;
-                for (let item of _data["checklists"])
-                    this.checklists!.push(CheckListDto.fromJS(item));
+            if (Array.isArray(_data["checkItems"])) {
+                this.checkItems = [] as any;
+                for (let item of _data["checkItems"])
+                    this.checkItems!.push(CheckListItemDto.fromJS(item));
             }
         }
     }
@@ -4176,7 +4265,6 @@ export class UpdateVehicleInspectionCommand implements IUpdateVehicleInspectionC
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["driverId"] = this.driverId;
         data["vehicleId"] = this.vehicleId;
         data["hasDocuments"] = this.hasDocuments;
         data["isDamaged"] = this.isDamaged;
@@ -4184,10 +4272,10 @@ export class UpdateVehicleInspectionCommand implements IUpdateVehicleInspectionC
         data["notes"] = this.notes;
         data["authorizedFrom"] = this.authorizedFrom ? this.authorizedFrom.toISOString() : <any>undefined;
         data["authorizedTo"] = this.authorizedTo ? this.authorizedTo.toISOString() : <any>undefined;
-        if (Array.isArray(this.checklists)) {
-            data["checklists"] = [];
-            for (let item of this.checklists)
-                data["checklists"].push(item.toJSON());
+        if (Array.isArray(this.checkItems)) {
+            data["checkItems"] = [];
+            for (let item of this.checkItems)
+                data["checkItems"].push(item.toJSON());
         }
         return data;
     }
@@ -4195,7 +4283,6 @@ export class UpdateVehicleInspectionCommand implements IUpdateVehicleInspectionC
 
 export interface IUpdateVehicleInspectionCommand {
     id?: string | undefined;
-    driverId?: string | undefined;
     vehicleId?: string | undefined;
     hasDocuments?: boolean;
     isDamaged?: boolean;
@@ -4203,7 +4290,7 @@ export interface IUpdateVehicleInspectionCommand {
     notes?: string | undefined;
     authorizedFrom?: Date;
     authorizedTo?: Date;
-    checklists?: CheckListDto[] | undefined;
+    checkItems?: CheckListItemDto[] | undefined;
 }
 
 export class CreateDriverCommand implements ICreateDriverCommand {

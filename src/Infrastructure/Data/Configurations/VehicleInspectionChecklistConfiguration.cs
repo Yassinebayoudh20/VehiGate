@@ -22,9 +22,8 @@ public class VehicleInspectionChecklistConfiguration : IEntityTypeConfiguration<
             .WithMany(vi => vi.VehicleInspectionChecklists)
             .HasForeignKey(vic => vic.VehicleInspectionId);
 
-        builder
-            .HasOne(vic => vic.Checklist)
-            .WithMany()
-            .HasForeignKey(vic => vic.ChecklistId);
+        builder.HasOne(dic => dic.Checklist)
+              .WithMany(cl => cl.VehicleInspectionChecklists)
+              .HasForeignKey(dic => dic.ChecklistId);
     }
 }

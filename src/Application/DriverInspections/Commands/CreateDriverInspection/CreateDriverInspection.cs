@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using VehiGate.Application.CheckLists.Queries;
@@ -17,7 +18,7 @@ namespace VehiGate.Application.DriverInspections.Commands.CreateDriverInspection
         public DateTime AuthorizedTo { get; set; } = DateTime.UtcNow;
         public string DriverId { get; init; }
         public string DriversFields { get; init; }
-        public List<CheckListDto> Checklists { get; init; }
+        public List<CheckListItemDto> CheckItems { get; init; }
     }
 
     public class CreateDriverInspectionCommandValidator : AbstractValidator<CreateDriverInspectionCommand>
@@ -27,8 +28,8 @@ namespace VehiGate.Application.DriverInspections.Commands.CreateDriverInspection
             RuleFor(x => x.AuthorizedFrom).NotEmpty().WithMessage("AuthorizedFrom is required.");
             RuleFor(x => x.AuthorizedTo).NotEmpty().WithMessage("AuthorizedTo is required.");
             RuleFor(x => x.AuthorizedTo)
-            .Must((x, authorizedTo) => authorizedTo.Date >= x.AuthorizedFrom.Date)
-               .WithMessage("Authorized To date must be greater than or equal Authorized From date");
+                .Must((x, authorizedTo) => authorizedTo.Date >= x.AuthorizedFrom.Date)
+                .WithMessage("Authorized To date must be greater than or equal Authorized From date");
             RuleFor(x => x.DriverId).NotEmpty().WithMessage("DriverId is required.");
         }
     }
@@ -53,28 +54,34 @@ namespace VehiGate.Application.DriverInspections.Commands.CreateDriverInspection
                 DriversFields = request.DriversFields
             };
 
-            if (request.Checklists != null && request.Checklists.Any())
+            if (request.CheckItems != null && request.CheckItems.Count > 0)
             {
-                foreach (var checklistDto in request.Checklists)
-                {
-                    var checklist = await _context.Checklists.FindAsync(checklistDto.Id);
+                var checklist = new Checklist();
+                checklist.Name = nameof(DriverInspection) + ' ' + DateTime.Now.ToString();
+                var checkListItems = new List<CheckListItem>();
 
-                    if (checklist != null)
+                foreach (var item in request.CheckItems)
+                {
+                    var checkItem = await _context.CheckItems.FindAsync(item.Id);
+
+                    if (checkItem != null)
                     {
-                        var inspectionChecklist = new DriverInspectionChecklist
+                        var checkListItem = new CheckListItem
                         {
-                            DriverInspection = driverInspection,
-                            Checklist = checklist,
-                            State = checklistDto.State,
-                            Note = checklistDto.Note
+                            CheckItem = checkItem,
+                            State = item.State,
+                            Note = item.Note
                         };
 
-                        _context.DriverInspectionChecklists.Add(inspectionChecklist);
+                        checkListItems.Add(checkListItem);
                     }
                 }
+
+                checklist.CheckListItems = checkListItems;
+                driverInspection.Checklist = checklist;
             }
 
-            driverInspection.IsAuthorized = InspectionHelper.IsAuthorized(driverInspection.AuthorizedFrom, driverInspection.AuthorizedTo) && request.Checklists.All(checklist => checklist.State);
+            driverInspection.IsAuthorized = InspectionHelper.IsAuthorized(driverInspection.AuthorizedFrom, driverInspection.AuthorizedTo) && driverInspection.Checklist.CheckListItems.All(cli => cli.State);
 
             _context.DriverInspections.Add(driverInspection);
             await _context.SaveChangesAsync(cancellationToken);

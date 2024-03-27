@@ -18,12 +18,18 @@ import { DropdownModule } from 'primeng/dropdown';
 import { LoaderComponent } from './components/loader/loader.component';
 import { AutoCompleteComponent } from './components/auto-complete/auto-complete.component';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { ChecklistComponent } from './components/checklist/checklist.component';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { DataEntryFormComponent } from './components/checklist/data-entry-form/data-entry-form.component';
+import { CalendarModule } from 'primeng/calendar';
+import { TagModule } from 'primeng/tag';
+import { EntityInfoComponent } from './components/checklist/entity-info/entity-info.component';
 
-const PRIME_UI_MODULES = [TableModule, MultiSelectModule, ToolbarModule, FileUploadModule, DropdownModule, ToastModule, InputTextModule, FieldsetModule, AutoCompleteModule];
+const PRIME_UI_MODULES = [TableModule,CalendarModule,TagModule, RadioButtonModule, MultiSelectModule, ToolbarModule, FileUploadModule, DropdownModule, ToastModule, InputTextModule, FieldsetModule, AutoCompleteModule];
 
 @NgModule({
-  declarations: [CrudComponent, ContactInfoComponent, DropdownVScrollComponent, LoaderComponent, AutoCompleteComponent],
+  declarations: [CrudComponent, ContactInfoComponent, DropdownVScrollComponent, LoaderComponent, AutoCompleteComponent, ChecklistComponent, DataEntryFormComponent, EntityInfoComponent],
   imports: [CommonModule, FormsModule, TranslocoModule, ReactiveFormsModule, ...PRIME_UI_MODULES],
-  exports: [CrudComponent, ContactInfoComponent, DropdownVScrollComponent,AutoCompleteComponent],
+  exports: [CrudComponent,EntityInfoComponent, ContactInfoComponent, DropdownVScrollComponent, AutoCompleteComponent, ChecklistComponent,DataEntryFormComponent],
 })
 export class SharedModule {}

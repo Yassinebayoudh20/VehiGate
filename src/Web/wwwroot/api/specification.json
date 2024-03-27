@@ -1831,6 +1831,45 @@
         ]
       }
     },
+    "/api/CheckLists": {
+      "get": {
+        "tags": [
+          "CheckLists"
+        ],
+        "operationId": "GetCheckingItemsByAssociation",
+        "parameters": [
+          {
+            "name": "association",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CheckListAssociation"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CheckListItemDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
     "/api/Checkings": {
       "post": {
         "tags": [
@@ -2595,22 +2634,29 @@
             "type": "string",
             "nullable": true
           },
-          "checklists": {
+          "checkItems": {
             "type": "array",
             "nullable": true,
             "items": {
-              "$ref": "#/components/schemas/CheckListDto"
+              "$ref": "#/components/schemas/CheckListItemDto"
             }
           }
         }
       },
-      "CheckListDto": {
+      "CheckListItemDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "id": {
             "type": "string",
             "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "association": {
+            "$ref": "#/components/schemas/CheckListAssociation"
           },
           "state": {
             "type": "boolean"
@@ -2620,6 +2666,21 @@
             "nullable": true
           }
         }
+      },
+      "CheckListAssociation": {
+        "type": "integer",
+        "description": "",
+        "x-enumFlags": true,
+        "x-enumNames": [
+          "Driver",
+          "Vehicle",
+          "Tank"
+        ],
+        "enum": [
+          0,
+          1,
+          2
+        ]
       },
       "UpdateDriverInspectionCommand": {
         "type": "object",
@@ -2649,11 +2710,15 @@
             "type": "string",
             "nullable": true
           },
-          "checklists": {
+          "checkListId": {
+            "type": "string",
+            "nullable": true
+          },
+          "checkItems": {
             "type": "array",
             "nullable": true,
             "items": {
-              "$ref": "#/components/schemas/CheckListDto"
+              "$ref": "#/components/schemas/CheckListItemDto"
             }
           }
         }
@@ -2662,10 +2727,6 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "driverId": {
-            "type": "string",
-            "nullable": true
-          },
           "vehicleId": {
             "type": "string",
             "nullable": true
@@ -2692,11 +2753,11 @@
             "type": "string",
             "format": "date-time"
           },
-          "checklists": {
+          "checkItems": {
             "type": "array",
             "nullable": true,
             "items": {
-              "$ref": "#/components/schemas/CheckListDto"
+              "$ref": "#/components/schemas/CheckListItemDto"
             }
           }
         }
@@ -2709,10 +2770,6 @@
             "type": "string",
             "nullable": true
           },
-          "driverId": {
-            "type": "string",
-            "nullable": true
-          },
           "vehicleId": {
             "type": "string",
             "nullable": true
@@ -2739,11 +2796,11 @@
             "type": "string",
             "format": "date-time"
           },
-          "checklists": {
+          "checkItems": {
             "type": "array",
             "nullable": true,
             "items": {
-              "$ref": "#/components/schemas/CheckListDto"
+              "$ref": "#/components/schemas/CheckListItemDto"
             }
           }
         }

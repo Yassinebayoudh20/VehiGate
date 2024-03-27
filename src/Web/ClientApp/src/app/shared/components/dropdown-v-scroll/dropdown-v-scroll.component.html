@@ -8,6 +8,7 @@
       <div class="p-dropdown-items">
         <div *ngFor="let item of items" class="p-dropdown-item p-element" (click)="selectItem($event, item)">
           {{ item[optionName] }}
+          <span *ngFor="let info of additionalInfo"> {{ item[info] }} </span>
         </div>
       </div>
 

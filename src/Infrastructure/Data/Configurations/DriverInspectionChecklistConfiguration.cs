@@ -1,30 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using VehiGate.Domain.Entities;
 
-namespace VehiGate.Infrastructure.Data.Configurations;
-
-public class DriverInspectionChecklistConfiguration : IEntityTypeConfiguration<DriverInspectionChecklist>
+namespace VehiGate.Infrastructure.Persistence.Configurations
 {
-    public void Configure(EntityTypeBuilder<DriverInspectionChecklist> builder)
+    public class DriverInspectionChecklistConfiguration : IEntityTypeConfiguration<DriverInspectionChecklist>
     {
-        builder
-            .HasKey(dic => new { dic.Id });
+        public void Configure(EntityTypeBuilder<DriverInspectionChecklist> builder)
+        {
+            builder.HasKey(dic => new { dic.DriverInspectionId, dic.ChecklistId });
 
-        builder
-            .HasOne(dic => dic.DriverInspection)
-            .WithMany(di => di.DriverInspectionChecklists)
-            .HasForeignKey(dic => dic.DriverInspectionId);
+            builder.HasOne(dic => dic.DriverInspection)
+                .WithMany(di => di.DriverInspectionChecklists)
+                .HasForeignKey(dic => dic.DriverInspectionId);
 
-        builder
-            .HasOne(dic => dic.Checklist)
-            .WithMany()
-            .HasForeignKey(dic => dic.ChecklistId);
+            builder.HasOne(dic => dic.Checklist)
+                .WithMany(cl => cl.DriverInspectionChecklists)
+                .HasForeignKey(dic => dic.ChecklistId);
+        }
     }
 }

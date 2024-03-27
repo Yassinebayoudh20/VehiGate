@@ -1,0 +1,13 @@
+<div class="p-datatable p-component">
+  <div class="p-datatable-wrapper">
+    <table class="p-datatable-gridlines" style="width: 100%">
+      <thead class="p-datatable-thead"></thead>
+      <tbody class="p-element p-datatable-tbody">
+        <tr *ngFor="let col of cols">
+          <td style="width: 50%;">{{ col.header | transloco | titlecase }}</td>
+          <td>{{ info ? info[col.field] : '-' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

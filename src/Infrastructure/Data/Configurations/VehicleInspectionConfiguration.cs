@@ -17,5 +17,9 @@ public class VehicleInspectionConfiguration : IEntityTypeConfiguration<VehicleIn
              .WithMany(d => d.VehicleInspections)
              .HasForeignKey(d => d.VehicleId)
              .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(di => di.Checklist)
+               .WithOne()
+               .HasForeignKey<VehicleInspection>(di => di.ChecklistId);
     }
 }

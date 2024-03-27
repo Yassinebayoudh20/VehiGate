@@ -11,6 +11,7 @@ import { TranslocoService } from '@ngneat/transloco';
 export class DropdownVScrollComponent implements OnChanges {
   @Input() items$: Observable<any> | null = null;
   @Input() optionName: string = 'name';
+  @Input() additionalInfo: string[] = [];
   @Input() isRequired: boolean = false;
   @Input() selected: string = null;
   @Output() selectedItemChange = new EventEmitter<any>();

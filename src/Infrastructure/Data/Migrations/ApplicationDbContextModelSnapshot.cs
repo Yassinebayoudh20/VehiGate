@@ -155,6 +155,72 @@ namespace VehiGate.Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("VehiGate.Domain.Entities.CheckItem", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AssociatedTo")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CheckItems");
+                });
+
+            modelBuilder.Entity("VehiGate.Domain.Entities.CheckListItem", b =>
+                {
+                    b.Property<string>("CheckListId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CheckItemId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("State")
+                        .HasColumnType("bit");
+
+                    b.HasKey("CheckListId", "CheckItemId");
+
+                    b.HasIndex("CheckItemId");
+
+                    b.ToTable("CheckListItems");
+                });
+
             modelBuilder.Entity("VehiGate.Domain.Entities.Checking", b =>
                 {
                     b.Property<string>("Id")
@@ -228,9 +294,6 @@ namespace VehiGate.Infrastructure.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("AssociatedTo")
-                        .HasColumnType("int");
-
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("datetimeoffset");
 
@@ -244,7 +307,9 @@ namespace VehiGate.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
@@ -381,6 +446,9 @@ namespace VehiGate.Infrastructure.Data.Migrations
                     b.Property<DateTime>("AuthorizedTo")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ChecklistId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("datetimeoffset");
 
@@ -406,9 +474,14 @@ namespace VehiGate.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ChecklistId")
+                        .IsUnique()
+                        .HasFilter("[ChecklistId] IS NOT NULL");
 
                     b.HasIndex("DriverId");
 
@@ -417,7 +490,7 @@ namespace VehiGate.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("VehiGate.Domain.Entities.DriverInspectionChecklist", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("DriverInspectionId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ChecklistId")
@@ -429,8 +502,8 @@ namespace VehiGate.Infrastructure.Data.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DriverInspectionId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTimeOffset>("LastModified")
                         .HasColumnType("datetimeoffset");
@@ -438,17 +511,9 @@ namespace VehiGate.Infrastructure.Data.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("State")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
+                    b.HasKey("DriverInspectionId", "ChecklistId");
 
                     b.HasIndex("ChecklistId");
-
-                    b.HasIndex("DriverInspectionId");
 
                     b.ToTable("DriverInspectionChecklists");
                 });
@@ -557,6 +622,9 @@ namespace VehiGate.Infrastructure.Data.Migrations
                     b.Property<DateTime>("AuthorizedTo")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ChecklistId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("datetimeoffset");
 
@@ -595,6 +663,10 @@ namespace VehiGate.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ChecklistId")
+                        .IsUnique()
+                        .HasFilter("[ChecklistId] IS NOT NULL");
+
                     b.HasIndex("DriverId");
 
                     b.HasIndex("VehicleId");
@@ -621,12 +693,6 @@ namespace VehiGate.Infrastructure.Data.Migrations
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("State")
-                        .HasColumnType("bit");
 
                     b.Property<string>("VehicleInspectionId")
                         .HasColumnType("nvarchar(450)");
@@ -789,6 +855,25 @@ namespace VehiGate.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("VehiGate.Domain.Entities.CheckListItem", b =>
+                {
+                    b.HasOne("VehiGate.Domain.Entities.CheckItem", "CheckItem")
+                        .WithMany("CheckListItems")
+                        .HasForeignKey("CheckItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VehiGate.Domain.Entities.Checklist", "CheckList")
+                        .WithMany("CheckListItems")
+                        .HasForeignKey("CheckListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CheckItem");
+
+                    b.Navigation("CheckList");
+                });
+
             modelBuilder.Entity("VehiGate.Domain.Entities.Checking", b =>
                 {
                     b.HasOne("VehiGate.Domain.Entities.Customer", "Customer")
@@ -839,10 +924,16 @@ namespace VehiGate.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("VehiGate.Domain.Entities.DriverInspection", b =>
                 {
+                    b.HasOne("VehiGate.Domain.Entities.Checklist", "Checklist")
+                        .WithOne()
+                        .HasForeignKey("VehiGate.Domain.Entities.DriverInspection", "ChecklistId");
+
                     b.HasOne("VehiGate.Domain.Entities.Driver", "Driver")
                         .WithMany("DriverInspections")
                         .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Checklist");
 
                     b.Navigation("Driver");
                 });
@@ -850,12 +941,16 @@ namespace VehiGate.Infrastructure.Data.Migrations
             modelBuilder.Entity("VehiGate.Domain.Entities.DriverInspectionChecklist", b =>
                 {
                     b.HasOne("VehiGate.Domain.Entities.Checklist", "Checklist")
-                        .WithMany()
-                        .HasForeignKey("ChecklistId");
+                        .WithMany("DriverInspectionChecklists")
+                        .HasForeignKey("ChecklistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("VehiGate.Domain.Entities.DriverInspection", "DriverInspection")
                         .WithMany("DriverInspectionChecklists")
-                        .HasForeignKey("DriverInspectionId");
+                        .HasForeignKey("DriverInspectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Checklist");
 
@@ -881,6 +976,10 @@ namespace VehiGate.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("VehiGate.Domain.Entities.VehicleInspection", b =>
                 {
+                    b.HasOne("VehiGate.Domain.Entities.Checklist", "Checklist")
+                        .WithOne()
+                        .HasForeignKey("VehiGate.Domain.Entities.VehicleInspection", "ChecklistId");
+
                     b.HasOne("VehiGate.Domain.Entities.Driver", "Driver")
                         .WithMany("VehicleInspections")
                         .HasForeignKey("DriverId")
@@ -891,6 +990,8 @@ namespace VehiGate.Infrastructure.Data.Migrations
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.Navigation("Checklist");
+
                     b.Navigation("Driver");
 
                     b.Navigation("Vehicle");
@@ -899,7 +1000,7 @@ namespace VehiGate.Infrastructure.Data.Migrations
             modelBuilder.Entity("VehiGate.Domain.Entities.VehicleInspectionChecklist", b =>
                 {
                     b.HasOne("VehiGate.Domain.Entities.Checklist", "Checklist")
-                        .WithMany()
+                        .WithMany("VehicleInspectionChecklists")
                         .HasForeignKey("ChecklistId");
 
                     b.HasOne("VehiGate.Domain.Entities.VehicleInspection", "VehicleInspection")
@@ -909,6 +1010,20 @@ namespace VehiGate.Infrastructure.Data.Migrations
                     b.Navigation("Checklist");
 
                     b.Navigation("VehicleInspection");
+                });
+
+            modelBuilder.Entity("VehiGate.Domain.Entities.CheckItem", b =>
+                {
+                    b.Navigation("CheckListItems");
+                });
+
+            modelBuilder.Entity("VehiGate.Domain.Entities.Checklist", b =>
+                {
+                    b.Navigation("CheckListItems");
+
+                    b.Navigation("DriverInspectionChecklists");
+
+                    b.Navigation("VehicleInspectionChecklists");
                 });
 
             modelBuilder.Entity("VehiGate.Domain.Entities.Company", b =>

@@ -22,5 +22,8 @@ public class VehicleInspection : BaseInspection
 
     public string Msdn { get; set; }
 
+    public string ChecklistId { get; set; }
+    public Checklist Checklist { get; set; }
+
     public ICollection<VehicleInspectionChecklist> VehicleInspectionChecklists { get; set; }
 }

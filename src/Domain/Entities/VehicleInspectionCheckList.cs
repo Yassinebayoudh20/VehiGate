@@ -13,7 +13,4 @@ public class VehicleInspectionChecklist : BaseAuditableEntity
 
     public string ChecklistId { get; set; }
     public Checklist Checklist { get; set; }
-
-    public bool State { get; set; }
-    public string Note { get; set; }
 }

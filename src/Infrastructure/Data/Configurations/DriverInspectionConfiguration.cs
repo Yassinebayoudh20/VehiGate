@@ -1,16 +1,25 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using VehiGate.Domain.Entities;
 
-namespace VehiGate.Infrastructure.Data.Configurations;
-
-public class DriverInspectionConfiguration : IEntityTypeConfiguration<DriverInspection>
+namespace VehiGate.Infrastructure.Persistence.Configurations
 {
-    public void Configure(EntityTypeBuilder<DriverInspection> builder)
+    public class DriverInspectionConfiguration : IEntityTypeConfiguration<DriverInspection>
     {
-        builder.HasOne(c => c.Driver)
-              .WithMany(d => d.DriverInspections)
-              .HasForeignKey(d => d.DriverId)
-              .OnDelete(DeleteBehavior.Restrict);
+        public void Configure(EntityTypeBuilder<DriverInspection> builder)
+        {
+            builder.HasKey(di => di.Id);
+
+            builder.Property(di => di.Notes)
+                .HasMaxLength(1000);
+
+            builder.HasOne(di => di.Driver)
+                .WithMany(d => d.DriverInspections)
+                .HasForeignKey(di => di.DriverId);
+
+            builder.HasOne(di => di.Checklist)
+                .WithOne()
+                .HasForeignKey<DriverInspection>(di => di.ChecklistId);
+        }
     }
 }

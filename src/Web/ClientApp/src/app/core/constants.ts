@@ -55,3 +55,22 @@ export const POPULAR_CARS_AND_TRUCKS_MODELS = [
   { name: 'Mack TerraPro' },
   { name: 'Western Star 6900' },
 ];
+export const FORM_ENTRY_DATA_COLS = [
+  { field: 'date', header: 'CONTROL_DATE' },
+  { field: 'isValidFrom', header: 'VALID_FROM' },
+  { field: 'validTo', header: 'VALID_TO' },
+  { field: 'isAuthorized', header: 'FINAL_STATUS' },
+];
+
+export const DRIVER_INFO_COLS = [
+  { field: 'firstName', header: 'FIRST_NAME' },
+  { field: 'lastName', header: 'LAST_NAME' },
+  { field: 'driverLicenseNumber', header: 'DRIVER_LICENSE_NUMBER' },
+];
+
+export const VEHICLE_TANK_INFO_COLS = [
+  { field: 'plateNumber', header: 'PLATE_NUMBER' },
+  { field: 'model', header: 'MODEL' },
+  { field: 'company', header: 'COMPANY' },
+  { field: 'driver', header: 'DRIVER' },
+];

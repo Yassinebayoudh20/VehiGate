@@ -43,3 +43,5 @@ export const VEHICLE_UPSERT_FORM = '/pages/vehicles/upsert';
  */
 export const VEHICLE_TYPES_LIST_PATH = '/pages/genres';
 export const VEHICLE_TYPE_UPSERT_FORM = '/pages/genres/upsert';
+export const VEHICLE_INSPECTION_UPSERT_FORM = '/pages/vehicles-inspection/upsert';
+export const VEHICLE_INSPECTIONS_LIST_PATH = '/pages/vehicles-inspection';

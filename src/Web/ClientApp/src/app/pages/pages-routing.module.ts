@@ -35,10 +35,10 @@ const routes: Routes = [
         path: 'drivers-inspection',
         loadChildren: () => import('./drivers-inspection-management/drivers-inspection-management.module').then((m) => m.DriversInspectionManagementModule),
       },
-      // {
-      //   path: 'vehicles-inspection',
-      //   loadChildren: () => import('./vehicles-inspection-management/vehicles-inspection-management.module').then((m) => m.VehiclesInspectionManagementModule),
-      // },
+      {
+        path: 'vehicles-inspection',
+        loadChildren: () => import('./vehicles-inspection-management/vehicles-inspection-management.module').then((m) => m.VehiclesInspectionManagementModule),
+      },
       // {
       //   path: 'checking',
       //   loadChildren: () => import('./checkings-management/checkings-management.module').then((m) => m.CheckingsManagementModule),

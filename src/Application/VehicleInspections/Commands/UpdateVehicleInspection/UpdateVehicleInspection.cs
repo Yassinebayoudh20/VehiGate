@@ -29,8 +29,6 @@ namespace VehiGate.Application.VehicleInspections.Commands.UpdateVehicleInspecti
         public List<CheckListItemDto> CheckItems { get; set; }
     }
 
-  
-
     public class UpdateVehicleInspectionCommandValidator : AbstractValidator<UpdateVehicleInspectionCommand>
     {
         public UpdateVehicleInspectionCommandValidator()
@@ -58,8 +56,8 @@ namespace VehiGate.Application.VehicleInspections.Commands.UpdateVehicleInspecti
         {
             var vehicleInspection = await _context.VehicleInspections
             .Include(di => di.Vehicle)
-                .Include(di => di.VehicleInspectionChecklists)
-                    .ThenInclude(dic => dic.Checklist)
+                .Include(di => di.Checklist)
+                    .ThenInclude(dic => dic.CheckListItems)
                         .FirstOrDefaultAsync(vi => vi.Id == request.Id);
 
             if (vehicleInspection == null)
@@ -67,24 +65,50 @@ namespace VehiGate.Application.VehicleInspections.Commands.UpdateVehicleInspecti
                 throw new NotFoundException(nameof(VehicleInspection), request.Id);
             }
 
-            vehicleInspection.VehicleId = request.VehicleId;
-            vehicleInspection.HasDocuments = request.HasDocuments;
-            vehicleInspection.IsDamaged = request.IsDamaged;
-            vehicleInspection.Msdn = request.Msdn;
-            vehicleInspection.Notes = request.Notes;
-            vehicleInspection.AuthorizedFrom = request.AuthorizedFrom;
-            vehicleInspection.AuthorizedTo = request.AuthorizedTo;
+            if (vehicleInspection.VehicleId != null)
+            {
+                vehicleInspection.VehicleId = request.VehicleId;
+            }
+
+            if (vehicleInspection.Notes != null)
+            {
+                vehicleInspection.Notes = request.Notes;
+            }
+
+            if (vehicleInspection.Msdn != null)
+            {
+                vehicleInspection.Msdn = request.Msdn;
+            }
+
+            if (vehicleInspection.AuthorizedFrom != DateTime.MinValue)
+            {
+                vehicleInspection.AuthorizedFrom = request.AuthorizedFrom;
+            }
+
+            if (vehicleInspection.AuthorizedTo != DateTime.MinValue)
+            {
+                vehicleInspection.AuthorizedTo = request.AuthorizedTo;
+            }
 
             if (request.CheckItems != null && request.CheckItems.Count > 0)
             {
-                foreach (var updatedItem in request.CheckItems)
+                foreach (var existingItem in vehicleInspection?.Checklist?.CheckListItems)
                 {
-                    var existingItem = vehicleInspection.Checklist.CheckListItems.FirstOrDefault(cli => cli.CheckItemId == updatedItem.Id);
+                    var updatedItem = request.CheckItems.FirstOrDefault(cli => cli.Id == existingItem.CheckItemId);
 
-                    if (existingItem != null)
+                    if (updatedItem != null)
                     {
-                        existingItem.State = updatedItem.State;
-                        existingItem.Note = updatedItem.Note;
+                        if (updatedItem.State != existingItem.State)
+                        {
+                            existingItem.State = updatedItem.State;
+                        }
+
+                        if (updatedItem.Note != existingItem.Note)
+                        {
+                            existingItem.Note = updatedItem.Note;
+                        }
+
+                        _context.CheckListItems.Update(existingItem);
                     }
                 }
             }
@@ -94,17 +118,17 @@ namespace VehiGate.Application.VehicleInspections.Commands.UpdateVehicleInspecti
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            var vehicle = await _context.Vehicles.FirstOrDefaultAsync(d => d.Id == request.VehicleId);
+            //var vehicle = await _context.Vehicles.FirstOrDefaultAsync(d => d.Id == request.VehicleId);
 
-            if (vehicle != null)
-            {
-                vehicle.AuthorizedFrom = request.AuthorizedFrom;
-                vehicle.AuthorizedTo = request.AuthorizedTo;
-                vehicle.IsAuthorized = vehicleInspection.IsAuthorized;
+            //if (vehicle != null)
+            //{
+            //    vehicle.AuthorizedFrom = request.AuthorizedFrom;
+            //    vehicle.AuthorizedTo = request.AuthorizedTo;
+            //    vehicle.IsAuthorized = vehicleInspection.IsAuthorized;
 
-                _context.Vehicles.Update(vehicle);
-                await _context.SaveChangesAsync(cancellationToken);
-            }
+            //    _context.Vehicles.Update(vehicle);
+            //    await _context.SaveChangesAsync(cancellationToken);
+            //}
 
             return Unit.Value;
         }

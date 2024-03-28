@@ -44,6 +44,8 @@ namespace VehiGate.Application.VehicleInspections.Queries.GetVehicleInspection
         {
 
             var userById = await _identityService.GetUserById(vehicleInspection.Driver.UserId);
+            var lastReviewedById = await _identityService.GetUserById(vehicleInspection.LastModifiedBy);
+
 
             return new VehicleInspectionDto
             {
@@ -52,20 +54,12 @@ namespace VehiGate.Application.VehicleInspections.Queries.GetVehicleInspection
                 AuthorizedTo = vehicleInspection.AuthorizedTo,
                 IsAuthorized = vehicleInspection.IsAuthorized,
                 Notes = vehicleInspection.Notes,
-                Msdn = vehicleInspection.Msdn,
-                IsDamaged = vehicleInspection.IsDamaged,
-                HasDocuments = vehicleInspection.HasDocuments,
-                Driver = new DriverInformation
-                {
-                    Id = vehicleInspection.Driver.Id,
-                    Name = userById.FirstName + " " + userById.LastName,
-                },
-                Vehicle = new VehicleInformation
-                {
-                    Id = vehicleInspection.Vehicle.Id,
-                    Name = vehicleInspection.Vehicle.Name,
-                    TypeName = vehicleInspection.Vehicle.VehicleType.Name
-                }
+                DriverId = vehicleInspection.Driver.Id,
+                DriverName = userById.FirstName + " " + userById.LastName,
+                ReviewedBy = lastReviewedById.FirstName + " " + lastReviewedById.LastName,
+                VehicleId = vehicleInspection.Vehicle.Id,
+                VehicleName = vehicleInspection.Vehicle.Name,
+                VehicleTypeName = vehicleInspection.Vehicle.VehicleType.Name
             };
         }
     }

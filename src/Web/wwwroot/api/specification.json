@@ -1113,7 +1113,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResultOfVehicleInspectionDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1211,7 +1218,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleInspectionDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -2895,6 +2909,97 @@
             "items": {
               "$ref": "#/components/schemas/CheckListItemDto"
             }
+          }
+        }
+      },
+      "VehicleInspectionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "driverId": {
+            "type": "string",
+            "nullable": true
+          },
+          "driverName": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehicleId": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehicleName": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehicleTypeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "authorizedFrom": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "authorizedTo": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "isAuthorized": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "items": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/CheckListItemDto"
+            }
+          },
+          "totalItems": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reviewedBy": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "PagedResultOfVehicleInspectionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/VehicleInspectionDto"
+            }
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasPreviousPage": {
+            "type": "boolean"
+          },
+          "hasNextPage": {
+            "type": "boolean"
           }
         }
       },

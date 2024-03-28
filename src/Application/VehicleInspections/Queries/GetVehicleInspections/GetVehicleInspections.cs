@@ -43,11 +43,16 @@ namespace VehiGate.Application.VehicleInspections.Queries.GetVehicleInspections
 
         public async Task<PagedResult<VehicleInspectionDto>> Handle(GetVehicleInspectionsQuery request, CancellationToken cancellationToken)
         {
-            var query = _context.VehicleInspections.Include(i => i.Driver).Include(i => i.Vehicle).ThenInclude(i => i.VehicleType).AsNoTracking();
+            var query = await _context.VehicleInspections
+                .Include(i => i.Driver)
+                    .Include(i => i.Vehicle)
+                        .ThenInclude(i => i.VehicleType)
+                            .AsNoTracking()
+                                .ToListAsync(cancellationToken);
 
-            var totalCount = await query.CountAsync(cancellationToken);
+            var totalCount = query.Count;
 
-            var inspections = await query
+            var inspections = query
                       .OrderByDescending(inspection => inspection.AuthorizedFrom)
                       .Select(inspection => new VehicleInspectionDto
                       {
@@ -56,30 +61,29 @@ namespace VehiGate.Application.VehicleInspections.Queries.GetVehicleInspections
                           AuthorizedTo = inspection.AuthorizedTo,
                           IsAuthorized = inspection.IsAuthorized,
                           Notes = inspection.Notes,
-                          Msdn = inspection.Msdn,
-                          IsDamaged = inspection.IsDamaged,
-                          HasDocuments = inspection.HasDocuments,
-                          Driver = new DriverInformation
-                          {
-                              Id = inspection.DriverId,
-                              UserId = inspection.Driver.UserId,
-                              Name = null
-                          },
-                          Vehicle = new VehicleInformation
-                          {
-                              Id = inspection.VehicleId,
-                              Name = inspection.Vehicle.Name,
-                              TypeName = inspection.Vehicle.VehicleType.Name
-                          }
+                          DriverId = inspection.DriverId,
+                          DriverUserId = inspection.Driver.UserId,
+                          DriverName = null,
+                          ReviewedById = inspection.LastModifiedBy,
+                          VehicleId = inspection.VehicleId,
+                          VehicleName = inspection.Vehicle.Name,
+                          VehicleTypeName = inspection.Vehicle.VehicleType.Name
                       })
-                      .ToListAsync(cancellationToken);
+                      .ToList();
 
             foreach (var inspection in inspections)
             {
-                var user = await _identityService.GetUserById(inspection.Driver.UserId);
+                var user = await _identityService.GetUserById(inspection.DriverUserId);
+                var lastReviewedById = await _identityService.GetUserById(inspection.ReviewedById);
+
                 if (user != null)
                 {
-                    inspection.Driver.Name = user.FirstName + " " + user.LastName;
+                    inspection.DriverName = user.FirstName + " " + user.LastName;
+                }
+
+                if (lastReviewedById != null)
+                {
+                    inspection.ReviewedBy = lastReviewedById.FirstName + " " + lastReviewedById.LastName;
                 }
             }
 
@@ -87,10 +91,9 @@ namespace VehiGate.Application.VehicleInspections.Queries.GetVehicleInspections
             {
                 inspections = inspections.Where(inspection =>
                     (inspection.Notes?.Contains(request.SearchBy) ?? false) ||
-                    (inspection.Msdn?.Contains(request.SearchBy) ?? false) ||
-                    (inspection.Driver.Name?.Contains(request.SearchBy) ?? false) ||
-                    (inspection.Vehicle.Name?.Contains(request.SearchBy) ?? false) ||
-                    (inspection.Vehicle.TypeName?.Contains(request.SearchBy) ?? false)
+                    (inspection.DriverName?.Contains(request.SearchBy) ?? false) ||
+                    (inspection.VehicleName?.Contains(request.SearchBy) ?? false) ||
+                    (inspection.VehicleTypeName?.Contains(request.SearchBy) ?? false)
                 ).ToList();
             }
 

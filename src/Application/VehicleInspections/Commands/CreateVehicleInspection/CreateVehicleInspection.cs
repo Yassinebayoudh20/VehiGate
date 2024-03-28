@@ -57,8 +57,6 @@ namespace VehiGate.Application.VehicleInspections.Commands.CreateVehicleInspecti
             var vehicleInspection = new VehicleInspection
             {
                 VehicleId = request.VehicleId,
-                HasDocuments = request.HasDocuments,
-                IsDamaged = request.IsDamaged,
                 Msdn = request.Msdn,
                 AuthorizedFrom = request.AuthorizedFrom,
                 AuthorizedTo = request.AuthorizedTo,
@@ -68,6 +66,7 @@ namespace VehiGate.Application.VehicleInspections.Commands.CreateVehicleInspecti
             if (request.CheckItems != null && request.CheckItems.Count > 0)
             {
                 var checklist = new Checklist();
+                checklist.Name = nameof(VehicleInspection) + ' ' + DateTime.Now.ToString();
                 var checkListItems = new List<CheckListItem>();
 
                 foreach (var item in request.CheckItems)

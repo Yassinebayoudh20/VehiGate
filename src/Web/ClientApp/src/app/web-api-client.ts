@@ -1393,10 +1393,10 @@ export class DriverInspectionsClient implements IDriverInspectionsClient {
 
 export interface IVehicleInspectionsClient {
     createVehicleInspection(command: CreateVehicleInspectionCommand): Observable<void>;
-    getVehicleInspections(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void>;
+    getVehicleInspections(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<PagedResultOfVehicleInspectionDto>;
     updateVehicleInspection(id: string, command: UpdateVehicleInspectionCommand): Observable<void>;
     deleteVehicleInspection(id: string): Observable<void>;
-    getVehicleInspectionById(id: string): Observable<void>;
+    getVehicleInspectionById(id: string): Observable<VehicleInspectionDto>;
 }
 
 @Injectable({
@@ -1460,7 +1460,7 @@ export class VehicleInspectionsClient implements IVehicleInspectionsClient {
         return _observableOf(null as any);
     }
 
-    getVehicleInspections(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<void> {
+    getVehicleInspections(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<PagedResultOfVehicleInspectionDto> {
         let url_ = this.baseUrl + "/api/VehicleInspections?";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
@@ -1484,6 +1484,7 @@ export class VehicleInspectionsClient implements IVehicleInspectionsClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -1494,14 +1495,14 @@ export class VehicleInspectionsClient implements IVehicleInspectionsClient {
                 try {
                     return this.processGetVehicleInspections(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<PagedResultOfVehicleInspectionDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<PagedResultOfVehicleInspectionDto>;
         }));
     }
 
-    protected processGetVehicleInspections(response: HttpResponseBase): Observable<void> {
+    protected processGetVehicleInspections(response: HttpResponseBase): Observable<PagedResultOfVehicleInspectionDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1510,7 +1511,10 @@ export class VehicleInspectionsClient implements IVehicleInspectionsClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PagedResultOfVehicleInspectionDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -1618,7 +1622,7 @@ export class VehicleInspectionsClient implements IVehicleInspectionsClient {
         return _observableOf(null as any);
     }
 
-    getVehicleInspectionById(id: string): Observable<void> {
+    getVehicleInspectionById(id: string): Observable<VehicleInspectionDto> {
         let url_ = this.baseUrl + "/api/VehicleInspections/{Id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -1629,6 +1633,7 @@ export class VehicleInspectionsClient implements IVehicleInspectionsClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
@@ -1639,14 +1644,14 @@ export class VehicleInspectionsClient implements IVehicleInspectionsClient {
                 try {
                     return this.processGetVehicleInspectionById(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
+                    return _observableThrow(e) as any as Observable<VehicleInspectionDto>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<void>;
+                return _observableThrow(response_) as any as Observable<VehicleInspectionDto>;
         }));
     }
 
-    protected processGetVehicleInspectionById(response: HttpResponseBase): Observable<void> {
+    protected processGetVehicleInspectionById(response: HttpResponseBase): Observable<VehicleInspectionDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1655,7 +1660,10 @@ export class VehicleInspectionsClient implements IVehicleInspectionsClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = VehicleInspectionDto.fromJS(resultData200);
+            return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -4443,6 +4451,162 @@ export interface IUpdateVehicleInspectionCommand {
     authorizedFrom?: Date;
     authorizedTo?: Date;
     checkItems?: CheckListItemDto[] | undefined;
+}
+
+export class VehicleInspectionDto implements IVehicleInspectionDto {
+    id?: string | undefined;
+    driverId?: string | undefined;
+    driverName?: string | undefined;
+    vehicleId?: string | undefined;
+    vehicleName?: string | undefined;
+    vehicleTypeName?: string | undefined;
+    authorizedFrom?: Date;
+    authorizedTo?: Date;
+    isAuthorized?: boolean;
+    notes?: string | undefined;
+    items?: CheckListItemDto[] | undefined;
+    totalItems?: number;
+    reviewedBy?: string | undefined;
+
+    constructor(data?: IVehicleInspectionDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.driverId = _data["driverId"];
+            this.driverName = _data["driverName"];
+            this.vehicleId = _data["vehicleId"];
+            this.vehicleName = _data["vehicleName"];
+            this.vehicleTypeName = _data["vehicleTypeName"];
+            this.authorizedFrom = _data["authorizedFrom"] ? new Date(_data["authorizedFrom"].toString()) : <any>undefined;
+            this.authorizedTo = _data["authorizedTo"] ? new Date(_data["authorizedTo"].toString()) : <any>undefined;
+            this.isAuthorized = _data["isAuthorized"];
+            this.notes = _data["notes"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(CheckListItemDto.fromJS(item));
+            }
+            this.totalItems = _data["totalItems"];
+            this.reviewedBy = _data["reviewedBy"];
+        }
+    }
+
+    static fromJS(data: any): VehicleInspectionDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new VehicleInspectionDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["driverId"] = this.driverId;
+        data["driverName"] = this.driverName;
+        data["vehicleId"] = this.vehicleId;
+        data["vehicleName"] = this.vehicleName;
+        data["vehicleTypeName"] = this.vehicleTypeName;
+        data["authorizedFrom"] = this.authorizedFrom ? this.authorizedFrom.toISOString() : <any>undefined;
+        data["authorizedTo"] = this.authorizedTo ? this.authorizedTo.toISOString() : <any>undefined;
+        data["isAuthorized"] = this.isAuthorized;
+        data["notes"] = this.notes;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["totalItems"] = this.totalItems;
+        data["reviewedBy"] = this.reviewedBy;
+        return data;
+    }
+}
+
+export interface IVehicleInspectionDto {
+    id?: string | undefined;
+    driverId?: string | undefined;
+    driverName?: string | undefined;
+    vehicleId?: string | undefined;
+    vehicleName?: string | undefined;
+    vehicleTypeName?: string | undefined;
+    authorizedFrom?: Date;
+    authorizedTo?: Date;
+    isAuthorized?: boolean;
+    notes?: string | undefined;
+    items?: CheckListItemDto[] | undefined;
+    totalItems?: number;
+    reviewedBy?: string | undefined;
+}
+
+export class PagedResultOfVehicleInspectionDto implements IPagedResultOfVehicleInspectionDto {
+    data?: VehicleInspectionDto[] | undefined;
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+
+    constructor(data?: IPagedResultOfVehicleInspectionDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(VehicleInspectionDto.fromJS(item));
+            }
+            this.pageNumber = _data["pageNumber"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+        }
+    }
+
+    static fromJS(data: any): PagedResultOfVehicleInspectionDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagedResultOfVehicleInspectionDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item.toJSON());
+        }
+        data["pageNumber"] = this.pageNumber;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        return data;
+    }
+}
+
+export interface IPagedResultOfVehicleInspectionDto {
+    data?: VehicleInspectionDto[] | undefined;
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
 }
 
 export class CreateDriverCommand implements ICreateDriverCommand {

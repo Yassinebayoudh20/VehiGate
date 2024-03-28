@@ -85,25 +85,31 @@ namespace VehiGate.Application.DriverInspections.Commands.UpdateDriverInspection
             }
 
 
-            foreach (var existingItem in driverInspection?.Checklist?.CheckListItems)
+            if (request.CheckItems != null && request.CheckItems.Count > 0)
             {
-                var updatedItem = request.CheckItems.FirstOrDefault(cli => cli.Id == existingItem.CheckItemId);
-
-                if (updatedItem != null)
+                foreach (var existingItem in driverInspection?.Checklist?.CheckListItems)
                 {
-                    if (updatedItem.State != existingItem.State)
-                    {
-                        existingItem.State = updatedItem.State;
-                    }
+                    var updatedItem = request.CheckItems.FirstOrDefault(cli => cli.Id == existingItem.CheckItemId);
 
-                    if (updatedItem.Note != existingItem.Note)
+                    if (updatedItem != null)
                     {
-                        existingItem.Note = updatedItem.Note;
-                    }
+                        if (updatedItem.State != existingItem.State)
+                        {
+                            existingItem.State = updatedItem.State;
+                        }
 
-                    _context.CheckListItems.Update(existingItem);
-                }
+                        if (updatedItem.Note != existingItem.Note)
+                        {
+                            existingItem.Note = updatedItem.Note;
+                        }
+
+                        _context.CheckListItems.Update(existingItem);
+                    }
+                } 
             }
+
+            driverInspection.IsAuthorized = InspectionHelper.IsAuthorized(driverInspection.AuthorizedFrom, driverInspection.AuthorizedTo)
+                                                && driverInspection.Checklist.CheckListItems.All(checklist => checklist.State);
 
             await _context.SaveChangesAsync(cancellationToken);
 

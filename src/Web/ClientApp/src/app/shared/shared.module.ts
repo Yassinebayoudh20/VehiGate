@@ -24,8 +24,9 @@ import { DataEntryFormComponent } from './components/checklist/data-entry-form/d
 import { CalendarModule } from 'primeng/calendar';
 import { TagModule } from 'primeng/tag';
 import { EntityInfoComponent } from './components/checklist/entity-info/entity-info.component';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
-const PRIME_UI_MODULES = [TableModule,CalendarModule,TagModule, RadioButtonModule, MultiSelectModule, ToolbarModule, FileUploadModule, DropdownModule, ToastModule, InputTextModule, FieldsetModule, AutoCompleteModule];
+const PRIME_UI_MODULES = [TableModule,CalendarModule,TagModule, RadioButtonModule, MultiSelectModule, ToolbarModule, FileUploadModule, DropdownModule, ToastModule, InputTextModule, FieldsetModule, AutoCompleteModule, ConfirmDialogModule];
 
 @NgModule({
   declarations: [CrudComponent, ContactInfoComponent, DropdownVScrollComponent, LoaderComponent, AutoCompleteComponent, ChecklistComponent, DataEntryFormComponent, EntityInfoComponent],

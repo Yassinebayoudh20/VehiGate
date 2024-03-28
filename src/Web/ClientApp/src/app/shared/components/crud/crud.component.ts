@@ -1,6 +1,6 @@
 import { Observable, Subject, debounceTime, takeUntil, tap } from 'rxjs';
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { LazyLoadEvent, MessageService } from 'primeng/api';
+import { ConfirmationService, LazyLoadEvent, MessageService } from 'primeng/api';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { UsersService } from 'src/app/pages/users-management/services/users.service';
 import { TableColumn } from './models/table-column';
@@ -16,7 +16,7 @@ import { DEFAULT_PAGE_SIZE } from 'src/app/core/constants';
   selector: 'app-crud',
   templateUrl: './crud.component.html',
   styleUrls: ['./crud.component.css'],
-  providers: [MessageService, ToasterService],
+  providers: [MessageService, ToasterService, ConfirmationService],
 })
 export class CrudComponent implements OnChanges, OnDestroy {
   @Input() entities$!: Observable<any>;
@@ -57,7 +57,7 @@ export class CrudComponent implements OnChanges, OnDestroy {
 
   destroy$: Subject<void> = new Subject<void>();
 
-  constructor(private crudService: CrudService, private toasterService: ToasterService, private paramsService: PaginationParamsService) {}
+  constructor(private crudService: CrudService, private toasterService: ToasterService, private paramsService: PaginationParamsService, private confirmationService: ConfirmationService, private messageService: MessageService) {}
 
   ngOnInit() {
     this.loading = true;
@@ -113,7 +113,13 @@ export class CrudComponent implements OnChanges, OnDestroy {
   }
 
   deleteEntity(entityId: string) {
-    this.onDelete.emit(entityId);
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete this entity?',
+      accept: () => {
+        // Confirmation accepted, emit onDelete event
+        this.onDelete.emit(entityId);
+      }
+    });
   }
 
   editEntity(entityId: string) {

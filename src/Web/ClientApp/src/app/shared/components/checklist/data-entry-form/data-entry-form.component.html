@@ -7,7 +7,7 @@
           <tr *ngFor="let col of cols">
             <td>{{ col.header | transloco | titlecase }}</td>
             <td *ngIf="col.field !== 'isAuthorized'">
-              <p-calendar  [showIcon]="true" [placeholder]="col.header | transloco | titlecase" appendTo="body" [formControlName]="col.field" dateFormat="yy-mm-dd"> </p-calendar>
+              <p-calendar [showIcon]="true" [placeholder]="col.header | transloco | titlecase" appendTo="body" [formControlName]="col.field" dateFormat="yy-mm-dd"> </p-calendar>
               <div *ngIf="formData.get(col.field).invalid && (formData.get(col.field).dirty || formData.get(col.field).touched)">
                 <small class="text-red-500" *ngIf="formData.get(col.field).errors.required">{{ 'THIS_FIELD_IS_REQUIRED' | transloco | titlecase }}</small>
               </div>

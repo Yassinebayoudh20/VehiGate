@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using VehiGate.Application.Common.Models;
 using VehiGate.Application.DriverInspections.Commands.CreateDriverInspection;
 using VehiGate.Application.DriverInspections.Commands.DeleteDriverInspection;
 using VehiGate.Application.DriverInspections.Commands.UpdateDriverInspection;
@@ -22,6 +23,9 @@ namespace VehiGate.Web.Endpoints.VehicleInspections
 
         private async Task<IResult> CreateDriverInspection(ISender sender, CreateDriverInspectionCommand command)
         {
+            command.AuthorizedFrom = command.AuthorizedFrom.ToLocalTime();
+            command.AuthorizedTo = command.AuthorizedTo.ToLocalTime();
+
             var result = await sender.Send(command);
             return Results.Ok(result);
         }
@@ -32,6 +36,9 @@ namespace VehiGate.Web.Endpoints.VehicleInspections
             {
                 return Results.BadRequest();
             }
+
+            command.AuthorizedFrom = command.AuthorizedFrom.ToLocalTime();
+            command.AuthorizedTo = command.AuthorizedTo.ToLocalTime();
 
             var result = await sender.Send(command);
 
@@ -45,14 +52,13 @@ namespace VehiGate.Web.Endpoints.VehicleInspections
             return Results.NoContent();
         }
 
-        private async Task<IResult> GetDriverInspectionById(ISender sender, string id)
+        private async Task<DriverInspectionDto> GetDriverInspectionById(ISender sender, string id)
         {
             var query = new GetDriverInspectionQuery { Id = id };
-            var result = await sender.Send(query);
-            return result != null ? Results.Ok(result) : Results.NotFound();
+            return await sender.Send(query);
         }
 
-        private async Task<IResult> GetDriverInspections(ISender sender, [FromQuery] int pageNumber = 1,
+        private async Task<PagedResult<DriverInspectionDto>> GetDriverInspections(ISender sender, [FromQuery] int pageNumber = 1,
                                                [FromQuery] int pageSize = 10,
                                                [FromQuery] string? searchBy = null,
                                                [FromQuery] string? orderBy = null,
@@ -67,8 +73,7 @@ namespace VehiGate.Web.Endpoints.VehicleInspections
                 SortOrder = sortOrder,
             };
 
-            var result = await sender.Send(query);
-            return Results.Ok(result);
+            return await sender.Send(query);
         }
     }
 }

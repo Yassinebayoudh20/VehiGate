@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using VehiGate.Application.CheckLists.Queries;
 
 namespace VehiGate.Application.DriverInspections.Queries.GetDriverInspection;
 
@@ -6,25 +7,29 @@ public class DriverInspectionDto
 {
     public string Id { get; set; }
 
-    public DriverInformation Driver { get; set; }
+    public string DriverId { get; set; }
 
-    public string DriversFields { get; set; }
+    [JsonIgnore]
+    public string DriverUserId { get; set; }
 
-    public DateTime AuthorizedFrom { get; set; }
+    public string DriverName { get; set; }
 
-    public DateTime AuthorizedTo { get; set; }
+    //public string DriversFields { get; set; }
+
+    [JsonIgnore]
+    public string ReviewedById { get; set; }
+
+    public string ReviewedBy { get; set; }
+
+    public string AuthorizedFrom { get; set; }
+
+    public string AuthorizedTo { get; set; }
 
     public bool IsAuthorized { get; set; }
 
     public string Notes { get; set; }
-}
 
-public class DriverInformation
-{
-    public string Id { get; set; }
+    public List<CheckListItemDto> Items { get; set; } = new List<CheckListItemDto> { };
 
-    [JsonIgnore]
-    public string UserId { get; set; }
-
-    public string Name { get; set; }
+    public int TotalItems { get; set; }
 }

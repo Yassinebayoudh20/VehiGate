@@ -53,6 +53,7 @@ export class DriverFormComponent implements OnInit {
       }
     });
   }
+  
   resolvePageTitle() {
     this.pageTitle = this.isEditing ? 'EDIT_DRIVER' : 'ADD_NEW_DRIVER';
   }

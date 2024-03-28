@@ -1,12 +1,15 @@
 <div class="card">
+  <h5>{{ pageTitle | transloco | titlecase }}</h5>
   <ng-container [formGroup]="form">
     <div class="m-3">
       <div class="text-lg m-2 font-bold capitalize"><i class="pi pi-user mr-2"></i>{{ 'SELECT_A_DRIVER' | transloco | titlecase }}</div>
       <div>
         <app-dropdown-v-scroll
+          *ngIf="(isEditing && driverInspectionModel) || !isEditing"
           [optionName]="'firstName'"
           [additionalInfo]="['lastName']"
           [isRequired]="true"
+          [selected]="driverInspectionModel?.driverId"
           [items$]="this.driversList$"
           (loadMoreDataEmitter)="onLoadMoreData($event)"
           (selectedItemChange)="getSelectedDriver($event)"
@@ -27,15 +30,21 @@
     </div>
     <div class="m-3">
       <div class="text-lg m-2 font-bold capitalize"><i class="pi pi-calendar mr-2"></i>{{ 'VALIDITY' | transloco | titlecase }}</div>
-      <div>
-        <app-data-entry-form [isEditable]="selectedDriver !== null" [isAuthorized]="isInspectionAuthorized"></app-data-entry-form>
+      <div class="md:flex">
+        <div class="md:w-6">
+          <app-data-entry-form [isEditable]="selectedDriver !== null" [isAuthorized]="isInspectionAuthorized"></app-data-entry-form>
+        </div>
+        <div class="ml-4 md:w-6">
+          <textarea formControlName="notes" class="w-full h-full" placeholder="{{ 'ADD_GENERAL_NOTE' | transloco | titlecase }}" rows="5" cols="30" pInputTextarea></textarea>
+        </div>
       </div>
     </div>
-    <div class="flex md:justify-content-end gap-2">
+    <div class="flex justify-content-center md:justify-content-end gap-2">
       <button pButton type="button" pRipple icon="pi pi-arrow-left" label="{{ 'BACK' | transloco | titlecase }}" class="p-button" (click)="goBack()"></button>
       <button
         pButton
         type="button"
+        [loading]="requestProcessing"
         [disabled]="!selectedDriver || !isDateValid()"
         pRipple
         icon="pi pi-save"

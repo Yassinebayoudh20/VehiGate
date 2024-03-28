@@ -27,6 +27,10 @@ export const SITE_UPSERT_FORM = '/pages/sites/upsert';
  */
 export const DRIVERS_LIST_PATH = '/pages/drivers';
 export const DRIVER_UPSERT_FORM = '/pages/drivers/upsert';
+export const DRIVER_INSPECTION_UPSERT_FORM = '/pages/drivers-inspection/upsert';
+export const DRIVER_INSPECTIONS_LIST_PATH = '/pages/drivers-inspection';
+
+
 
 /**
  * vehicles Management

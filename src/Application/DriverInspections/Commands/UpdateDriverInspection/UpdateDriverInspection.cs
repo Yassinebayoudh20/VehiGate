@@ -18,15 +18,13 @@ namespace VehiGate.Application.DriverInspections.Commands.UpdateDriverInspection
     {
         public string Id { get; init; }
         public string Notes { get; init; }
-        public DateTime AuthorizedFrom { get; init; }
-        public DateTime AuthorizedTo { get; init; }
+        public DateTime AuthorizedFrom { get; set; }
+        public DateTime AuthorizedTo { get; set; }
         public string DriverId { get; init; }
         public string DriversFields { get; init; }
         public string CheckListId { get; set; }
         public List<CheckListItemDto> CheckItems { get; init; }
     }
-
-
 
     public class UpdateDriverInspectionCommandValidator : AbstractValidator<UpdateDriverInspectionCommand>
     {
@@ -37,7 +35,6 @@ namespace VehiGate.Application.DriverInspections.Commands.UpdateDriverInspection
                 .NotEmpty().WithMessage("AuthorizedTo is required.")
                 .Must((x, authorizedTo) => authorizedTo.Date >= x.AuthorizedFrom.Date)
                 .WithMessage("Authorized To date must be greater than or equal Authorized From date");
-            RuleFor(x => x.DriverId).NotEmpty().WithMessage("DriverId is required.");
         }
     }
 
@@ -55,6 +52,7 @@ namespace VehiGate.Application.DriverInspections.Commands.UpdateDriverInspection
             var driverInspection = await _context.DriverInspections
                 .Include(di => di.Driver)
                 .Include(di => di.Checklist)
+                .ThenInclude(di => di.CheckListItems)
                 .FirstOrDefaultAsync(di => di.Id == request.Id);
 
             if (driverInspection == null)
@@ -62,56 +60,63 @@ namespace VehiGate.Application.DriverInspections.Commands.UpdateDriverInspection
                 throw new NotFoundException(nameof(DriverInspection), request.Id);
             }
 
-            driverInspection.Notes = request.Notes;
-            driverInspection.AuthorizedFrom = request.AuthorizedFrom;
-            driverInspection.AuthorizedTo = request.AuthorizedTo;
-            driverInspection.DriverId = request.DriverId;
-            driverInspection.DriversFields = request.DriversFields;
-
-            // Update checklist items
-            var existingChecklistItems = await _context.CheckListItems
-                .Where(cli => cli.Id == request.Id)
-                .ToListAsync();
-
-            foreach (var existingItem in existingChecklistItems)
+            if (request.Notes != null)
             {
-                var updatedItem = request.CheckItems.FirstOrDefault(cli => cli.Id == existingItem.Id);
+                driverInspection.Notes = request.Notes;
+            }
+            if (request.AuthorizedFrom != DateTime.MinValue.ToLocalTime())
+            {
+                driverInspection.AuthorizedFrom = request.AuthorizedFrom;
+            }
+
+            if (request.AuthorizedTo != DateTime.MinValue.ToLocalTime())
+            {
+                driverInspection.AuthorizedTo = request.AuthorizedTo;
+            }
+
+            if (request.DriverId != null)
+            {
+                driverInspection.DriverId = request.DriverId;
+            }
+
+            if (request.DriversFields != null)
+            {
+                driverInspection.DriversFields = request.DriversFields;
+            }
+
+
+            foreach (var existingItem in driverInspection?.Checklist?.CheckListItems)
+            {
+                var updatedItem = request.CheckItems.FirstOrDefault(cli => cli.Id == existingItem.CheckItemId);
 
                 if (updatedItem != null)
                 {
-                    existingItem.State = updatedItem.State;
-                    existingItem.Note = updatedItem.Note;
+                    if (updatedItem.State != existingItem.State)
+                    {
+                        existingItem.State = updatedItem.State;
+                    }
+
+                    if (updatedItem.Note != existingItem.Note)
+                    {
+                        existingItem.Note = updatedItem.Note;
+                    }
+
+                    _context.CheckListItems.Update(existingItem);
                 }
-            }
-
-            var newChecklistItems = request.CheckItems.Where(cli => !existingChecklistItems.Any(e => e.Id == cli.Id)).ToList();
-
-            foreach (var newItem in newChecklistItems)
-            {
-                var checkListItem = new CheckListItem
-                {
-                    CheckListId = request.CheckListId,
-                    CheckItemId = newItem.Id,
-                    State = newItem.State,
-                    Note = newItem.Note,
-                };
-
-                _context.CheckListItems.Add(checkListItem);
             }
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            // Update driver authorization
-            var driver = _context.Drivers.FirstOrDefault(d => d.Id == request.DriverId);
+            //var driver = _context.Drivers.FirstOrDefault(d => d.Id == request.DriverId);
 
-            if (driver != null)
-            {
-                driver.AuthorizedFrom = request.AuthorizedFrom;
-                driver.AuthorizedTo = request.AuthorizedTo;
-                driver.IsAuthorized = InspectionHelper.IsAuthorized(request.AuthorizedFrom, request.AuthorizedTo);
-                _context.Drivers.Update(driver);
-                await _context.SaveChangesAsync(cancellationToken);
-            }
+            //if (driver != null)
+            //{
+            //    driver.AuthorizedFrom = request.AuthorizedFrom;
+            //    driver.AuthorizedTo = request.AuthorizedTo;
+            //    driver.IsAuthorized = InspectionHelper.IsAuthorized(request.AuthorizedFrom, request.AuthorizedTo);
+            //    _context.Drivers.Update(driver);
+            //    await _context.SaveChangesAsync(cancellationToken);
+            //}
 
             return Unit.Value;
         }

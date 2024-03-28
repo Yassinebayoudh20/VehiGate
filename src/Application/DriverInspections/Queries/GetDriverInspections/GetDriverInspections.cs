@@ -46,8 +46,8 @@ namespace VehiGate.Application.DriverInspections.Queries.GetDriverInspections
         public async Task<PagedResult<DriverInspectionDto>> Handle(GetDriverInspectionsQuery request, CancellationToken cancellationToken)
         {
             var query = await _context.DriverInspections.Include(i => i.Driver)
-                .Include(inspection => inspection.DriverInspectionChecklists)
-                .ThenInclude(checklist => checklist.Checklist)
+                .Include(checklist => checklist.Checklist)
+                .ThenInclude(i => i.CheckListItems)
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
@@ -58,26 +58,32 @@ namespace VehiGate.Application.DriverInspections.Queries.GetDriverInspections
                       .Select(inspection => new DriverInspectionDto
                       {
                           Id = inspection.Id,
-                          AuthorizedFrom = inspection.AuthorizedFrom,
-                          AuthorizedTo = inspection.AuthorizedTo,
+                          AuthorizedFrom = inspection.AuthorizedFrom.ToString(),
+                          AuthorizedTo = inspection.AuthorizedTo.ToString(),
                           IsAuthorized = inspection.IsAuthorized,
                           Notes = inspection.Notes,
-                          DriversFields = inspection.DriversFields,
-                          Driver = new DriverInformation
-                          {
-                              Id = inspection.DriverId,
-                              UserId = inspection.Driver.UserId,
-                              Name = null
-                          }
+                          //DriversFields = inspection.DriversFields,
+                          TotalItems = inspection.Checklist.CheckListItems.Count,
+                          ReviewedById = inspection.LastModifiedBy,
+                          DriverId = inspection.DriverId,
+                          DriverUserId = inspection.Driver.UserId,
+                          DriverName = null
                       })
                       .ToList();
 
             foreach (var inspection in inspections)
             {
-                var user = await _identityService.GetUserById(inspection.Driver.UserId);
+                var user = await _identityService.GetUserById(inspection.DriverUserId);
+                var lastReviewedById = await _identityService.GetUserById(inspection.ReviewedById);
+
                 if (user != null)
                 {
-                    inspection.Driver.Name = user.FirstName + " " + user.LastName;
+                    inspection.DriverName = user.FirstName + " " + user.LastName;
+                }
+
+                if (lastReviewedById != null)
+                {
+                    inspection.ReviewedBy = lastReviewedById.FirstName + " " + lastReviewedById.LastName;
                 }
             }
 
@@ -85,7 +91,7 @@ namespace VehiGate.Application.DriverInspections.Queries.GetDriverInspections
             {
                 inspections = inspections.Where(inspection =>
                     (inspection.Notes?.Contains(request.SearchBy) ?? false) ||
-                    (inspection.Driver.Name?.Contains(request.SearchBy) ?? false)
+                    (inspection.DriverName?.Contains(request.SearchBy) ?? false)
                 ).ToList();
             }
 

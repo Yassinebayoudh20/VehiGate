@@ -1,11 +1,17 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, of, switchMap, tap } from 'rxjs';
 import { ChecklistService } from 'src/app/shared/services/checklist.service';
-import { CheckListAssociation, CheckListItemDto, DriverDto, PagedResultOfDriverDto } from 'src/app/web-api-client';
+import { CheckListAssociation, CheckListItemDto, CreateDriverInspectionCommand, DriverDto, DriverInspectionDto, PagedResultOfDriverDto, UpdateDriverInspectionCommand } from 'src/app/web-api-client';
 import { DriverService } from '../../drivers-management/services/driver.service';
 import { DEFAULT_PAGE_SIZE } from 'src/app/core/constants';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { getDateOnly, isDateBetween } from 'src/app/core/utils';
+import { dateToUtc, getDateOnly, isDateBetween } from 'src/app/core/utils';
+import { DriverInspectionService } from '../services/driver-inspection.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CrudService } from 'src/app/shared/components/crud/crud.service';
+import { DRIVER_INSPECTIONS_LIST_PATH } from 'src/app/core/paths';
+import { FormState } from 'src/app/core/data/models/form-state.enum';
+import { TranslocoService } from '@ngneat/transloco';
 
 @Component({
   selector: 'app-driver-inspection-form',
@@ -16,20 +22,77 @@ export class DriverInspectionFormComponent implements OnInit, AfterViewInit {
   checkListItems$: Observable<CheckListItemDto[]> = new Observable();
   driversList$: Observable<PagedResultOfDriverDto> = new Observable();
   selectedDriver: DriverDto = null;
+  driverInspectionModel: DriverInspectionDto = null;
   form: FormGroup;
   items: CheckListItemDto[];
   isInspectionAuthorized: boolean = false;
+  requestProcessing = false;
+  isEditing: boolean = false;
+  pageTitle: string;
 
-  constructor(private checkListService: ChecklistService, private driverService: DriverService, private fb: FormBuilder) {}
+  constructor(
+    private checkListService: ChecklistService,
+    private aRoute: ActivatedRoute,
+    private crudService: CrudService,
+    private router: Router,
+    private driverService: DriverService,
+    private dis: DriverInspectionService,
+    private fb: FormBuilder,
+    private transloco: TranslocoService
+  ) {}
 
   ngAfterViewInit(): void {
     this.form.get('dataEntry').valueChanges.subscribe({ next: (form) => this.isAuthorized() });
   }
 
   ngOnInit(): void {
-    this.loadCheckListItems();
-    this.loadDrivers();
-    this.form = this.fb.group({});
+    const driverInspectionId = this.aRoute.snapshot.params.id;
+    this.aRoute.queryParams.subscribe((params) => {
+      this.isEditing = params['action'] === FormState.EDITING ? true : false;
+      this.resolvePageTitle();
+      this.loadCheckListItems();
+      this.loadDrivers();
+      this.form = this.fb.group({
+        driverId: [],
+        notes: [],
+      });
+      if (this.isEditing) {
+        this.fetchDriverInspectionDetails(driverInspectionId);
+      }
+    });
+  }
+
+  fetchDriverInspectionDetails(driverInspectionId: string) {
+    this.dis
+      .getDriverInspectionDetails(driverInspectionId)
+      .pipe(
+        switchMap((driverInspectionInfo) => {
+          this.driverInspectionModel = driverInspectionInfo;
+          if (this.driverInspectionModel.items) {
+            this.checkListItems$ = of(this.driverInspectionModel.items).pipe(tap((items) => (this.items = items)));
+          }
+          return this.driverService.getDriverDetails(this.driverInspectionModel.driverId);
+        })
+      )
+      .subscribe({
+        next: (driverInfo: DriverDto) => {
+          this.selectedDriver = driverInfo;
+          const isValidFrom = new Date(this.driverInspectionModel.authorizedFrom);
+          const validTo = new Date(this.driverInspectionModel.authorizedTo);
+          this.form.get('notes').patchValue(this.driverInspectionModel.notes);
+          this.form.get('driverId').patchValue(driverInfo.id);
+          this.form.get('dataEntry').patchValue({
+            isValidFrom: isValidFrom,
+            validTo: validTo,
+            isAuthorized: this.driverInspectionModel.isAuthorized,
+          });
+          this.isAuthorized();
+        },
+      });
+  }
+
+  resolvePageTitle() {
+    this.pageTitle = this.isEditing ? 'EDIT_DRIVER_INSPECTION' : 'ADD_NEW_DRIVER_INSPECTION';
   }
 
   loadCheckListItems() {
@@ -42,6 +105,7 @@ export class DriverInspectionFormComponent implements OnInit, AfterViewInit {
 
   getSelectedDriver($event: DriverDto) {
     this.selectedDriver = $event;
+    this.form.get('driverId').setValue(this.selectedDriver.id);
   }
 
   onLoadMoreData($event) {
@@ -65,11 +129,64 @@ export class DriverInspectionFormComponent implements OnInit, AfterViewInit {
   }
 
   goBack() {
-    throw new Error('Method not implemented.');
+    this.router.navigate([DRIVER_INSPECTIONS_LIST_PATH]);
   }
+
   onSubmit() {
-    console.log(this.form.value);
-    console.log(this.items);
+    if (this.form.invalid) {
+      return;
+    }
+
+    this.requestProcessing = true;
+
+    this.requestProcessing = true;
+
+    const command = this.isEditing ? this.UpdateDriverInspectionCommand() : this.createDriverInspectionCommand();
+    const userServiceMethod = this.isEditing ? this.dis.updateDriverInspection : this.dis.createNewDriverInspection;
+    const successMessage = this.isEditing ? this.transloco.translate('DRIVER_INSPECTION_UPDATED_SUCCESSFULLY') : this.transloco.translate('DRIVER_INSPECTION_ADDED_SUCCESSFULLY');
+
+    const methodParams = this.isEditing ? [this.aRoute.snapshot.params.id, command] : [command];
+
+    userServiceMethod.apply(this.dis, methodParams).subscribe({
+      next: () => this.handleSuccess(successMessage),
+      error: () => this.handleError(),
+      complete: () => (this.requestProcessing = false),
+    });
+  }
+
+  createDriverInspectionCommand() {
+    const cmd = new CreateDriverInspectionCommand();
+    cmd.driverId = this.selectedDriver.id;
+    cmd.notes = this.form.get('notes').value;
+    cmd.authorizedFrom = dateToUtc(this.form.get('dataEntry').get('isValidFrom').value);
+    cmd.authorizedTo = dateToUtc(this.form.get('dataEntry').get('validTo').value);
+    cmd.checkItems = this.items;
+    return cmd;
+  }
+
+  UpdateDriverInspectionCommand() {
+    const cmd = new UpdateDriverInspectionCommand();
+    cmd.id = this.aRoute.snapshot.params.id;
+
+    if (this.form.get('driverId').dirty) {
+      cmd.driverId = this.form.get('driverId').value;
+    }
+
+    if (this.form.get('notes').dirty) {
+      cmd.notes = this.form.get('notes').value;
+    }
+
+    if (this.form.get('dataEntry').get('isValidFrom').dirty) {
+      cmd.authorizedFrom = dateToUtc(this.form.get('dataEntry').get('isValidFrom').value);
+    }
+
+    if (this.form.get('dataEntry').get('validTo').dirty) {
+      cmd.authorizedTo = dateToUtc(this.form.get('dataEntry').get('validTo').value);
+    }
+
+    cmd.checkItems = this.items;
+
+    return cmd;
   }
 
   isAuthorized() {
@@ -84,5 +201,14 @@ export class DriverInspectionFormComponent implements OnInit, AfterViewInit {
     const validFrom = this.form.get('dataEntry').get('isValidFrom').value;
     const isDateValid = getDateOnly(validFrom) <= getDateOnly(validTo);
     return isDateValid;
+  }
+
+  private handleSuccess(message: string) {
+    this.crudService.setExecuteToaster({ isSuccess: true, message: message });
+    this.router.navigate([DRIVER_INSPECTIONS_LIST_PATH]);
+  }
+
+  private handleError() {
+    this.requestProcessing = false;
   }
 }

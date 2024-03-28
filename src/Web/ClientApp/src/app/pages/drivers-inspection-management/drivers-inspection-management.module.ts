@@ -9,8 +9,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { TranslocoModule } from '@ngneat/transloco';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
+import { InputTextareaModule } from 'primeng/inputtextarea';
 
-const PRIME_UI_MODULES = [ButtonModule];
+const PRIME_UI_MODULES = [ButtonModule,InputTextareaModule];
 
 @NgModule({
   declarations: [DriverInspectionsComponent, DriverInspectionsListComponent, DriverInspectionFormComponent],

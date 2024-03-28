@@ -18,3 +18,8 @@ export function isDateBetween(dateToCheck: Date, fromDate: Date, toDate: Date): 
 
   return dateOnly >= fromOnly && dateOnly <= toOnly;
 }
+
+export function dateToUtc(date: Date): Date {
+  const utcDate = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds(), date.getUTCMilliseconds()));
+  return utcDate;
+}

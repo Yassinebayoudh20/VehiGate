@@ -3,6 +3,8 @@ import {
   COMPANY_UPSERT_FORM,
   CUSTOMER_UPSERT_FORM,
   CUSTOMERS_LIST_PATH,
+  DRIVER_INSPECTION_UPSERT_FORM,
+  DRIVER_INSPECTIONS_LIST_PATH,
   DRIVER_UPSERT_FORM,
   DRIVERS_LIST_PATH,
   SITE_UPSERT_FORM,
@@ -79,6 +81,8 @@ export class AppMenuComponent implements OnInit {
             items: [
               { label: 'DRIVERS', icon: 'pi pi-list', routerLink: [DRIVERS_LIST_PATH] },
               { label: 'ADD_DRIVER', icon: 'pi pi-plus', routerLink: [DRIVER_UPSERT_FORM] },
+              { label: 'DRIVER_INSPECTIONS', icon: 'pi pi-list', routerLink: [DRIVER_INSPECTIONS_LIST_PATH] },
+              { label: 'ADD_DRIVER_INSPECTION', icon: 'pi pi-plus', routerLink: [DRIVER_INSPECTION_UPSERT_FORM] },
             ],
           },
           {
@@ -87,8 +91,8 @@ export class AppMenuComponent implements OnInit {
             iconClass: 'text-pink-500 ',
             items: [
               { label: 'VEHICLES', icon: 'pi pi-list', routerLink: [VEHICLES_LIST_PATH] },
-              { label: 'VEHICLE_TYPES', icon: 'pi pi-list', routerLink: [VEHICLE_TYPES_LIST_PATH] },
               { label: 'ADD_VEHICLE', icon: 'pi pi-plus', routerLink: [VEHICLE_UPSERT_FORM] },
+              { label: 'VEHICLE_TYPES', icon: 'pi pi-list', routerLink: [VEHICLE_TYPES_LIST_PATH] },
               { label: 'ADD_TYPE', icon: 'pi pi-plus', routerLink: [VEHICLE_TYPE_UPSERT_FORM] },
             ],
           },

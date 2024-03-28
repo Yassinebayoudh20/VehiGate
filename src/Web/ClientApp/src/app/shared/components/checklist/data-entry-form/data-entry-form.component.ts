@@ -44,7 +44,7 @@ export class DataEntryFormComponent implements OnInit, OnChanges, OnDestroy {
     if (this.formData && changes.isAuthorized) {
       this.formData.get('isAuthorized').setValue(this.isAuthorized);
     }
-    if (changes.isEditable) {
+    if (this.formData && changes.isEditable) {
       if (this.isEditable) {
         this.formData.get('isValidFrom').enable();
         this.formData.get('validTo').enable();

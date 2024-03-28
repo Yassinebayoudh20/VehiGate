@@ -13,11 +13,11 @@ namespace VehiGate.Application.DriverInspections.Commands.CreateDriverInspection
 {
     public record CreateDriverInspectionCommand : IRequest<Unit>
     {
-        public string Notes { get; init; }
+        public string Notes { get; init; } = String.Empty;
         public DateTime AuthorizedFrom { get; set; } = DateTime.UtcNow;
         public DateTime AuthorizedTo { get; set; } = DateTime.UtcNow;
         public string DriverId { get; init; }
-        public string DriversFields { get; init; }
+        public string DriversFields { get; init; } = String.Empty;
         public List<CheckListItemDto> CheckItems { get; init; }
     }
 

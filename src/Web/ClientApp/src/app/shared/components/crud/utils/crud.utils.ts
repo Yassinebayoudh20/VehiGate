@@ -27,7 +27,7 @@ export function getColumnValue(entity: any, column: string): any {
 }
 
 function isExcludedProperty(property: string): boolean {
-  const excludedProperties = ['createdAt', 'updatedAt','isAuthorized'];
+  const excludedProperties = ['createdAt', 'updatedAt','isAuthorized','items'];
   return excludedProperties.includes(property) || property.toLowerCase().includes('id');
 }
 

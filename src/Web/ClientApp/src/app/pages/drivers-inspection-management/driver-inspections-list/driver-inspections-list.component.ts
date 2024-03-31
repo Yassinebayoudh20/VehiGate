@@ -58,6 +58,9 @@ export class DriverInspectionsListComponent {
   goToEditDriverInspectionForm(driverInspectionId: string) {
     this.router.navigate([`${DRIVER_INSPECTION_UPSERT_FORM}/${driverInspectionId}`], { queryParams: { action: FormState.EDITING } });
   }
+  goToViewDriverInspectionForm(driverInspectionId: string) {
+    this.router.navigate([`${DRIVER_INSPECTION_UPSERT_FORM}/${driverInspectionId}`], { queryParams: { action: FormState.VIEWING } });
+  }
 
   ngOnDestroy() {
     this.destroy$.next(true);

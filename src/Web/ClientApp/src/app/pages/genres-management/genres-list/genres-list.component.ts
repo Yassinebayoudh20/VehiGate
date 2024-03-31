@@ -47,6 +47,9 @@ export class GenresListComponent implements OnInit, OnDestroy {
     this.router.navigate([VEHICLE_TYPE_UPSERT_FORM, genreId], { queryParams: { action: FormState.EDITING } });
   }
 
+  goToViewGenreForm(genreId: string) {
+    this.router.navigate([`${VEHICLE_TYPE_UPSERT_FORM}/${genreId}`], { queryParams: { action: FormState.VIEWING } });
+  }
   ngOnDestroy() {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();

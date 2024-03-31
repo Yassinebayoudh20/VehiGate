@@ -17,6 +17,7 @@ import { VEHICLE_TYPES_LIST_PATH } from 'src/app/core/paths';
 export class VehicleTypeFormComponent implements OnInit {
   form: FormGroup;
   isEditing: boolean = false;
+  isViewing: boolean = false;
   pageTitle: string;
   requestProcessing = false;
 
@@ -34,18 +35,26 @@ export class VehicleTypeFormComponent implements OnInit {
 
     this.aRoute.queryParams.subscribe((params) => {
       this.isEditing = params['action'] === FormState.EDITING ? true : false;
+      this.isViewing = params['action'] === FormState.VIEWING ? true : false;
       this.resolvePageTitle();
       this.form = this.formBuilder.group({
         name: [null, [Validators.required, Validators.minLength(2), noWhiteSpaceValidator()]],
       });
-      if (this.isEditing) {
+      if (this.isEditing || this.isViewing) {
         this.fetchVehicleTypeDetails(genreId);
       }
     });
   }
-
+  disableForm() {
+    if (this.isViewing) {
+      this.form.disable();
+    }
+  }
   resolvePageTitle() {
-    this.pageTitle = this.isEditing ? 'EDIT_GENRE' : 'ADD_NEW_GENRE';
+    if (this.isViewing) {
+      this.pageTitle = 'VIEW_GENRE_DETAILS';
+    } else {
+    this.pageTitle = this.isEditing ? 'EDIT_GENRE' : 'ADD_NEW_GENRE';}
   }
 
   onSubmit(): void {
@@ -80,6 +89,7 @@ export class VehicleTypeFormComponent implements OnInit {
         this.form.patchValue({
           name: genreData.name,
         });
+        this.disableForm();
       },
     });
   }

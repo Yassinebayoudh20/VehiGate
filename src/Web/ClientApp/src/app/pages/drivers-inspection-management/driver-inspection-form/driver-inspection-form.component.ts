@@ -28,6 +28,7 @@ export class DriverInspectionFormComponent implements OnInit, AfterViewInit {
   isInspectionAuthorized: boolean = false;
   requestProcessing = false;
   isEditing: boolean = false;
+  isViewing: boolean = false;
   pageTitle: string;
 
   constructor(
@@ -49,6 +50,7 @@ export class DriverInspectionFormComponent implements OnInit, AfterViewInit {
     const driverInspectionId = this.aRoute.snapshot.params.id;
     this.aRoute.queryParams.subscribe((params) => {
       this.isEditing = params['action'] === FormState.EDITING ? true : false;
+      this.isViewing = params['action'] === FormState.VIEWING ? true : false;
       this.resolvePageTitle();
       this.loadCheckListItems();
       this.loadDrivers();
@@ -56,12 +58,16 @@ export class DriverInspectionFormComponent implements OnInit, AfterViewInit {
         driverId: [],
         notes: [],
       });
-      if (this.isEditing) {
+      if (this.isEditing || this.isViewing) {
         this.fetchDriverInspectionDetails(driverInspectionId);
       }
     });
   }
-
+  disableForm() {
+    if (this.isViewing) {
+      this.form.disable();
+    }
+  }
   fetchDriverInspectionDetails(driverInspectionId: string) {
     this.dis
       .getDriverInspectionDetails(driverInspectionId)
@@ -87,12 +93,16 @@ export class DriverInspectionFormComponent implements OnInit, AfterViewInit {
             isAuthorized: this.driverInspectionModel.isAuthorized,
           });
           this.isAuthorized();
+          this.disableForm();
         },
       });
   }
 
   resolvePageTitle() {
-    this.pageTitle = this.isEditing ? 'EDIT_DRIVER_INSPECTION' : 'ADD_NEW_DRIVER_INSPECTION';
+    if (this.isViewing) {
+      this.pageTitle = 'VIEW_DRIVER_INSPECTION_DETAILS';
+    } else {
+    this.pageTitle = this.isEditing ? 'EDIT_DRIVER_INSPECTION' : 'ADD_NEW_DRIVER_INSPECTION';}
   }
 
   loadCheckListItems() {

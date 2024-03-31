@@ -114,7 +114,11 @@ export class CrudComponent implements OnChanges, OnDestroy {
 
   deleteEntity(entityId: string) {
     this.confirmationService.confirm({
-      message: 'Are you sure you want to delete this entity?',
+      message: 'Do you want to delete this record?',
+      header: 'DELETE_CONFIRMATION',
+      icon: 'pi pi-info-circle',
+      acceptButtonStyleClass: 'p-button-success',
+      rejectButtonStyleClass: 'p-button-danger',
       accept: () => {
         // Confirmation accepted, emit onDelete event
         this.onDelete.emit(entityId);

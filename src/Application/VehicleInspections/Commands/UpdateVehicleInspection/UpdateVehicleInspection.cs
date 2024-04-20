@@ -34,12 +34,15 @@ namespace VehiGate.Application.VehicleInspections.Commands.UpdateVehicleInspecti
         public UpdateVehicleInspectionCommandValidator()
         {
             RuleFor(x => x.Id).NotEmpty().WithMessage("Id is required.");
-            RuleFor(x => x.VehicleId).NotEmpty().WithMessage("VehicleId is required.");
             RuleFor(x => x.AuthorizedFrom).NotEmpty().WithMessage("AuthorizedFrom is required.");
             RuleFor(x => x.AuthorizedTo).NotEmpty().WithMessage("AuthorizedTo is required.");
             RuleFor(x => x.AuthorizedTo)
                 .Must((x, authorizedTo) => authorizedTo.Date >= x.AuthorizedFrom.Date)
                 .WithMessage("Authorized To date must be greater than or equal Authorized From date");
+
+            RuleFor(x => x.CheckItems)
+               .NotNull().WithMessage("CheckItems are required.")
+               .NotEmpty().WithMessage("CheckItems should not be empty.");
         }
     }
 
@@ -65,56 +68,82 @@ namespace VehiGate.Application.VehicleInspections.Commands.UpdateVehicleInspecti
                 throw new NotFoundException(nameof(VehicleInspection), request.Id);
             }
 
-            if (vehicleInspection.VehicleId != null)
+            if (request.VehicleId != null)
             {
                 vehicleInspection.VehicleId = request.VehicleId;
             }
 
-            if (vehicleInspection.Notes != null)
+            if (request.Notes != null)
             {
                 vehicleInspection.Notes = request.Notes;
             }
 
-            if (vehicleInspection.Msdn != null)
+            if (request.Msdn != null)
             {
                 vehicleInspection.Msdn = request.Msdn;
             }
 
-            if (vehicleInspection.AuthorizedFrom != DateTime.MinValue)
+            if (request.AuthorizedFrom != DateTime.MinValue)
             {
                 vehicleInspection.AuthorizedFrom = request.AuthorizedFrom;
             }
 
-            if (vehicleInspection.AuthorizedTo != DateTime.MinValue)
+            if (request.AuthorizedTo != DateTime.MinValue)
             {
                 vehicleInspection.AuthorizedTo = request.AuthorizedTo;
             }
 
-            if (request.CheckItems != null && request.CheckItems.Count > 0)
+            if (vehicleInspection?.Checklist is null)
             {
-                foreach (var existingItem in vehicleInspection?.Checklist?.CheckListItems)
+                var newChecklist = new Checklist
                 {
-                    var updatedItem = request.CheckItems.FirstOrDefault(cli => cli.Id == existingItem.CheckItemId);
+                    Id = Guid.NewGuid().ToString(),
+                    Name = nameof(VehicleInspection) + ' ' + DateTime.Now.ToString(),
 
-                    if (updatedItem != null)
+                    CheckListItems = request.CheckItems.Select(ci => new CheckListItem
                     {
-                        if (updatedItem.State != existingItem.State)
-                        {
-                            existingItem.State = updatedItem.State;
-                        }
+                        CheckItemId = ci.Id,
+                        State = ci.State,
+                        Note = ci.Note
+                    }).ToList()
+                };
 
-                        if (updatedItem.Note != existingItem.Note)
-                        {
-                            existingItem.Note = updatedItem.Note;
-                        }
+                _context.Checklists.Add(newChecklist);
 
-                        _context.CheckListItems.Update(existingItem);
+                await _context.SaveChangesAsync(cancellationToken);
+
+                vehicleInspection.ChecklistId = newChecklist.Id;
+            }
+            else
+            {
+                if (request.CheckItems != null && request.CheckItems.Count > 0)
+                {
+                    foreach (var existingItem in vehicleInspection?.Checklist?.CheckListItems)
+                    {
+                        var updatedItem = request.CheckItems.FirstOrDefault(cli => cli.Id == existingItem.CheckItemId);
+
+                        if (updatedItem != null)
+                        {
+                            if (updatedItem.State != existingItem.State)
+                            {
+                                existingItem.State = updatedItem.State;
+                            }
+
+                            if (updatedItem.Note != existingItem.Note)
+                            {
+                                existingItem.Note = updatedItem.Note;
+                            }
+
+                            _context.CheckListItems.Update(existingItem);
+                        }
                     }
                 }
             }
 
             vehicleInspection.IsAuthorized = InspectionHelper.IsAuthorized(vehicleInspection.AuthorizedFrom, vehicleInspection.AuthorizedTo)
                                                 && vehicleInspection.Checklist.CheckListItems.All(checklist => checklist.State);
+            
+            _context.VehicleInspections.Update(vehicleInspection);
 
             await _context.SaveChangesAsync(cancellationToken);
 

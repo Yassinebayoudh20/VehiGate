@@ -18,6 +18,7 @@ namespace VehiGate.Application.Vehicles.Queries.GetVehicles
         public int PageSize { get; init; } = 10;
         public DateOnly? InsuranceFrom { get; init; }
         public DateOnly? InsuranceTo { get; init; }
+        public string VehicleTypeFilter { get; set; }
     }
 
     public class GetVehiclesQueryValidator : AbstractValidator<GetVehiclesQuery>
@@ -39,31 +40,27 @@ namespace VehiGate.Application.Vehicles.Queries.GetVehicles
 
         public async Task<PagedResult<VehicleDto>> Handle(GetVehiclesQuery request, CancellationToken cancellationToken)
         {
-            IQueryable<Vehicle> query = _context.Vehicles
-                .Include(v => v.VehicleType)
-                .Include(v => v.Company);
+            List<Vehicle> query = await _context.Vehicles
+               .Include(v => v.VehicleType)
+               .Include(v => v.Company).ToListAsync(cancellationToken);
+
+            if (request.VehicleTypeFilter != null)
+            {
+                query = query.Where(v => v.VehicleType.Name.Equals(request.VehicleTypeFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
 
             if (request.InsuranceFrom != null && request.InsuranceTo != null)
             {
-                query = query.Where(v => v.InsuranceFrom >= request.InsuranceFrom && v.InsuranceTo <= request.InsuranceTo);
+                query = query.Where(v => v.InsuranceFrom >= request.InsuranceFrom && v.InsuranceTo <= request.InsuranceTo).ToList();
             }
 
-            var totalCount = await query.CountAsync(cancellationToken);
-
-            List<Vehicle> vehicles = await query
-                .ToListAsync(cancellationToken);
+            var totalCount = query.Count;
 
             List<VehicleDto> vehiclesDtos = new List<VehicleDto>();
 
-            foreach (var vehicle in vehicles)
+            foreach (var vehicle in query)
             {
-                var isAuthorized = InspectionHelper.IsAuthorized(vehicle.AuthorizedFrom, vehicle.AuthorizedTo) && vehicle.IsAuthorized;
-
-                if (vehicle.IsAuthorized != isAuthorized)
-                {
-                    vehicle.IsAuthorized = isAuthorized;
-                    _context.Vehicles.Update(vehicle);
-                }
+         
 
                 vehiclesDtos.Add(new VehicleDto
                 {
@@ -75,14 +72,13 @@ namespace VehiGate.Application.Vehicles.Queries.GetVehicles
                     CompanyId = vehicle.CompanyId,
                     Name = vehicle.Name,
                     Model = vehicle.Model,
-                    IsAuthorized = isAuthorized,
+                    IsAuthorized = vehicle.IsAuthorized,
                     PlateNumber = vehicle.PlateNumber,
                     InsuranceFrom = vehicle.InsuranceFrom.ToString(),
                     InsuranceTo = vehicle.InsuranceTo.ToString()
                 });
             }
 
-            await _context.SaveChangesAsync(cancellationToken);
 
             if (!string.IsNullOrEmpty(request.SearchBy))
             {

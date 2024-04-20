@@ -71,6 +71,7 @@ export const DRIVER_INFO_COLS = [
 export const VEHICLE_TANK_INFO_COLS = [
   { field: 'plateNumber', header: 'PLATE_NUMBER' },
   { field: 'model', header: 'MODEL' },
-  { field: 'company', header: 'COMPANY' },
+  { field: 'companyName', header: 'COMPANY' },
+  { field: 'vehicleTypeName', header: 'TYPE' },
   { field: 'driver', header: 'DRIVER' },
 ];

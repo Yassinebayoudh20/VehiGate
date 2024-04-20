@@ -63,7 +63,7 @@ namespace VehiGate.Application.DriverInspections.Queries.GetDriverInspections
                           IsAuthorized = inspection.IsAuthorized,
                           Notes = inspection.Notes,
                           //DriversFields = inspection.DriversFields,
-                          TotalItems = inspection.Checklist.CheckListItems.Count,
+                          TotalItems = inspection.Checklist?.CheckListItems.Count ?? 0,
                           ReviewedById = inspection.LastModifiedBy,
                           DriverId = inspection.DriverId,
                           DriverUserId = inspection.Driver.UserId,
@@ -73,18 +73,31 @@ namespace VehiGate.Application.DriverInspections.Queries.GetDriverInspections
 
             foreach (var inspection in inspections)
             {
-                var user = await _identityService.GetUserById(inspection.DriverUserId);
-                var lastReviewedById = await _identityService.GetUserById(inspection.ReviewedById);
 
-                if (user != null)
+                if (inspection.ReviewedBy != null)
                 {
-                    inspection.DriverName = user.FirstName + " " + user.LastName;
+                    var lastReviewedById = await _identityService.GetUserById(inspection.ReviewedById!);
+
+                    if (lastReviewedById != null)
+                    {
+                        inspection.ReviewedBy = lastReviewedById.FirstName + " " + lastReviewedById.LastName;
+                    }
+
                 }
 
-                if (lastReviewedById != null)
+                if (inspection.DriverUserId != null)
                 {
-                    inspection.ReviewedBy = lastReviewedById.FirstName + " " + lastReviewedById.LastName;
+                    var user = await _identityService.GetUserById(inspection.DriverUserId);
+
+                    if (user != null)
+                    {
+                        inspection.DriverName = user.FirstName + " " + user.LastName;
+                    }
                 }
+
+
+
+
             }
 
             if (!string.IsNullOrEmpty(request.SearchBy))

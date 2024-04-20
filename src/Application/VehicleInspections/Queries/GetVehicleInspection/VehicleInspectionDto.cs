@@ -21,9 +21,9 @@ public class VehicleInspectionDto
 
     public string VehicleTypeName { get; set; }
 
-    public DateTime AuthorizedFrom { get; set; }
+    public string AuthorizedFrom { get; set; }
 
-    public DateTime AuthorizedTo { get; set; }
+    public string AuthorizedTo { get; set; }
 
     public bool IsAuthorized { get; set; }
 

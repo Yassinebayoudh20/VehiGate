@@ -44,6 +44,8 @@ namespace VehiGate.Application.VehicleInspections.Queries.GetVehicleInspections
         public async Task<PagedResult<VehicleInspectionDto>> Handle(GetVehicleInspectionsQuery request, CancellationToken cancellationToken)
         {
             var query = await _context.VehicleInspections
+                .Include(i => i.Checklist)
+                    .ThenInclude(i => i.CheckListItems)
                 .Include(i => i.Driver)
                     .Include(i => i.Vehicle)
                         .ThenInclude(i => i.VehicleType)
@@ -57,12 +59,13 @@ namespace VehiGate.Application.VehicleInspections.Queries.GetVehicleInspections
                       .Select(inspection => new VehicleInspectionDto
                       {
                           Id = inspection.Id,
-                          AuthorizedFrom = inspection.AuthorizedFrom,
-                          AuthorizedTo = inspection.AuthorizedTo,
+                          AuthorizedFrom = inspection.AuthorizedFrom.ToString(),
+                          AuthorizedTo = inspection.AuthorizedTo.ToString(),
                           IsAuthorized = inspection.IsAuthorized,
                           Notes = inspection.Notes,
                           DriverId = inspection.DriverId,
                           DriverUserId = inspection.Driver.UserId,
+                          TotalItems = inspection.Checklist.CheckListItems.Count,
                           DriverName = null,
                           ReviewedById = inspection.LastModifiedBy,
                           VehicleId = inspection.VehicleId,
@@ -73,17 +76,25 @@ namespace VehiGate.Application.VehicleInspections.Queries.GetVehicleInspections
 
             foreach (var inspection in inspections)
             {
-                var user = await _identityService.GetUserById(inspection.DriverUserId);
-                var lastReviewedById = await _identityService.GetUserById(inspection.ReviewedById);
-
-                if (user != null)
+                if (inspection.ReviewedById != null)
                 {
-                    inspection.DriverName = user.FirstName + " " + user.LastName;
+                    var lastReviewedById = await _identityService.GetUserById(inspection.ReviewedById!);
+
+                    if (lastReviewedById != null)
+                    {
+                        inspection.ReviewedBy = lastReviewedById.FirstName + " " + lastReviewedById.LastName;
+                    }
+
                 }
 
-                if (lastReviewedById != null)
+                if (inspection.DriverUserId != null)
                 {
-                    inspection.ReviewedBy = lastReviewedById.FirstName + " " + lastReviewedById.LastName;
+                    var user = await _identityService.GetUserById(inspection.DriverUserId);
+
+                    if (user != null)
+                    {
+                        inspection.DriverName = user.FirstName + " " + user.LastName;
+                    }
                 }
             }
 

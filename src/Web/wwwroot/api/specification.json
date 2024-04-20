@@ -88,6 +88,15 @@
               "default": 1
             },
             "x-position": 5
+          },
+          {
+            "name": "vehicleTypeFilter",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 6
           }
         ],
         "responses": {
@@ -2942,11 +2951,11 @@
           },
           "authorizedFrom": {
             "type": "string",
-            "format": "date-time"
+            "nullable": true
           },
           "authorizedTo": {
             "type": "string",
-            "format": "date-time"
+            "nullable": true
           },
           "isAuthorized": {
             "type": "boolean"

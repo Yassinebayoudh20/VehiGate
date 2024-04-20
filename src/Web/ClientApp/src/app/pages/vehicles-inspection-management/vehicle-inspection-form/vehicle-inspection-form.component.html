@@ -1,1 +1,84 @@
-<p>vehicle-inspection-form works!</p>
+<div class="card">
+  <div class="flex justify-content-between">
+    <div>
+      <h5>{{ pageTitle | transloco | titlecase }}</h5>
+    </div>
+    <div>
+      <div class="flex flex-wrap gap-3">
+        <div class="flex align-items-center">
+          <p-radioButton
+            (onClick)="onVehicleTypeChanged($event)"
+            name="typeSelector"
+            [value]="CheckListAssociation.Vehicle"
+            [(ngModel)]="selectedVehicleType"
+            [inputId]="CheckListAssociation.Vehicle.toString()"
+          ></p-radioButton>
+          <label [for]="CheckListAssociation.Vehicle.toString()" class="ml-2">{{ 'VEHICLE' | transloco | titlecase }}</label>
+        </div>
+
+        <div class="flex align-items-center">
+          <p-radioButton
+            (onClick)="onVehicleTypeChanged($event)"
+            name="typeSelector"
+            [value]="CheckListAssociation.Tank"
+            [(ngModel)]="selectedVehicleType"
+            [inputId]="CheckListAssociation.Tank.toString()"
+          ></p-radioButton>
+          <label [for]="CheckListAssociation.Tank.toString()" class="ml-2">{{ 'TANK' | transloco | titlecase }}</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-container [formGroup]="form">
+    <div class="m-3">
+      <div class="text-lg m-2 font-bold capitalize"><i class="pi pi-user mr-2"></i>{{ 'SELECT_A_VEHICLE' | transloco | titlecase }}</div>
+      <app-dropdown-v-scroll
+        *ngIf="(isEditing && vehicleInspectionModel) || !isEditing"
+        [optionName]="'name'"
+        [isRequired]="true"
+        [selected]="vehicleInspectionModel?.vehicleId"
+        [items$]="this.vehiclesList$"
+        [resetList]="resetVehicleDropdown"
+        (loadMoreDataEmitter)="onLoadMoreData($event)"
+        (selectedItemChange)="getSelectedVehicle($event)"
+      ></app-dropdown-v-scroll>
+    </div>
+    <div class="m-3">
+      <div class="text-lg m-2 font-bold capitalize"><i class="pi pi-user mr-2"></i>{{ 'VEHICLE_INFO' | transloco | titlecase }}</div>
+      <div>
+        <app-entity-info [info]="selectedVehicle" [associatedTo]="CheckListAssociation.Vehicle"></app-entity-info>
+      </div>
+    </div>
+    <div class="m-3">
+      <div class="text-lg m-2 font-bold capitalize"><i class="pi pi-check-circle mr-2"></i>{{ 'VEHICLE_ENTRANCE_INSPECTION_CHECKLIST' | transloco | titlecase }}</div>
+      <div>
+        <app-checklist [isEditable]="selectedVehicle !== null" [items]="checkListItems$ | async" (noteChange)="onNoteChange($event)" (stateChange)="onStateChange($event)"></app-checklist>
+      </div>
+    </div>
+    <div class="m-3">
+      <div class="text-lg m-2 font-bold capitalize"><i class="pi pi-calendar mr-2"></i>{{ 'VALIDITY' | transloco | titlecase }}</div>
+      <div class="md:flex">
+        <div class="md:w-6">
+          <app-data-entry-form [isEditable]="selectedVehicle !== null" [isAuthorized]="isInspectionAuthorized"></app-data-entry-form>
+        </div>
+        <div class="ml-4 md:w-6">
+          <textarea formControlName="notes" class="w-full h-full" placeholder="{{ 'ADD_GENERAL_NOTE' | transloco | titlecase }}" rows="5" cols="30" pInputTextarea></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="flex justify-content-center md:justify-content-end gap-2">
+      <button pButton type="button" pRipple icon="pi pi-arrow-left" label="{{ 'BACK' | transloco | titlecase }}" class="p-button" (click)="goBack()"></button>
+      <button
+        pButton
+        type="button"
+        [loading]="requestProcessing"
+        [disabled]="!selectedVehicle || !isDateValid()"
+        pRipple
+        icon="pi pi-save"
+        label="{{ 'SAVE' | transloco | titlecase }}"
+        class="p-button p-button-success"
+        (click)="onSubmit()"
+      ></button></div
+  ></ng-container>
+</div>

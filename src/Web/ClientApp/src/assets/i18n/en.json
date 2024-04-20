@@ -18,7 +18,7 @@
   "DRIVER_INFO": "Driver Information",
   "DRIVER_ENTRANCE_INSPECTION_CHECKLIST": "Driver Entrance Inspection Checklist",
   "VALIDITY": "Validity",
-
+  "ADD_GENERAL_NOTE": "Add General Note",
   "FIRST_NAME": "First name",
   "FIRST_NAME_IS_REQUIRED": "First Name is required",
   "LAST_NAME": "Last name",
@@ -29,6 +29,7 @@
   "ROLE_IS_REQUIRED": "Role is required",
   "PASSWORD_IS_REQUIRED": "Password is required",
   "ROLE": "role",
+
   "VEHICLE_TYPE": "Vehicle Type",
   "VEHICLE_TYPE_ID_IS_REQUIRED": "Vehicle type is required.",
   "COMPANY_IS_REQUIRED": "Company is required.",
@@ -67,7 +68,8 @@
   "COMPANY_ADDED_SUCCESSFULLY": "Company added successfully",
   "CUSTOMER_UPDATED_SUCCESSFULLY": "Customer updated successfully",
   "CUSTOMER_ADDED_SUCCESSFULLY": "Customer added successfully",
-
+  "DRIVER_INSPECTION_UPDATED_SUCCESSFULLY": "Driver Inspection Updated Successfully",
+  "DRIVER_INSPECTION_ADDED_SUCCESSFULLY": "Driver Inspection Added Successfully",
   "DRIVER_UPDATED_SUCCESSFULLY": "Driver updated successfully",
   "DRIVER_ADDED_SUCCESSFULLY": "Driver added successfully",
   "GENRE_UPDATED_SUCCESSFULLY": "Type updated successfully",
@@ -76,6 +78,17 @@
   "SITE_ADDED_SUCCESSFULLY": "Site added successfully",
   "USER_UPDATED_SUCCESSFULLY": "User updated successfully",
   "USER_ADDED_SUCCESSFULLY": "User added successfully",
+  "ADD_NEW_VEHICLE_INSPECTION" : "Add new vehicle inspection",
+  "EDIT_VEHICLE_INSPECTION" : "Edit vehicle inspection",
+  "VEHICLE_INSPECTIONS" : "vehicle inspections",
+  "ADD_VEHICLE_INSPECTION" : "Add vehicle inspection",
+  "VEHICLE": "Vehicle",
+  "TANK": "Tank",
+  "SELECT_A_VEHICLE": "Select a Vehicle",
+  "VEHICLE_INFO": "Vehicle Information",
+  "VEHICLE_ENTRANCE_INSPECTION_CHECKLIST": "Vehicle Entrance Inspection Checklist",
+  "VEHICLE_INSPECTION_UPDATED_SUCCESSFULLY": "Vehicle Inspection Updated Successfully",
+  "VEHICLE_INSPECTION_ADDED_SUCCESSFULLY": "Vehicle Inspection Added Successfully",
   "VEHICLE_UPDATED_SUCCESSFULLY": "vehicle updated successfully",
   "VEHICLE_ADDED_SUCCESSFULLY": "vehicle added successfully",
   "EDIT_VEHICLE": "edit vehicle",
@@ -124,11 +137,8 @@
   "VALID_FROM": "Valid From",
   "VALID_TO": "Valid To",
   "FINAL_STATUS": "Final Status",
-  "ADD_GENERAL_NOTE": "Add General Note",
-  "DRIVER_INSPECTION_UPDATED_SUCCESSFULLY": "Driver Inspection Updated Successfully",
-  "DRIVER_INSPECTION_ADDED_SUCCESSFULLY": "Driver Inspection Added Successfully",
   "EDIT_DRIVER_INSPECTION": "edit driver inspection",
   "ADD_NEW_DRIVER_INSPECTION": "add new driver inspection",
   "DRIVER_INSPECTIONS": "driver inspections",
-  "ADD_DRIVER_INSPECTION": "driver inspections"
+  "ADD_DRIVER_INSPECTION": "add driver inspections"
 }

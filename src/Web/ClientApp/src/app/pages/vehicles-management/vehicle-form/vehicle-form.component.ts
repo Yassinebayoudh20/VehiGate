@@ -152,8 +152,8 @@ export class VehicleFormComponent implements OnInit {
           name: vehicleData.name,
           model: vehicleData.model,
           plateNumber: vehicleData.plateNumber,
-          insuranceFrom: vehicleData.insuranceFrom,
-          insuranceTo: vehicleData.insuranceTo,
+          insuranceFrom: new Date(vehicleData.insuranceFrom),
+          insuranceTo: new Date(vehicleData.insuranceTo),
         });
         this.disableForm();
       },

@@ -56,7 +56,8 @@ namespace VehiGate.Web.Endpoints.Vehicles
                                                [FromQuery] int pageSize = 10,
                                                [FromQuery] string? searchBy = null,
                                                [FromQuery] string? orderBy = null,
-                                               [FromQuery] int SortOrder = 1)
+                                               [FromQuery] int SortOrder = 1,
+                                               [FromQuery] string? vehicleTypeFilter = null)
         {
             GetVehiclesQuery query = new GetVehiclesQuery
             {
@@ -65,6 +66,7 @@ namespace VehiGate.Web.Endpoints.Vehicles
                 SearchBy = searchBy,
                 OrderBy = orderBy,
                 SortOrder = SortOrder,
+                VehicleTypeFilter = vehicleTypeFilter
             };
 
             return await sender.Send(query);

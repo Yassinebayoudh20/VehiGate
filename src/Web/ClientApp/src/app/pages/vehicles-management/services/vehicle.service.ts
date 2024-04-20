@@ -10,8 +10,8 @@ import { POPULAR_CARS_AND_TRUCKS_MODELS } from 'src/app/core/constants';
 export class VehicleService {
   constructor(private vehiclesClient: VehiclesClient) {}
 
-  getAllVehicles(params: PaginationParams) {
-    return this.vehiclesClient.getVehicles(params.pageNumber, params.pageSize, params.searchBy, params.orderBy, params.sortOrder);
+  getAllVehicles(params: PaginationParams, vehicleType?: string) {
+    return this.vehiclesClient.getVehicles(params.pageNumber, params.pageSize, params.searchBy, params.orderBy, params.sortOrder,vehicleType);
   }
 
   createNewVehicle(createCmd: CreateVehicleCommand) {

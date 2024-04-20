@@ -15,6 +15,7 @@ export class DropdownVScrollComponent implements OnChanges {
   @Input() isRequired: boolean = false;
   @Input() isDisabled: boolean = false;
   @Input() selected: string = null;
+  @Input() resetList: boolean = false;
   @Output() selectedItemChange = new EventEmitter<any>();
   @Output() loadMoreDataEmitter = new EventEmitter<number>();
   @ViewChild('scrollContainer') scrollContainer: ElementRef;
@@ -33,15 +34,29 @@ export class DropdownVScrollComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.items$) {
+      if (this.resetList) {
+        this.resetItems();
+      }
       this.loadItems();
     }
+  }
+
+  private resetItems() {
+    this.items = [];
+    this.loadedPages = [];
+    this.itemsPaginationOptions = null;
+    this.selectedItem = null;
   }
 
   private loadItems() {
     this.loading = true;
     if (this.items$) {
       this.items$.subscribe((items) => {
-        this.items = [...this.items, ...items.data];
+        if (this.resetList) {
+          this.items = [...items.data];
+        } else {
+          this.items = [...this.items, ...items.data];
+        }
         this.itemsPaginationOptions = {
           hasNextPage: items.hasNextPage,
           hasPreviousPage: items.hasPreviousPage,
@@ -56,7 +71,6 @@ export class DropdownVScrollComponent implements OnChanges {
         this.loading = false;
       });
     } else {
-      console.error('Items Observable is not provided.');
     }
   }
 

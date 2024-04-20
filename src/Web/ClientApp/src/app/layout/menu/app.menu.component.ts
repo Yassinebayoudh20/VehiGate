@@ -81,10 +81,23 @@ export class AppMenuComponent implements OnInit {
             icon: 'pi pi-fw pi-user',
             iconClass: 'text-yellow-900',
             items: [
-              { label: 'DRIVERS', icon: 'pi pi-list', routerLink: [DRIVERS_LIST_PATH] },
-              { label: 'ADD_DRIVER', icon: 'pi pi-plus', routerLink: [DRIVER_UPSERT_FORM] },
-              { label: 'DRIVER_INSPECTIONS', icon: 'pi pi-list', routerLink: [DRIVER_INSPECTIONS_LIST_PATH] },
-              { label: 'ADD_DRIVER_INSPECTION', icon: 'pi pi-plus', routerLink: [DRIVER_INSPECTION_UPSERT_FORM] },
+              {
+                label: 'DRIVERS',
+                icon: 'pi pi-id-card',
+                items: [
+                  { label: 'LIST', icon: 'pi pi-list', routerLink: [DRIVERS_LIST_PATH] },
+                  { label: 'ADD_DRIVER', icon: 'pi pi-plus', routerLink: [DRIVER_UPSERT_FORM] },
+                ],
+              },
+
+              {
+                label: 'DRIVER_INSPECTIONS',
+                icon: 'pi pi-search',
+                items: [
+                  { label: 'LIST', icon: 'pi pi-list', routerLink: [DRIVER_INSPECTIONS_LIST_PATH] },
+                  { label: 'ADD_DRIVER_INSPECTION', icon: 'pi pi-plus', routerLink: [DRIVER_INSPECTION_UPSERT_FORM] },
+                ],
+              },
             ],
           },
           {
@@ -92,12 +105,32 @@ export class AppMenuComponent implements OnInit {
             icon: 'pi pi-fw pi-car',
             iconClass: 'text-pink-500 ',
             items: [
-              { label: 'VEHICLES', icon: 'pi pi-list', routerLink: [VEHICLES_LIST_PATH] },
-              { label: 'ADD_VEHICLE', icon: 'pi pi-plus', routerLink: [VEHICLE_UPSERT_FORM] },
-              { label: 'VEHICLE_TYPES', icon: 'pi pi-list', routerLink: [VEHICLE_TYPES_LIST_PATH] },
-              { label: 'ADD_TYPE', icon: 'pi pi-plus', routerLink: [VEHICLE_TYPE_UPSERT_FORM] },
-              { label: 'VEHICLE_INSPECTIONS', icon: 'pi pi-list', routerLink: [VEHICLE_INSPECTIONS_LIST_PATH] },
-              { label: 'ADD_VEHICLE_INSPECTION', icon: 'pi pi-plus', routerLink: [VEHICLE_INSPECTION_UPSERT_FORM] },
+              {
+                label: 'VEHICLES',
+                icon: 'pi pi-truck',
+                items: [
+                  { label: 'LIST', icon: 'pi pi-list', routerLink: [VEHICLES_LIST_PATH] },
+                  { label: 'ADD_VEHICLE', icon: 'pi pi-plus', routerLink: [VEHICLE_UPSERT_FORM] },
+                ],
+              },
+
+              {
+                label: 'VEHICLE_TYPES',
+                icon: 'pi pi-sitemap',
+                items: [
+                  { label: 'LIST', icon: 'pi pi-list', routerLink: [VEHICLE_TYPES_LIST_PATH] },
+                  { label: 'ADD_TYPE', icon: 'pi pi-plus', routerLink: [VEHICLE_TYPE_UPSERT_FORM] },
+                ],
+              },
+
+              {
+                label: 'VEHICLE_INSPECTIONS',
+                icon: 'pi pi-search',
+                items: [
+                  { label: 'LIST', icon: 'pi pi-list', routerLink: [VEHICLE_INSPECTIONS_LIST_PATH] },
+                  { label: 'ADD_VEHICLE_INSPECTION', icon: 'pi pi-plus', routerLink: [VEHICLE_INSPECTION_UPSERT_FORM] },
+                ],
+              },
             ],
           },
         ],

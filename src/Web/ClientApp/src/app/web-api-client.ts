@@ -17,7 +17,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IVehiclesClient {
     createVehicle(command: CreateVehicleCommand): Observable<void>;
-    getVehicles(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<PagedResultOfVehicleDto>;
+    getVehicles(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined, vehicleTypeFilter: string | null | undefined): Observable<PagedResultOfVehicleDto>;
     updateVehicle(id: string, command: UpdateVehicleCommand): Observable<void>;
     deleteVehicle(id: string): Observable<void>;
     getVehicleById(id: string): Observable<VehicleDto>;
@@ -84,7 +84,7 @@ export class VehiclesClient implements IVehiclesClient {
         return _observableOf(null as any);
     }
 
-    getVehicles(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined): Observable<PagedResultOfVehicleDto> {
+    getVehicles(pageNumber: number | undefined, pageSize: number | undefined, searchBy: string | null | undefined, orderBy: string | null | undefined, sortOrder: number | undefined, vehicleTypeFilter: string | null | undefined): Observable<PagedResultOfVehicleDto> {
         let url_ = this.baseUrl + "/api/Vehicles?";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
@@ -102,6 +102,8 @@ export class VehiclesClient implements IVehiclesClient {
             throw new Error("The parameter 'sortOrder' cannot be null.");
         else if (sortOrder !== undefined)
             url_ += "SortOrder=" + encodeURIComponent("" + sortOrder) + "&";
+        if (vehicleTypeFilter !== undefined && vehicleTypeFilter !== null)
+            url_ += "vehicleTypeFilter=" + encodeURIComponent("" + vehicleTypeFilter) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -4460,8 +4462,8 @@ export class VehicleInspectionDto implements IVehicleInspectionDto {
     vehicleId?: string | undefined;
     vehicleName?: string | undefined;
     vehicleTypeName?: string | undefined;
-    authorizedFrom?: Date;
-    authorizedTo?: Date;
+    authorizedFrom?: string | undefined;
+    authorizedTo?: string | undefined;
     isAuthorized?: boolean;
     notes?: string | undefined;
     items?: CheckListItemDto[] | undefined;
@@ -4485,8 +4487,8 @@ export class VehicleInspectionDto implements IVehicleInspectionDto {
             this.vehicleId = _data["vehicleId"];
             this.vehicleName = _data["vehicleName"];
             this.vehicleTypeName = _data["vehicleTypeName"];
-            this.authorizedFrom = _data["authorizedFrom"] ? new Date(_data["authorizedFrom"].toString()) : <any>undefined;
-            this.authorizedTo = _data["authorizedTo"] ? new Date(_data["authorizedTo"].toString()) : <any>undefined;
+            this.authorizedFrom = _data["authorizedFrom"];
+            this.authorizedTo = _data["authorizedTo"];
             this.isAuthorized = _data["isAuthorized"];
             this.notes = _data["notes"];
             if (Array.isArray(_data["items"])) {
@@ -4514,8 +4516,8 @@ export class VehicleInspectionDto implements IVehicleInspectionDto {
         data["vehicleId"] = this.vehicleId;
         data["vehicleName"] = this.vehicleName;
         data["vehicleTypeName"] = this.vehicleTypeName;
-        data["authorizedFrom"] = this.authorizedFrom ? this.authorizedFrom.toISOString() : <any>undefined;
-        data["authorizedTo"] = this.authorizedTo ? this.authorizedTo.toISOString() : <any>undefined;
+        data["authorizedFrom"] = this.authorizedFrom;
+        data["authorizedTo"] = this.authorizedTo;
         data["isAuthorized"] = this.isAuthorized;
         data["notes"] = this.notes;
         if (Array.isArray(this.items)) {
@@ -4536,8 +4538,8 @@ export interface IVehicleInspectionDto {
     vehicleId?: string | undefined;
     vehicleName?: string | undefined;
     vehicleTypeName?: string | undefined;
-    authorizedFrom?: Date;
-    authorizedTo?: Date;
+    authorizedFrom?: string | undefined;
+    authorizedTo?: string | undefined;
     isAuthorized?: boolean;
     notes?: string | undefined;
     items?: CheckListItemDto[] | undefined;

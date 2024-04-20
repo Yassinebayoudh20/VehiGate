@@ -41,23 +41,39 @@ namespace VehiGate.Application.DriverInspections.Queries.GetDriverInspection
                 throw new NotFoundException(nameof(DriverInspection), request.Id);
             }
 
-            var userById = await _identityService.GetUserById(inspection.Driver.UserId);
-            var lastReviewedById = await _identityService.GetUserById(inspection.LastModifiedBy);
-
             var driverInspectionDto = new DriverInspectionDto
             {
                 Id = inspection.Id,
                 DriverId = inspection.Driver.Id,
                 DriverUserId = inspection.Driver.UserId,
-                DriverName = userById.FirstName + " " + userById.LastName,
                 Items = null,
-                //DriversFields = inspection.DriversFields,
-                ReviewedBy = lastReviewedById.FirstName + " " + lastReviewedById.LastName,
                 AuthorizedFrom = inspection.AuthorizedFrom.ToString(),
                 AuthorizedTo = inspection.AuthorizedTo.ToString(),
                 IsAuthorized = inspection.IsAuthorized,
                 Notes = inspection.Notes
             };
+
+
+            if (inspection.LastModifiedBy != null)
+            {
+                var lastReviewedById = await _identityService.GetUserById(inspection.LastModifiedBy);
+
+                driverInspectionDto.ReviewedBy = lastReviewedById.FirstName + " " + lastReviewedById.LastName;
+
+
+            }
+
+            if (inspection.Driver.UserId != null)
+            {
+                var user = await _identityService.GetUserById(inspection.Driver.UserId);
+
+                if (user != null)
+                {
+                    driverInspectionDto.DriverName = user.FirstName + " " + user.LastName;
+                }
+            }
+
+
 
             if (inspection.Checklist != null && inspection.Checklist.CheckListItems.Any())
             {

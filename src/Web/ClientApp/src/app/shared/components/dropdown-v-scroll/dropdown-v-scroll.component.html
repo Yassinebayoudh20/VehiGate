@@ -1,15 +1,23 @@
-<div  *ngIf="items && items.length > 0" class="p-dropdown p-component p-inputwrapper p-dropdown-clearable" [ngClass]="{ 'p-invalid': isInvalid, 'p-disabled': isDisabled }" (click)="toggleDropdown($event)">
-  <div class="p-element p-dropdown-label p-inputtext p-placeholder">
+<div class="p-dropdown w-full p-component p-inputwrapper p-dropdown-clearable" [ngClass]="{ 'p-invalid': isInvalid }" (click)="toggleDropdown($event)">
+  <div class="p-element p-dropdown-label p-inputtext p-placeholder flex justify-content-between align-items-center">
     {{ selectedItem ? selectedItem[optionName] : ('SELECT_AN_ITEM' | transloco | titlecase) }}
+    <i class="pi" [ngClass]="{'pi-chevron-up': isOpen, 'pi-chevron-down': !isOpen}"></i>
   </div>
 
   <div class="p-dropdown-panel p-component" *ngIf="isOpen">
     <div class="p-dropdown-items-wrapper" (scroll)="onScroll()" #scrollContainer>
       <div class="p-dropdown-items">
-        <div *ngFor="let item of items" class="p-dropdown-item p-element" (click)="selectItem($event, item)">
-          {{ item[optionName] }}
-          <span *ngFor="let info of additionalInfo"> {{ item[info] }} </span>
-        </div>
+        <ng-container *ngIf="items && items.length > 0; else emptyDropdown">
+          <div *ngFor="let item of items" class="p-dropdown-item p-element" (click)="selectItem($event, item)">
+            {{ item[optionName] }}
+            <span *ngFor="let info of additionalInfo"> {{ item[info] }} </span>
+          </div>
+        </ng-container>
+        <ng-template #emptyDropdown>
+          <div class="p-dropdown-item p-element">
+            No items available
+          </div>
+        </ng-template>
       </div>
 
       <div class="loading-overlay" *ngIf="loading">
@@ -18,6 +26,7 @@
     </div>
   </div>
 </div>
+
 <div *ngIf="isInvalid">
   <small class="text-red-500">
     {{ errorMessage | titlecase }}

@@ -1,71 +1,104 @@
-﻿# VehiGate
 
-The project was generated using the [Clean.Architecture.Solution.Template](https://github.com/jasontaylordev/VehiGate) version 8.0.4.
+# VehiGate
 
-## Build
+## Overview
 
-Run `dotnet build -tl` to build the solution.
+**VehiGate** is a vehicle management platform built with **ASP.NET Core** for the backend and **Angular** for the frontend. It provides a comprehensive solution for managing vehicle-related data, including vehicle registration, tracking, maintenance scheduling, and more.
 
-## Run
+---
 
-To run the web application:
+## Features
 
-```bash
-cd .\src\Web\
-dotnet watch run
+- Vehicle Registration and Management
+- Users Registration and Management
+- Sites Registration and Management
+- Checking In and out Forms
+- Authorize Vehicles
+- Responsive UI built with Angular and PrimeNG
+- Secure API with ASP.NET Core Identity and JWT Authentication
+
+## Upcoming Features
+- Maintenance Scheduling and Tracking
+- Real-time Vehicle Location Monitoring
+- Role-based Access Control (Admin, User, Mechanic)
+
+---
+
+## Technologies
+
+* [ASP.NET Core 6](https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core?view=aspnetcore-6.0)
+* [Entity Framework Core 6](https://docs.microsoft.com/en-us/ef/core/)
+* [Angular 13](https://angular.io/)
+* [MediatR](https://github.com/jbogard/MediatR)
+* [AutoMapper](https://automapper.org/)
+* [FluentValidation](https://fluentvalidation.net/)
+* [NUnit](https://nunit.org/), [FluentAssertions](https://fluentassertions.com/), [Moq](https://github.com/moq) & [Respawn](https://github.com/jbogard/Respawn)
+
+## Getting Started
+
+The easiest way to get started is to install the [NuGet package](https://www.nuget.org/packages/Clean.Architecture.Solution.Template) and run `dotnet new ca-sln`:
+
+1. Install the latest [.NET 6 SDK](https://dotnet.microsoft.com/download/dotnet/6.0)
+2. Install the latest [Node.js LTS](https://nodejs.org/en/)
+3. Run `dotnet new --install Clean.Architecture.Solution.Template` to install the project template
+4. Create a folder for your solution and cd into it (the template will use it as project name)
+5. Run `dotnet new ca-sln` to create a new project
+6. Navigate to `src/WebUI` and launch the project using `dotnet run`
+
+Check out my [blog post](https://jasontaylor.dev/clean-architecture-getting-started/) for more information.
+
+### Database Configuration
+
+The template is configured to use an in-memory database by default. This ensures that all users will be able to run the solution without needing to set up additional infrastructure (e.g. SQL Server).
+
+If you would like to use SQL Server, you will need to update **WebUI/appsettings.json** as follows:
+
+```json
+  "UseInMemoryDatabase": false,
 ```
 
-Navigate to https://localhost:5001. The application will automatically reload if you change any of the source files.
+Verify that the **DefaultConnection** connection string within **appsettings.json** points to a valid SQL Server instance. 
 
-## Code Styles & Formatting
+When you run the application the database will be automatically created (if necessary) and the latest migrations will be applied.
 
-The template includes [EditorConfig](https://editorconfig.org/) support to help maintain consistent coding styles for multiple developers working on the same project across various editors and IDEs. The **.editorconfig** file defines the coding styles applicable to this solution.
+### Database Migrations
 
-## Code Scaffolding
+To use `dotnet-ef` for your migrations first ensure that "UseInMemoryDatabase" is disabled, as described within previous section.
+Then, add the following flags to your command (values assume you are executing from repository root)
 
-The template includes support to scaffold new commands and queries.
+* `--project src/Infrastructure` (optional if in this folder)
+* `--startup-project src/WebUI`
+* `--output-dir Persistence/Migrations`
 
-Start in the `.\src\Application\` folder.
+For example, to add a new migration from the root folder:
 
-Create a new command:
+ `dotnet ef migrations add "SampleMigration" --project src\Infrastructure --startup-project src\WebUI --output-dir Persistence\Migrations`
 
-```
-dotnet new ca-usecase --name CreateTodoList --feature-name TodoLists --usecase-type command --return-type int
-```
+### Logging
 
-Create a new query:
+We are using serilog and seq as a log system to get started very quick you can run this command to have a local version of seq:
 
-```
-dotnet new ca-usecase -n GetTodos -fn TodoLists -ut query -rt TodosVm
-```
-
-If you encounter the error *"No templates or subcommands found matching: 'ca-usecase'."*, install the template and try again:
-
-```bash
-dotnet new install Clean.Architecture.Solution.Template::8.0.4
+``` bash
+docker run --name seq -d --restart unless-stopped -e ACCEPT_EULA=Y -v D:\DockerShare\Logs\Seq:/data -p 5080:80 -p 5341:5341 datalust/seq
 ```
 
-## Test
+navigate to localhost:5080 and you are in.
 
-The solution contains unit, integration, functional, and acceptance tests.
+## Overview
 
-To run the unit, integration, and functional tests (excluding acceptance tests):
-```bash
-dotnet test --filter "FullyQualifiedName!~AcceptanceTests"
-```
+### Domain
 
-To run the acceptance tests, first start the application:
+This will contain all entities, enums, exceptions, interfaces, types and logic specific to the domain layer.
 
-```bash
-cd .\src\Web\
-dotnet run
-```
+### Application
 
-Then, in a new console, run the tests:
-```bash
-cd .\src\Web\
-dotnet test
-```
+This layer contains all application logic. It is dependent on the domain layer, but has no dependencies on any other layer or project. This layer defines interfaces that are implemented by outside layers. For example, if the application need to access a notification service, a new interface would be added to application and an implementation would be created within infrastructure.
 
-## Help
-To learn more about the template go to the [project website](https://github.com/jasontaylordev/CleanArchitecture). Here you can find additional guidance, request new features, report a bug, and discuss the template with other users.
+### Infrastructure
+
+This layer contains classes for accessing external resources such as file systems, web services, smtp, and so on. These classes should be based on interfaces defined within the application layer.
+
+### WebUI
+
+This layer is a single page application based on Angular 13 and ASP.NET Core 6. This layer depends on both the Application and Infrastructure layers, however, the dependency on Infrastructure is only to support dependency injection. Therefore only *Startup.cs* should reference Infrastructure.
+
